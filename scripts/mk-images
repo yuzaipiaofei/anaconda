@@ -566,7 +566,7 @@ EOF
 	$MBD_DIR fd1 b 2 1 644 root:root
 EOF
     if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
-       rm -f $MBD_DIR/dev/console
+       rm -f $MBD_DIR/dev/console $MBD_DIR/dev/tty[2-9]
        awk '{ printf("mknod %s/dev/%s %s %s %s\n", $1, $2, $3, $4, $5);
 	      printf("chmod %s %s/dev/%s\n", $6, $1, $2);
 	      printf("chown %s %s/dev/%s\n", $7, $1, $2); 
@@ -583,6 +583,9 @@ EOF
 EOF
     fi
     ln -s fb0 $MBD_DIR/dev/fb
+    for i in `seq 2 9`; do
+	ln -s console $MBD_DIR/dev/tty$i
+    done
 
     if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
 	dd if=/dev/zero of=$MBD_DIR/etc/ramfs.img.big bs=1k count=16000
