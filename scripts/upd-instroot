@@ -139,7 +139,7 @@ fi
 if [ $ARCH = s390 -o $ARCH = s390x ]; then
     PACKAGES="$PACKAGES s390utils binutils s390installer libgcc
 	sed net-tools inetd openssh openssh-server coreutils modutils
-	initscripts gawk xauth bash pygtk2 portmap 
+	initscripts gawk xauth bash pygtk2 portmap pam libcrack
 	telnet-server login ssh_keys mount grep"
 fi
 
@@ -447,7 +447,16 @@ $LIBDIR/libvtoc*.so*
 lib/modules/ibm*
 etc/inetd.conf
 etc/ssh/*
+etc/pam.d/sshd
+etc/pam.d/login
+etc/pam.d/system-auth
+etc/pam.d/other
+etc/security/limits.conf
+etc/security/pam_env.conf
+$LIBDIR/security/pam_*
+usr/$LIBDIR/libcrack.so*
 usr/$LIBDIR/python2.2/site-packages/gtk*/gtk/*
+usr/$LIBDIR/python2.2/site-packages/gnome/uimodule.so
 usr/X11R6/bin/xauth
 usr/share/anaconda/*
 EOF

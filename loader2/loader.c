@@ -992,6 +992,7 @@ int main(int argc, char ** argv) {
         symlink("mnt/runtime/usr", "/usr");
         rename("/lib", "/lib_old");
 	symlink("mnt/runtime/lib", "/lib");
+	system("/sbin/ldconfig");
 #endif
     }
 
