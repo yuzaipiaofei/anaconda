@@ -21,7 +21,9 @@ class InstallClass(BaseInstallClass):
 	BaseInstallClass.setSteps(self, dispatch);
 	dispatch.skipStep("partition")
         dispatch.skipStep("autopartition")
-        dispatch.skipStep("partitionmethod")
+#        dispatch.skipStep("partitionmethod")
+#        dispatch.skipStep("partitionmethodsetup")
+#        dispatch.skipStep("partitionobjinit")
         dispatch.skipStep("keyboard")
 	dispatch.skipStep("mouse")
 #        dispatch.skipStep("bootloader")
@@ -32,8 +34,6 @@ class InstallClass(BaseInstallClass):
         dispatch.skipStep("desktopchoice")
         dispatch.skipStep("confirminstall")
         dispatch.skipStep("authentication")
-
-#        dispatch.skipStep("desktopchoice", skip = 0)
         dispatch.skipStep("package-selection", skip = 1)
 
     def setGroupSelection(self, comps, intf):
