@@ -928,11 +928,12 @@ def doPostInstall(method, id, intf, instPath):
 		securetty = open(instPath + '/etc/securetty','a+')
 		securetty.write("console\n")
 		securetty.close()
+		usbWasMounted = 0
 
-		if usbWasMounted:
-		    isys.mount('/usbdevfs', '/proc/bus/usb', 'usbdevfs')
+	    if usbWasMounted:
+		isys.mount('/usbdevfs', '/proc/bus/usb', 'usbdevfs')
 
-		w.set(4)
+	    w.set(4)
 
         if upgrade and id.dbpath is not None:
 	    # move the rebuilt db into place.
