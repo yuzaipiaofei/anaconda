@@ -629,6 +629,7 @@ class KickstartBase(BaseInstallClass):
                         id.handleDeps = IGNORE_DEPS
                 
 		where = "packages"
+                self.skipSteps.append("package-selection")
 	    else:
                 # if we're parsing the %pre and not in the pre, continue
                 if parsePre and where != "pre":
@@ -662,9 +663,9 @@ class KickstartBase(BaseInstallClass):
 		else:
 		    raise SyntaxError, "I'm lost in kickstart"
 
-	self.groupList = groups
-	self.packageList = packages
-        self.excludedList = excludedPackages
+        self.groupList.extend(groups)
+        self.packageList.extend(packages)
+        self.excludedList.extend(excludedPackages)
 
         # test to see if they specified to clear partitions and also
         # tried to --onpart on a logical partition
@@ -1081,7 +1082,6 @@ class KickstartBase(BaseInstallClass):
 	dispatch.skipStep("bootdisk")
         dispatch.skipStep("welcome")
         dispatch.skipStep("betanag")
-        dispatch.skipStep("package-selection")
         dispatch.skipStep("confirminstall")
         dispatch.skipStep("confirmupgrade")
         dispatch.skipStep("network")
@@ -1135,7 +1135,10 @@ class KickstartBase(BaseInstallClass):
 	    comps[n].select()
 
         for n in self.excludedList:
-            comps.packages[n].unselect()
+            if comps.packages.has_key(n):
+                comps.packages[n].unselect()
+            else:
+                log("%s does not exist, can't exclude" %(n,))
 
     def __init__(self, file, serial):
 	self.serial = serial
@@ -1143,12 +1146,15 @@ class KickstartBase(BaseInstallClass):
 	self.skipSteps = []
         self.showSteps = []
         self.interactive = 0
+        self.packageList = []
+        self.groupList = []
+        self.excludedList = []
         self.ksRaidMapping = {}
         self.ksPVMapping = {}
         self.ksVGMapping = {}
         # XXX hack to give us a starting point for RAID, LVM, etc unique IDs.
         self.ksID = 100000 
-	BaseInstallClass.__init__(self, 0)
+        BaseInstallClass.__init__(self, 0)
 
 def Kickstart(file, serial):
 
