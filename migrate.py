@@ -17,11 +17,16 @@ import rpm
 
 from flags import flags
 
+from rhpl.log import log
+from rhpl.translate import _
+
 def findConfig(intf, id, instPath, dir):
     rpm.addMacro("_dbPath",instPath + "/var/lib/rpm")
     ts=rpm.ts()
     mi=ts.dbMatch()
     configs=[]
+
+    win = intf.waitWindow(_("Finding"), _("Finding existing config files..."))
 
 #TODO: Add progress bar
     for h in mi:
@@ -35,6 +40,7 @@ def findConfig(intf, id, instPath, dir):
                 and isModified(names[i],md5sums[i],instPath):
                     configs.append(names[i])
 #TODO: whitelist/blacklist and do something meaningful
+    win.pop()
     if flags.test:
         print configs
 
