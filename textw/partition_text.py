@@ -217,8 +217,7 @@ class PartitionWindow:
         
 
     # make the list of available filesystems and it's label
-    def makeFsList(self, request, usecallback=1, uselabel=1, usetypes=None,
-                   ignorefs = None):
+    def makeFsList(self, request, usecallback=1, uselabel=1, usetypes=None, ignorefs = None):
         subgrid = Grid(1, 2)
         row = 0
         # filesystem type selection
