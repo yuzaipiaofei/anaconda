@@ -489,13 +489,10 @@ int readNetConfig(char * device, struct networkDeviceConfig * cfg, int flags) {
 }
 
 int configureNetwork(struct networkDeviceConfig * dev) {
-#if !defined(__s390__) && !defined(__s390x__)
     pumpSetupInterface(&dev->dev);
 
     if (dev->dev.set & PUMP_NETINFO_HAS_GATEWAY)
         pumpSetupDefaultGateway(&dev->dev.gateway);
-
-#endif
     return 0;
 }
 
