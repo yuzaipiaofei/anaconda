@@ -60,7 +60,21 @@ class LangSupportWindow(FirstbootGuiWindow):
         self.ics = ics
 
     def getNext(self):
-        print "in getNext"
+        self.supportedLangs = []
+
+        for row in range(self.maxrows):
+            if self.installAllRadio.get_active() == gtk.TRUE:
+                selected = self.languageList.get_text (row, 1)
+                self.supportedLangs.append (selected)
+            else:
+                if self.languageList.get_active(row) == 1:
+                    selected = self.languageList.get_text (row, 1)
+                    self.supportedLangs.append (selected)
+
+	curidx = self.deflang_optionmenu.get_history()
+	self.defaultLang = self.deflang_values[curidx]
+        self.langs.setSupported (self.supportedLangs)
+        self.langs.setDefault (self.defaultLang)
 
     def select_row(self, *args):
         rc = self.modelView.get_selection().get_selected()
@@ -106,6 +120,11 @@ class LangSupportWindow(FirstbootGuiWindow):
         sep = gtk.HSeparator ()
         self.myVbox.pack_start (sep, gtk.FALSE, 15)
 
+        self.sw = gtk.ScrolledWindow ()
+        self.sw.set_policy (gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+        self.sw.set_shadow_type(gtk.SHADOW_IN)
+        self.sw.set_sensitive(gtk.FALSE)
+
 
         self.installAllRadio = gtk.RadioButton(None, (_("Install _all available languages")))
         self.installSomeRadio = gtk.RadioButton(self.installAllRadio, (_("Select _addition languages "
@@ -121,31 +140,34 @@ class LangSupportWindow(FirstbootGuiWindow):
 
         # langs we want to support
         self.languageList = checklist.CheckList(1)
+        self.sw.add (self.languageList)
         label.set_mnemonic_widget(self.languageList)
 
         self.languageList.checkboxrenderer.connect("toggled",
 					       self.toggled_language)
 
-
         self.maxrows = 0
-        list = []
+
+        if self.supportedLangs == self.languages:
+            self.installAllRadio.set_active(gtk.TRUE)
+        else:
+            self.installSomeRadio.set_active(gtk.TRUE)
+            self.sw.set_sensitive(gtk.TRUE)
+            
+##         for locale in self.languages:
+##             self.languageList.append_row((locale, ""), gtk.FALSE)            
+##             self.maxrows = self.maxrows + 1
 
         for locale in self.languages:
-	    if locale == self.defaultLang or (locale in self.supportedLangs):
-		self.languageList.append_row((locale, ""), gtk.TRUE)
-		list.append(locale)
-	    else:
-		self.languageList.append_row((locale, ""), gtk.FALSE)
+            if locale == self.defaultLang or (locale in self.supportedLangs):
+                if self.supportedLangs == self.languages:
+                    self.languageList.append_row((locale, ""), gtk.FALSE)
+                else:
+                    self.languageList.append_row((locale, ""), gtk.TRUE)
+            else:
+                self.languageList.append_row((locale, ""), gtk.FALSE)
 
             self.maxrows = self.maxrows + 1
-
-        self.setCurrent(self.defaultLang)
-            
-        self.sw = gtk.ScrolledWindow ()
-        self.sw.set_policy (gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
-        self.sw.add (self.languageList)
-        self.sw.set_shadow_type(gtk.SHADOW_IN)
-        self.sw.set_sensitive(gtk.FALSE)
 
         align = gtk.Alignment()
         align.set(1.0, 0.5, 0.9, 1.0)
@@ -153,9 +175,9 @@ class LangSupportWindow(FirstbootGuiWindow):
 
         self.myVbox.pack_start (align, gtk.TRUE)
         
-
-        print "in apply"
+        self.rebuild_optionmenu()
         self.getNext()
+        self.setCurrent(self.defaultLang)
 
         try:
             #If we're in reconfig mode, this will fail because there is no self.mainWindow
@@ -165,7 +187,6 @@ class LangSupportWindow(FirstbootGuiWindow):
         return 0
 
     def anacondaScreen(self, langSupportLabel, lang):
-        print "okAnacondaClicked", langSupportLabel
         self.langs = lang
         self.langSupportLabel = langSupportLabel
         self.languages = self.langs.getAllSupported()
@@ -176,9 +197,7 @@ class LangSupportWindow(FirstbootGuiWindow):
             self.origLangs.append(i)
             
 	self.defaultLang = self.langs.getDefault()
-	self.oldDefaultLang = self.defaultLang
 
-        print langSupportLabel
         self.doDebug = None
         self.setupScreen()
         self.rebuild_optionmenu()
@@ -240,6 +259,8 @@ class LangSupportWindow(FirstbootGuiWindow):
 	else:
 	    self.defaultLang = None
 
+        self.defaultLang = self.langs.getDefault()
+
 	if self.defaultLang is not None and self.defaultLang in list:
 	    index = list.index(self.defaultLang)
 	else:
@@ -259,6 +280,7 @@ class LangSupportWindow(FirstbootGuiWindow):
         while (row < self.languageList.num_rows):
             if self.languageList.get_text(row, 1) == currentDefault:
                 path = store.get_path(store.get_iter((row,)))
+                store.set_value(store.get_iter(row,), 0, gtk.TRUE)
                 col = self.languageList.get_column(0)
                 self.languageList.set_cursor(path, col, gtk.FALSE)
                 self.languageList.scroll_to_cell(path, col, gtk.TRUE, 0.5, 0.5)
