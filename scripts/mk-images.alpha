@@ -2,7 +2,7 @@ SECSTAGE="vfat raid0 raid1 raid5"
 
 prepareBootImage() {
         dd if=/dev/zero of=$MBD_TMPIMAGE bs=1k count=$BOOTDISKSIZE 2>/dev/null
-        echo y | /sbin/mke2fs -i 4096 $MBD_TMPIMAGE  > /dev/null 2>/dev/null
+        echo y | /sbin/mke2fs -b 1024 -r 0 -O none $MBD_TMPIMAGE  > /dev/null 2>/dev/null
 	LODEV=`findloopdevice $MBD_TMPIMAGE`
 	e2writeboot $LODEV $BOOTDISKDIR/bootlx
 	mount $LODEV -t ext2 $MBD_BOOTTREE
