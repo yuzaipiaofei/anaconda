@@ -108,7 +108,6 @@ installSteps = [
     ("languagesupport", ("id.langSupport",)),
     ("timezone", ("id.instLanguage", "id.timezone")),
     ("accounts", ("intf", "id.rootPassword")),
-    ("authentication", ("id.auth",)),
     ("readcomps", readPackages, ("intf", "method", "id")),
     ("desktopchoice", ("intf", "id.instClass", "dispatch")),
     ("findpackages", upgradeFindPackages, ("intf", "method", "id",

@@ -120,7 +120,6 @@ class BaseInstallClass:
 		 "languagesupport",
 		 "timezone",
 		 "accounts",
-		 "authentication",
 		 "readcomps",
                  "selectlangpackages",
 		 "package-selection",
