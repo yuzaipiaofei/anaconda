@@ -304,9 +304,6 @@ int chooseLanguage(char ** lang, int flags) {
     else
 	choice = english;
 
-#if defined (__s390__) || defined (__s390x__)
-    if(!choice)
-#endif
     newtWinMenu(_("Choose a Language"),
 		_("What language would you like to use during the "
 		  "installation process?"), 40, 5, 5, 8,
