@@ -554,8 +554,15 @@ class ToDo:
                 # FORCE the partition that MILO has to read
                 # to have 1024 block size.  It's the only
                 # thing that our milo seems to read.
+                #    --- ALSO ---
+                # if you turn on revision 1 ext2 then the
+                # file_type flag (high 8 bits of the name_len
+                # field) will get set, throwing off both MILO
+                # and aboot.  I've fixed aboot to read these
+                # correctly, but MILO is _such_ a pain to build
+                # that I don't want to deal with it right now.
                 if arch == "alpha" and mntpoint == kernelPart:
-                    args = args + ["-b", "1024"]
+                    args = args + ["-b", "1024", '-r', '0']
                 # set up raid options for md devices.
                 if device[:2] == 'md':
                     for (rmnt, rdevice, fsType, raidType, start, size, makeup) in raid:
@@ -631,7 +638,8 @@ class ToDo:
 	self.setFdDevice ()
 	for mntpoint in keys: 
 	    (dev, fs, reformat) = self.mounts[mntpoint]
-	    iutil.mkdirChain(self.instPath + mntpoint)
+            if fs != "swap":
+                iutil.mkdirChain(self.instPath + mntpoint)
 	    if (mntpoint == '/'):
 		f.write (format % ( '/dev/' + dev, mntpoint, fs, 'defaults', 1, 1))
 	    else:
