@@ -222,7 +222,7 @@ EOF
 fi
 
 for I in $PACKAGES; do
-    for J in `ls $SRC/$I*` 2> /dev/null; do
+    for J in `ls $SRC/$I* 2> /dev/null`; do
 	if [ "$I" != "rpm-devel" ]; then
             if ! echo $J | egrep "(devel|sparcv9)" > /dev/null; then
 	        RPMS="$RPMS $J"
