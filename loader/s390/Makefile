@@ -4,12 +4,13 @@ PACKAGE=installer
 VERSION=$(shell cat installer.spec | grep Version: | sed 's/Version: //g')
 VERNAME=$(PACKAGE)-$(VERSION)
 
-SOURCES=dasdformat.c mountpoint.c netsetup.c pkgsrc.c pkgselect.c Makefile installer.spec common.h
-APPS=dasdformat mountpoint netsetup pkgsrc pkgselect
+SOURCES=dasdformat.c mountpoint.c netsetup.c pkgsrc.c pkgselect.c formatmnt.c Makefile installer.spec common.h
+APPS=dasdformat mountpoint netsetup pkgsrc pkgselect formatmnt
 
 all:	$(APPS)
 	strip $(APPS)
 
+formatmnt: formatmnt.c
 dasdformat: dasdformat.c
 mountpoint: mountpoint.c
 netsetup: netsetup.c

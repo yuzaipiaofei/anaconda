@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <libintl.h>
 #include "common.h"
 
 #define MAX_DASD	26
@@ -22,18 +23,29 @@
 #define FDASD		"/sbin/fdasd"
 #define PROCDASDDEV	"/proc/dasd/devices"
 #define DASDFMT		"/sbin/dasdfmt"
+
+#define DASD_HEIGHT	10
+
+#define _(String) gettext((String))
+
 int
 main (int argc, char **argv)
 {
-	newtComponent form, tb, ok, cancel, ret;
+	newtGrid grid, subgrid, buttonbar;
+	newtComponent form, subform, formats, tb, blank;
+	newtComponent scroll, ret, ok, cancel;
 	newtComponent cb[MAX_DASD], mpf[MAX_DASD];
 	newtComponent yesnoform, cdl, ldl, tb2;
 	int format[MAX_DASD], have_dasd[MAX_DASD];
-	int w, h, i, j, dasds = 0;
+	int w, h, i, j, dasds = 0, dasdcount = 0;
 	FILE *f, *g;
 	char dasd[sizeof (DEV_DASD_FMT) + 1], tmp[4096], error[4096];
 	char *mp[MAX_DASD];
 
+	if(getuid() != 0) {
+		printf("This program must be run with superuser privileges !\nAborted.\n");
+		exit (EXIT_FAILURE);
+	}
 	for (i = 0; i < MAX_DASD; i++) {
 		int fd;
 		mp[i] = "";
@@ -41,6 +53,7 @@ main (int argc, char **argv)
 		if ((fd = open (dasd, O_RDONLY)) >= 0) {
 			dasds++;
 			have_dasd[i] = 1;
+			dasdcount++;
 			close (fd);
 		} else
 			have_dasd[i] = 0;
@@ -103,29 +116,47 @@ main (int argc, char **argv)
 		newtFinished ();
 		exit (EXIT_FAILURE);
 	}
-	newtCenteredWindow (w - 22, h - 8, "DASD initialization");
-	form = newtForm (NULL, NULL, 0);
+	scroll = newtVerticalScrollbar(-1, -1, DASD_HEIGHT, 
+					NEWT_COLORSET_CHECKBOX,
+					NEWT_COLORSET_ACTCHECKBOX);
 	tb = newtTextbox (1, 0, w - 23, 2, NEWT_FLAG_WRAP);
 	newtTextboxSetText (tb, "Please choose which DASDs you would like to "
 		"format and where they should be mounted.");
-	newtFormAddComponent (form, tb);
+	formats = newtForm (NULL, NULL, 0);
 	for (i = 0; i < MAX_DASD; i++) {
 		if (! have_dasd[i])
 			continue;
 		sprintf (dasd, DEV_DASD_FMT, 'a' + i);
-		cb[i] = newtCheckbox (6 + (i / 10) * 16, 3 + (i % 10),
+		cb[i] = newtCheckbox ( -1, (i % 10),
 			dasd, '*', NULL, NULL);
-		mpf[i] = newtEntry(26 + (i / 10) * 16, 3 + (i % 10),
+		mpf[i] = newtEntry(21, (i % 10),
 			 mp[i], 20, &mp[i], NEWT_FLAG_SCROLL);
-		newtFormAddComponents (form, cb[i], mpf[i], NULL);
+		newtFormSetWidth(mpf[i], 20);
+		newtFormAddComponent (formats, cb[i]);
+		newtFormAddComponent (formats, mpf[i]);
 	}
-	ok = newtButton ((w - 22) / 2 - 15, h - 12, "OK");
-	newtFormAddComponent (form, ok);
-	cancel = newtButton ((w - 22) / 2 + 5, h - 12, "Cancel");
-	newtFormAddComponent (form, cancel);
+	blank = newtForm(NULL, NULL, 0);
+	newtFormSetWidth(blank, 1);
+	newtFormSetHeight(blank, DASD_HEIGHT);
+	newtFormSetWidth(formats, 30);
+	if(dasdcount > DASD_HEIGHT) {
+		subgrid = newtGridHCloseStacked(NEWT_GRID_COMPONENT, formats,
+			NEWT_GRID_COMPONENT, blank,
+			NEWT_GRID_COMPONENT, scroll, NULL);
+	} else {
+		subgrid = newtGridHCloseStacked(NEWT_GRID_COMPONENT, formats,
+				NULL);
+	}
+	subform = newtForm (NULL, NULL, 0);
+	newtFormSetWidth(subform, 50);
+	newtGridAddComponentsToForm(subgrid, subform, 1);
+	buttonbar = newtButtonBar(_("Ok"), &ok, _("Cancel"), &cancel, NULL);
 
-	newtFormSetCurrent (form, ok);
-
+	grid = newtGridBasicWindow(tb, subgrid, buttonbar);
+	form = newtForm (NULL, NULL, 0);
+	newtGridAddComponentsToForm(grid, form, 1);
+	newtGridWrappedWindow(grid, _("DASD initialisation"));
+	newtGridFree(grid, 1);
 	ret = newtRunForm (form);
 	if (ret == cancel) {
 		newtFinished ();
@@ -144,9 +175,9 @@ main (int argc, char **argv)
 			continue;
 
 		sprintf (dasd, DEV_DASD_FMT, 'a' + i);
-		newtCenteredWindow (48, 2, "DASD initialization");
+		newtCenteredWindow (48, 3, "DASD initialization");
 		form = newtForm (NULL, NULL, 0);
-		tb = newtTextbox (1, 0, 46, 2, NEWT_FLAG_WRAP);
+		tb = newtTextbox (1, 0, 46, 3, NEWT_FLAG_WRAP);
 		sprintf (tmp, "Checking DASD %s...", dasd);
 		newtTextboxSetText (tb, tmp);
 		newtFormAddComponent (form, tb);
@@ -208,7 +239,7 @@ main (int argc, char **argv)
 				}
 				*/
 			} else {   /* User selected CDL format */
-				sprintf (tmp, "Formatting DASD %s in CDL mode.\n"
+				sprintf (tmp, "Formatting DASD %s in CDL mode. "
 					"This can take several minutes - Please wait.", dasd);
 				newtTextboxSetText (tb, tmp);
 				newtDrawForm (form);
@@ -216,8 +247,8 @@ main (int argc, char **argv)
 				sprintf (tmp, "%s -d cdl -b 4096 -y -f %s >/dev/null 2>&1", DASDFMT, dasd);
 				if ((err = system (tmp))) {
 					sprintf (error,
-						"Error %d while trying to run\n%s:\n%s",
-						err, tmp, strerror (errno));
+						"Error %d while trying to run\n%s\n",
+						err, tmp);
 					newtWinMessage ("Error", "Ok", error);
 					continue;
 				} else {
@@ -239,11 +270,14 @@ main (int argc, char **argv)
 		} else {        /* zOS compatible disk layout */
 			sprintf(tmp, "%s1", dasd);
 			if (((g = fopen(tmp, "r")) == NULL) || ((j = fgetc(g)) == EOF)) {
-				sprintf(tmp, "DASD %s is already in zOS compatible disk layout.\n"
-					"but no partitions were found. Adding a new partition...",
-					dasd);
-				newtWinMessage ("Partition missing", "Ok", tmp);
 				fclose(g);
+				sprintf(tmp, "DASD %s is already in zOS compatible disk layout "
+					"but no partitions were found. Adding a new partition.",
+					dasd);
+				newtTextboxSetText (tb, tmp);
+				newtDrawForm (form);
+				newtRefresh ();
+				sleep(3);
 				sprintf(tmp, "%s -s -a %s >/dev/null 2>&1", FDASD, dasd);
 				if ((err = system (tmp))) {
 					sprintf (error,
@@ -253,10 +287,13 @@ main (int argc, char **argv)
 					continue;
 				}
 			} else {
-				sprintf(tmp, "DASD %s is already in zOS compatible disk layout.\n"
-					"low-level formatting is not required on this DASD.",
+				sprintf(tmp, "DASD %s is already in zOS compatible disk layout. "
+					"Low-level formatting is not required on this DASD.",
 					dasd);
-				newtWinMessage ("Already formatted", "Ok", tmp);
+				newtTextboxSetText (tb, tmp);
+				newtDrawForm (form);
+				newtRefresh ();
+				sleep(3);
 				if(g) fclose(g);
 			}
 		}
