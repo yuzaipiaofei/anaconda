@@ -23,9 +23,9 @@ def onMILO ():
 
 def partitionNum (path):
     i = len(path) - 1
-    while path[i] not in string.digits:
+    while path[i] in string.digits:
         i = i - 1
-    return string.atoi (path[i:])
+    return string.atoi (path[i + 1:])
 
 def wholeDevice (path):
     i = 0
