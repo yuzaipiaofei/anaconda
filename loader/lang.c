@@ -293,7 +293,7 @@ int chooseLanguage(char ** lang, int flags) {
     if (getenv("LANG")) {
 	for (choice = 0; choice < numLanguages; choice++)
 	    if (!strcmp(languages[choice].lc_all, getenv("LANG"))) break;
-	if (choice == numLanguages) choice = 0;
+	if (choice == numLanguages) choice = english;
     }
 
 #if defined (__s390__) || defined (__s390x__)
