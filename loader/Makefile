@@ -57,7 +57,7 @@ ifeq (s390, $(ARCH))
 BINS += loader
 OBJS += stubs.o
 DIRS += s390
-S390FILES = module-info.s390 linuxrc.s390 dasdformat mountpoint netsetup pkgselect pkgsrc
+S390FILES = module-info.s390
 endif
 
 ifeq (s390x, $(ARCH))
