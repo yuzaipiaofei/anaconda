@@ -348,12 +348,17 @@ class ExceptionWindow:
 ##         if file:
 ##             hbox.pack_start (GnomePixmap (file), gtk.FALSE)
 
+        if iutil.getArch() == 's390':
+             floppymsg = "and"
+        else:
+             floppymsg = "or save the crash dump to a floppy then"
         info = WrappingLabel(_("An unhandled exception has occurred.  This "
                                "is most likely a bug.  Please copy the "
-                               "full text of this exception or save the crash "
-                               "dump to a floppy then file a detailed bug "
+                               "full text of this exception %s "
+                               "file a detailed bug "
                                "report against anaconda at "
-                               "http://bugzilla.redhat.com/bugzilla/"))
+                               "http://bugzilla.redhat.com/bugzilla/") 
+                               % (floppymsg,))
         info.set_size_request (400, -1)
 
         hbox.pack_start (sw, gtk.TRUE)
@@ -1096,9 +1101,9 @@ class InstallControlWindow:
         self.box = gtk.VBox (gtk.FALSE, 0)
         self.box.set_spacing(0)
 
+        self.box.pack_start (gtk.HSeparator (), gtk.FALSE)
         self.help_sw = gtk.ScrolledWindow()
         self.help_sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self.help_sw.set_shadow_type(gtk.SHADOW_IN)
         self.help_sw.add(self.help)
         self.box.pack_start(self.help_sw, gtk.TRUE)
         

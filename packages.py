@@ -854,6 +854,9 @@ def doPostInstall(method, id, intf, instPath):
 	    if arch == "i386":
 		pcmcia.createPcmciaConfig(
 			instPath + "/etc/sysconfig/pcmcia")
+
+       if arch == "s390":
+          copyOCOModules(instPath)
 		       
 	    w.set(3)
 
@@ -883,18 +886,17 @@ def doPostInstall(method, id, intf, instPath):
 		except RuntimeError:
 		    pass
 
-	    if arch != "s390":
-		# we need to unmount usbdevfs before mounting it
-		usbWasMounted = iutil.isUSBDevFSMounted()
-		if usbWasMounted:
-                    isys.umount('/proc/bus/usb', removeDir = 0)
+        if arch != "s390":
+            # we need to unmount usbdevfs before mounting it
+            usbWasMounted = iutil.isUSBDevFSMounted()
+            if usbWasMounted:
+                isys.umount('/proc/bus/usb', removeDir = 0)
 
-		    # see if unmount suceeded, if not pretent it isnt mounted
-		    # because we're screwed anywyas if system is going to
-		    # lock up
-		    if iutil.isUSBDevFSMounted():
-			usbWasMounted = 0
-		    
+            # see if unmount suceeded, if not pretent it isnt mounted
+            # because we're screwed anywyas if system is going to
+            # lock up
+            if iutil.isUSBDevFSMounted():
+                usbWasMounted = 0
                 unmountUSB = 0
                 try:
                     isys.mount('/usbdevfs', instPath+'/proc/bus/usb', 'usbdevfs')
@@ -902,7 +904,6 @@ def doPostInstall(method, id, intf, instPath):
                 except:
                     log("Mount of /proc/bus/usb in chroot failed")
                     pass
-
 
                 argv = [ "/usr/sbin/kudzu", "-q" ]
                 devnull = os.open("/dev/null", os.O_RDWR)
@@ -921,6 +922,11 @@ def doPostInstall(method, id, intf, instPath):
 
                 if unmountUSB:
                     isys.umount(instPath + '/proc/bus/usb', removeDir = 0)
+
+        else:         # S390
+            securetty = open(instPath + '/etc/securetty','a+')
+            securetty.write("console\n")
+            securetty.close()
 
 		if usbWasMounted:
                     isys.mount('/usbdevfs', '/proc/bus/usb', 'usbdevfs')
@@ -1085,6 +1091,10 @@ def copyExtraModules(instPath, comps, extraModules):
 
             recreateInitrd(n, instPath)
 
+def copyOCOModules(instPath):
+    command = ("[ -d /OCO ] && cp -a /OCO/* %s/lib/modules" % (instPath))
+    log("running: '%s'" % (command, ))
+    os.system(command)
 
 #Recreate initrd for use when driver disks add modules
 def recreateInitrd (kernelTag, instRoot):

@@ -55,14 +55,18 @@ class InstallConfirmWindow (ConfirmWindow):
     windowTitle = N_("About to Install")
     htmlTag = "aboutinstall"
 
-    def getScreen(self):
+	def getScreen(self):
+	    if iutil.getArch() != "s390":
+	        kstext = _("A kickstart file containing the installation options "
+	                   "selected can be found in the /root/anaconda-ks.cfg file "
+	                   "after rebooting the system.")
+	    else:
+	        kstext = ""
 	return ConfirmWindow.getScreen(self,
 	    _("Click next to begin installation of %s.") % (productName,),
 	    _("A complete log of the installation can be found in "
 	      "the %s file after rebooting your system.\n\n"
-              "A kickstart file containing the installation options "
-	      "selected can be found in the %s file after rebooting the "
-	      "system.") % ("/root/install.log", "/root/anaconda-ks.cfg"))
+	      "%s") % ("/root/install.log", kstext))
 
 class UpgradeConfirmWindow (ConfirmWindow):
     windowTitle = N_("About to Upgrade")

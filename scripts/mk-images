@@ -74,6 +74,9 @@ TOPDIR=$(cd $TOPDIR; pwd)
 
     touch $MODULESUSED
 
+    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
+        MODINFO=$IMGPATH/usr/lib/anaconda-runtime/loader/module-info.s390
+    fi
     REQUIREMENTS="$TRIMPCITABLE $PCITABLE $GETMODDEPS $MODINFO
 		  $FILTERMODDEPS $LANGTABLE $GETKEYMAPS"
 
@@ -312,7 +315,8 @@ makemainmodules() {
 
     if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
        mkdir -p $KERNELROOT/lib/modules/misc
-       cp -f $KERNELROOT/lib/modules/*/kernel/drivers/s390/*/* $KERNELROOT/lib/modules/misc
+       find $KERNELROOT/lib/modules/*/kernel/drivers/s390/ -name "*.o" \
+          -exec cp -f {} $KERNELROOT/lib/modules/misc \;
     fi
     makemoduleball $extraargs $FULLMODPATH "$modlist"
     cp -ar $FULLMODPATH $FINALFULLMODPATH
@@ -649,7 +653,8 @@ makeinstimage () {
     (cd $INSTIMGTEMPLATE; find . | cpio --quiet -p $tmpdir)
     if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
        mkdir -p $KERNELROOT/lib/modules/misc
-       cp -f $KERNELROOT/lib/modules/*/kernel/drivers/s390/*/* $KERNELROOT/lib/modules/misc
+       find $KERNELROOT/lib/modules/*/kernel/drivers/s390/ -name "*.o" \
+         -exec cp -f {} $KERNELROOT/lib/modules/misc \;
     fi
     makemoduleball $tmpdir/modules "$modlist"
     rm -f $tmpdir/.buildstamp

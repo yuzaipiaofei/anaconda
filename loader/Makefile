@@ -72,13 +72,13 @@ endif
 
 ifeq (s390, $(ARCH))
 BINS += loader
-OBJS += stubs.o
+#OBJS += stubs.o
 S390FILES = load_anaconda
 endif
 
 ifeq (s390x, $(ARCH))
 BINS += loader
-OBJS += stubs.o
+#OBJS += stubs.o
 S390FILES = load_anaconda
 endif
 
@@ -155,6 +155,9 @@ install: all
 	install -m 644 module-info $(DESTDIR)/$(RUNTIMEDIR)/loader
 	install -m 644 kon.cfg $(DESTDIR)/$(RUNTIMEDIR)/loader
 	install -m 644 minikon.fnt $(DESTDIR)/$(RUNTIMEDIR)/loader
+	for n in $(S390FILES); do \
+	   install -m 755 s390/$$n $(DESTDIR)/$(RUNTIMEDIR)/loader; \
+	done
 
 urltest: urltest.o ftp.o urls.o lang.o log.o windows.o
 	$(CC) -g -o urltest urltest.o -lnewt ftp.o urls.o lang.o log.o windows.o -lz $(ISYS) -lresolv

@@ -136,30 +136,28 @@ class BaseInstallClass:
 	    dispatch.skipStep("betanag")
 
         # XXX ugh, this badly needs some clean up
-        if iutil.getArch() == "alpha" or iutil.getArch() == "ia64":
-	    dispatch.skipStep("bootdisk")
-            dispatch.skipStep("bootloader")
-            dispatch.skipStep("fdasd", permanent = 1)
-        elif iutil.getArch() == "s390" or iutil.getArch() == "s390x":
-	    #dispatch.skipStep("language")
-	    dispatch.skipStep("keyboard", permanent = 1)
-	    dispatch.skipStep("mouse", permanent = 1)
+	    if iutil.getArch() == "alpha" or iutil.getArch() == "ia64":
+	        dispatch.skipStep("bootdisk")
+	        dispatch.skipStep("bootloader")
+	        dispatch.skipStep("fdasd", permanent = 1)
+	    elif iutil.getArch() == "s390":
+	        dispatch.skipStep("keyboard", permanent = 1)
+	        dispatch.skipStep("mouse", permanent = 1)
+	        dispatch.skipStep("partitionmethod", permanent = 1)
+	        dispatch.skipStep("autopartition", permanent = 1)
+	        dispatch.skipStep("autopartitionexecute", permanent = 1)
+	        dispatch.skipStep("fdisk", permanent = 1)
+	        dispatch.skipStep("bootloaderpassword",  permanent = 1)
+	        dispatch.skipStep("handleX11pkgs", permanent = 1)
+	        dispatch.skipStep("videocard", permanent = 1)
+	        dispatch.skipStep("monitor", permanent = 1)
+	        dispatch.skipStep("xcustom", permanent = 1)
+	        dispatch.skipStep("writexconfig", permanent = 1)
+	        dispatch.skipStep("writeksconfig", permanent = 1)
+	        dispatch.skipStep("bootdisk", permanent = 1)
+	    else:
+	        dispatch.skipStep("fdasd", permanent = 1)
 
-            dispatch.skipStep("partitionmethod", permanent = 1)
-            dispatch.skipStep("autopartition", permanent = 1)
-            dispatch.skipStep("autopartitionexecute", permanent = 1)
-            dispatch.skipStep("fdisk", permanent = 1)
-
-	    dispatch.skipStep("handleX11pkgs", permanent = 1)
-	    dispatch.skipStep("videocard", permanent = 1)
-	    dispatch.skipStep("monitor", permanent = 1)
-	    dispatch.skipStep("xcustom", permanent = 1)
-	    dispatch.skipStep("writexconfig", permanent = 1)
-            
-            dispatch.skipStep("bootdisk", permanent = 1)
-        else:
-            dispatch.skipStep("fdasd", permanent = 1)
-            
     # This is called after the hdlist is read in.
     def setPackageSelection(self, hdlist):
 	pass

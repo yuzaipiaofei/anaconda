@@ -1,39 +1,4 @@
 
-
-prepareBootImage() {
-        dd if=/dev/zero bs=1k count=$BOOTDISKSIZE of=/$MBD_TMPIMAGE 2>/dev/null
-	mount -o loop -t msdos $MBD_TMPIMAGE $MBD_BOOTTREE
-
-	(cd $BOOTDISKDIR; find . ! -name "*.msg" -maxdepth 1 ! -type d | cpio --quiet -p $MBD_BOOTTREE)
-	
-	cp $MBD_FSIMAGE $MBD_BOOTTREE/initrd.img
-	cp $KERNELROOT/boot/vmlinuz-* $MBD_BOOTTREE/vmlinuz
-	if [ -d $BOOTDISKDIR/$BOOTLANG ]; then
-	    # fb console and kon don't get along...
-	    for file in $BOOTDISKDIR/$BOOTLANG/*.msg; do
-		filename=`basename $file`
-		sed -e "s/@VERSION@/$VERSION/g" $file > $MBD_BOOTTREE/$filename
-	    done
-	    if [ $? != 0 ]; then
-		echo $0: Failed to copy messages from $BOOTDISKDIR/$BOOTLANG to $MBD_BOOTTREE.
-		umount $MBD_BOOTTREE
-		rm -rf $MBD_BOOTTREE $MBD_TMPIMAGE
-		exit 1
-	    fi
-	else
-	    for file in $BOOTDISKDIR/*.msg; do
-		filename=`basename $file`
-		sed -e "s/@VERSION@/$VERSION/g" $file > $MBD_BOOTTREE/$filename
-	    done
-	    if [ $? != 0 ]; then
-		echo $0: Failed to copy messages from $BOOTDISKDIR to $MBD_BOOTTREE.
-		umount $MBD_BOOTTREE
-		rm -rf $MBD_BOOTTREE $MBD_TMPIMAGE
-		exit 1
-	    fi
-	fi
-}
-
 makeS390initrd() {
     EXTRAINITRDPATH=""
     PCMCIA=""
@@ -140,7 +105,6 @@ EOF
         mkdir -p $MBD_DIR/etc/terminfo/k
         install -m 644 $IMGPATH/usr/share/terminfo/k/kon $MBD_DIR/etc/terminfo/k/kon
         install -m 644 $LOADERBINDIR/kon.cfg $MBD_DIR/etc
-
         install -m 644 $LOADERBINDIR/minikon.fnt $MBD_DIR/etc
         ln -s loader $MBD_DIR/sbin/continue
     fi
@@ -364,6 +328,41 @@ EOF
     if [ -z "$KEEP" ]; then
         rm -rf $MBD_TMPIMAGE $MBD_FSIMAGE $MBD_MNTPOINT $MBD_BOOTTREE
     fi
+}
+
+
+prepareBootImage() {
+        dd if=/dev/zero bs=1k count=$BOOTDISKSIZE of=/$MBD_TMPIMAGE 2>/dev/null
+	mount -o loop -t msdos $MBD_TMPIMAGE $MBD_BOOTTREE
+
+	(cd $BOOTDISKDIR; find . ! -name "*.msg" -maxdepth 1 ! -type d | cpio --quiet -p $MBD_BOOTTREE)
+	
+	cp $MBD_FSIMAGE $MBD_BOOTTREE/initrd.img
+	cp $KERNELROOT/boot/vmlinuz-* $MBD_BOOTTREE/vmlinuz
+	if [ -d $BOOTDISKDIR/$BOOTLANG ]; then
+	    # fb console and kon don't get along...
+	    for file in $BOOTDISKDIR/$BOOTLANG/*.msg; do
+		filename=`basename $file`
+		sed -e "s/@VERSION@/$VERSION/g" $file > $MBD_BOOTTREE/$filename
+	    done
+	    if [ $? != 0 ]; then
+		echo $0: Failed to copy messages from $BOOTDISKDIR/$BOOTLANG to $MBD_BOOTTREE.
+		umount $MBD_BOOTTREE
+		rm -rf $MBD_BOOTTREE $MBD_TMPIMAGE
+		exit 1
+	    fi
+	else
+	    for file in $BOOTDISKDIR/*.msg; do
+		filename=`basename $file`
+		sed -e "s/@VERSION@/$VERSION/g" $file > $MBD_BOOTTREE/$filename
+	    done
+	    if [ $? != 0 ]; then
+		echo $0: Failed to copy messages from $BOOTDISKDIR to $MBD_BOOTTREE.
+		umount $MBD_BOOTTREE
+		rm -rf $MBD_BOOTTREE $MBD_TMPIMAGE
+		exit 1
+	    fi
+	fi
 }
 
 IDEMODS=""
