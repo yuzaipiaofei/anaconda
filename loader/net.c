@@ -372,6 +372,7 @@ int readNetConfig(char * device, struct networkDeviceConfig * cfg, int flags) {
 	}
     }
 
+    newtFormDestroy(f);
     newtPopWindow();
 
     if (!FL_TESTING(flags)) {

@@ -105,9 +105,8 @@ int urlMainSetupPanel(struct iurlinfo * ui, urlprotocol protocol,
     newtComponent answer, text, cb = NULL;
     char * site, * dir;
     char * reflowedText = NULL;
-    int width, height;
+    int width, height, len;
     newtGrid entryGrid, buttons, grid;
-    char * chptr;
 
     if (ui->address) {
 	site = ui->address;
@@ -208,14 +207,7 @@ int urlMainSetupPanel(struct iurlinfo * ui, urlprotocol protocol,
 			       _("You must enter a directory."));
 		continue;
 	    }
-
-	    if (!addrToIp(site)) {
-		newtWinMessage(_("Unknown Host"), _("Ok"),
-			_("%s is not a valid hostname."), site);
-		continue;
-	    }
 	}
-
 	break;
     } while (1);
     
@@ -232,15 +224,9 @@ int urlMainSetupPanel(struct iurlinfo * ui, urlprotocol protocol,
     if (ui->prefix) free(ui->prefix);
     ui->prefix = strdup(dir);
 
-    /* Get rid of trailing /'s */
-    chptr = ui->prefix + strlen(ui->prefix) - 1;
-    while (chptr > ui->prefix && *chptr == '/') chptr--;
-    chptr++;
-    *chptr = '\0';
-
     if (ui->urlprefix) free(ui->urlprefix);
-    ui->urlprefix = malloc(sizeof(char) * (strlen(ui->address) +
-					  strlen(ui->prefix) + 10));
+    len = strlen(addrToIp(ui->address)) + strlen(ui->prefix) + 10;
+    ui->urlprefix = malloc(sizeof(char) * len);
 
     if (*doSecondarySetup != '*') {
 	if (ui->login)
@@ -258,9 +244,10 @@ int urlMainSetupPanel(struct iurlinfo * ui, urlprotocol protocol,
 	delMacro(NULL, "_ftpproxyport");
     }
 
-    sprintf(ui->urlprefix, "%s://%s/%s",
-	    protocol == URL_METHOD_FTP ? "ftp" : "http",
-	    addrToIp(ui->address), ui->prefix);
+    snprintf(ui->urlprefix, len, "%s://%s/%s",
+		 protocol == URL_METHOD_FTP ? "ftp" : "http",
+		 addrToIp(ui->address), ui->prefix);
+
 
     newtFormDestroy(form);
     newtPopWindow();

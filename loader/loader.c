@@ -934,7 +934,7 @@ static char * mountUrlImage(struct installMethod * method,
 	    fd = urlinstStartTransfer(&ui, "base/stage2.img");
 	    
 	    if (fd == NULL || fdFileno(fd) < 0) {
-		newtPopWindow();
+  	        newtPopWindow(); 
 		snprintf(buf, sizeof(buf), "%s/RedHat/base/stage2.img",
 			 ui.urlprefix);
 		newtWinMessage(_("FTP"), _("OK"), 
