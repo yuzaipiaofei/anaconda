@@ -440,34 +440,39 @@ int readNetConfig(char * device, struct networkDeviceConfig * cfg, int flags) {
     } while (i != 2);
 
 #else /* s390 now */
-   /* quick and dirty hack by opaukstadt@millenux.com for s390 */
-   /* ctc stores remoteip in broadcast-field until pump.h is changed */
-   memset(&newCfg, 0, sizeof(newCfg));
-   strcpy(newCfg.dev.device, device);
-   newCfg.isDynamic = 0;
-   env = getenv("IPADDR");
-   if (env) {
-      inet_aton(env, &newCfg.dev.ip);
-      newCfg.dev.set |= PUMP_INTFINFO_HAS_IP;
-   }
-   env = getenv("NETMASK");
-   if (env) {
-      inet_aton(env, &newCfg.dev.netmask);
-      newCfg.dev.set |= PUMP_INTFINFO_HAS_NETMASK;
-   }
-   env = getenv("GATEWAY");
-   if (env) {
-      inet_aton(env, &newCfg.dev.gateway);
-      newCfg.dev.set |= PUMP_NETINFO_HAS_GATEWAY;
-   }
-   env = getenv("NETWORK");
-   if (env) {
-      inet_aton(env, &newCfg.dev.network);
-      newCfg.dev.set |= PUMP_INTFINFO_HAS_NETWORK;
+    /* quick and dirty hack by opaukstadt@millenux.com for s390 */
+    memset(&newCfg, 0, sizeof(newCfg));
+    strcpy(newCfg.dev.device, device);
+    newCfg.isDynamic = 0;
+    env = getenv("IPADDR");
+    if (env) {
+	    inet_aton(env, &newCfg.dev.ip);
+	    newCfg.dev.set |= PUMP_INTFINFO_HAS_IP;
+    }
+    env = getenv("NETMASK");
+    if (env) {
+	    inet_aton(env, &newCfg.dev.netmask);
+	    newCfg.dev.set |= PUMP_INTFINFO_HAS_NETMASK;
+    }
+    env = getenv("GATEWAY");
+    if (env) {
+	    inet_aton(env, &newCfg.dev.gateway);
+	    newCfg.dev.set |= PUMP_NETINFO_HAS_GATEWAY;
+    }
+    env = getenv("NETWORK");
+    if (env) {
+	    inet_aton(env, &newCfg.dev.network);
+	    newCfg.dev.set |= PUMP_INTFINFO_HAS_NETWORK;
+    }
+    env = getenv("DNS");
+    if (env) {
+	    inet_aton(strtok(env,":"), &newCfg.dev.dnsServers[0]);
+	    newCfg.dev.set |= PUMP_NETINFO_HAS_DNS;
    }
    if (!strncmp(newCfg.dev.device, "ctc", 3)) {
       env = getenv("REMIP");
       if (env) {
+         /* ctc stores remoteip in broadcast-field until pump.h is changed */
          inet_aton(env, &newCfg.dev.broadcast);
          newCfg.dev.set |= PUMP_INTFINFO_HAS_BROADCAST;
       }
@@ -483,11 +488,12 @@ int readNetConfig(char * device, struct networkDeviceConfig * cfg, int flags) {
 #ifdef __STANDALONE__
     if (!newCfg.isDynamic)
 #endif	  
-    cfg->dev = newCfg.dev;
     cfg->isDynamic = newCfg.isDynamic;
+    memcpy(&cfg->dev,&newCfg.dev,sizeof(newCfg.dev));
 
     fillInIpInfo(cfg);
 
+#if !defined(__s390__) && !defined(__s390x__)
     if (!(cfg->dev.set & PUMP_NETINFO_HAS_GATEWAY)) {
 	if (*c.gw && inet_aton(c.gw, &addr)) {
 	    cfg->dev.gateway = addr;
@@ -502,7 +508,6 @@ int readNetConfig(char * device, struct networkDeviceConfig * cfg, int flags) {
 	}
     }
 
-#if !defined(__s390__) && !defined(__s390x__)
     newtPopWindow();
 #endif
     if (!FL_TESTING(flags)) {
@@ -518,11 +523,13 @@ int readNetConfig(char * device, struct networkDeviceConfig * cfg, int flags) {
 }
 
 int configureNetwork(struct networkDeviceConfig * dev) {
+#if !defined(__s390__) && !defined(__s390x__)
     pumpSetupInterface(&dev->dev);
 
     if (dev->dev.set & PUMP_NETINFO_HAS_GATEWAY)
 	pumpSetupDefaultGateway(&dev->dev.gateway);
 
+#endif
     return 0;
 }
 
@@ -573,6 +580,9 @@ int writeResolvConf(struct networkDeviceConfig * net) {
     char * filename = "/etc/resolv.conf";
     FILE * f;
     int i;
+#if defined(__s390__) || defined(__s390x__)
+    return 0;
+#endif
 
     if (!(net->dev.set & PUMP_NETINFO_HAS_DOMAIN) && !net->dev.numDns)
     	return LOADER_ERROR;
