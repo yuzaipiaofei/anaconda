@@ -74,9 +74,6 @@ TOPDIR=$(cd $TOPDIR; pwd)
 
     touch $MODULESUSED
 
-    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
-        MODINFO=$IMGPATH/usr/lib/anaconda-runtime/loader/module-info.s390
-    fi
     REQUIREMENTS="$TRIMPCITABLE $PCITABLE $GETMODDEPS $MODINFO
 		  $FILTERMODDEPS $LANGTABLE $GETKEYMAPS"
 
