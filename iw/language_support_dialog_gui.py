@@ -76,6 +76,14 @@ class LangSupportWindow(FirstbootGuiWindow):
         self.langs.setSupported (self.supportedLangs)
         self.langs.setDefault (self.defaultLang)
 
+        if self.installAllRadio.get_active() == gtk.TRUE:
+            self.langSupportLabel.set_text(_("All languages"))
+        else:
+            if len(self.supportedLangs) == 1:
+                self.langSupportLabel.set_text(self.defaultLang)
+            else:
+                self.langSupportLabel.set_text(_("Various languages"))
+
     def select_row(self, *args):
         rc = self.modelView.get_selection().get_selected()
         if rc:
@@ -106,7 +114,7 @@ class LangSupportWindow(FirstbootGuiWindow):
         hbox = gtk.HBox (gtk.FALSE)
         
 	# create option menu of default langs
-        label = gui.MnemonicLabel(_("Select the _default language for the system:   "))
+        label = gui.MnemonicLabel(_("_Select the default language for the system:   "))
 	self.deflang_optionmenu = None
 	self.deflang_menu = None
 	self.deflang_values = None
