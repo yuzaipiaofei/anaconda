@@ -162,7 +162,7 @@ fi
 if [ $ARCH = s390 -o $ARCH = s390x ]; then
     PACKAGESGR="$PACKAGESGR s390utils oco binutils installer pdksh-static
 	sed net-tools inetd openssh openssh-server fileutils modutils
-	portmap textutils openssl telnet-server"
+	portmap textutils openssl telnet-server strace"
 fi
 
 KEEPFILE=/tmp/keepfile.$$
@@ -274,6 +274,9 @@ usr/share/terminfo/v/vt100
 usr/share/terminfo/v/vt102
 bin/ksh
 usr/bin/ssh-keygen
+usr/bin/strace
+usr/bin/ldd
+bin/ps
 usr/sbin/sshd
 usr/sbin/inetd
 usr/sbin/in.telnetd

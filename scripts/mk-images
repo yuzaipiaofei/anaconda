@@ -448,6 +448,8 @@ EOF
        cp -f $IMGPATH/usr/bin/ksh $MBD_DIR/sbin/ksh
        ln -sf ksh $MBD_DIR/sbin/sh
        cp -f $IMGPATH/usr/bin/ssh-keygen $MBD_DIR/sbin/ssh-keygen
+       cp -f $IMGPATH/usr/bin/ldd $MBD_DIR/sbin/ldd
+       cp -f $IMGPATH/usr/bin/ps $MBD_DIR/sbin/ps
        cp -f $IMGPATH/usr/sbin/sshd $MBD_DIR/sbin/sshd
        cp -f $IMGPATH/usr/sbin/insmod $MBD_DIR/sbin/insmod
        cp -f $IMGPATH/usr/sbin/ifconfig $MBD_DIR/sbin/ifconfig
@@ -460,7 +462,7 @@ EOF
        cp -f $IMGPATH/usr/bin/sed $MBD_DIR/sbin/sed
        cp -f $IMGPATH/usr/bin/hostname $MBD_DIR/sbin/hostname
        cp -f $IMGPATH/usr/bin/mount $MBD_DIR/sbin/mount
-       cp -f $IMGPATH/usr/etc/inetd.conf $MBD_DIR/etc/inetd.conf
+       cp -f $IMGPATH/etc/inetd.conf $MBD_DIR/etc/inetd.conf
        cp -df $IMGPATH/lib/libpam.so* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libdl.so* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libdl-*.so* $MBD_DIR/lib
@@ -534,6 +536,23 @@ EOF
 	$MBD_DIR fd0 b 2 0 644 root:root
 	$MBD_DIR fd1 b 2 1 644 root:root
 EOF
+    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
+       rm -f $MBD_DIR/dev/console
+       awk '{ printf("mknod %s/dev/%s %s %s %s\n", $1, $2, $3, $4, $5);
+	      printf("chmod %s %s/dev/%s\n", $6, $1, $2);
+	      printf("chown %s %s/dev/%s\n", $7, $1, $2); 
+	    }' <<EOF | sh
+	    $MBD_DIR console c 4 64 600 root:root
+	    $MBD_DIR random c 1 8 644 root:root
+	    $MBD_DIR urandom c 1 9 644 root:root
+	    $MBD_DIR mnda b 95 0 660 root:disk
+	    $MBD_DIR mndb b 95 1 660 root:disk
+	    $MBD_DIR mndc b 95 2 660 root:disk
+	    $MBD_DIR xpram0 b 35 0 600 root:root
+	    $MBD_DIR xpram1 b 35 1 600 root:root
+	    $MBD_DIR xpram2 b 35 2 600 root:root
+EOF
+    fi
     ln -s fb0 $MBD_DIR/dev/fb
 
     dd if=/dev/zero of=$MBD_DIR/etc/ramfs.img.big bs=1k count=12000
@@ -692,7 +711,7 @@ makeinstimage () {
     # No 2.4 kernel on S390 yet:
     if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
         IMGFILE=`mktemp /tmp/instimgXXXXXX`
-	dd if=/dev/zero of=$IMGFILE bs=1024 count=40000
+	dd if=/dev/zero of=$IMGFILE bs=1024 count=50000
 	echo y | /sbin/mke2fs -i 4096  $IMGFILE > /dev/null 2>/dev/null
         mount -o loop $IMGFILE $tmpdir
     fi
