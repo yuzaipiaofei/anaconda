@@ -13,6 +13,21 @@ if sys.argv[1] == "--syslogd":
 if (os.path.exists('isys')):
     sys.path.append('isys')
 
+if (os.path.exists('rpmmodule')):
+    sys.path.append('rpmmodule')
+    sys.path.append('libfdisk')
+    sys.path.append('balkan')
+    sys.path.append('kudzu')
+    sys.path.append('gnome-map')
+#elif (mode == None):
+#      try:
+#          f = open('/dev/fb0', 'r')
+#  	f.close()
+#  	mode = 'g'
+#      except:
+#  	mode = 't'
+
+
 import gettext
 import traceback
 import string
@@ -104,20 +119,6 @@ if (debug):
 if (not test and not localInstall and os.getpid() > 50):
     print "you're running me on a live system! that's incredibly stupid."
     sys.exit(1)
-
-if (os.path.exists('rpmmodule')):
-    sys.path.append('rpmmodule')
-    sys.path.append('libfdisk')
-    sys.path.append('balkan')
-    sys.path.append('kudzu')
-    sys.path.append('gnome-map')
-#elif (mode == None):
-#      try:
-#          f = open('/dev/fb0', 'r')
-#  	f.close()
-#  	mode = 'g'
-#      except:
-#  	mode = 't'
 
 import rpm
 import lilo
