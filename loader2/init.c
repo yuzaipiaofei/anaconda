@@ -662,6 +662,13 @@ int main(int argc, char **argv) {
 	    fatal_error(1);
 	}
     }
+#else
+    fd = open("/proc/self/0", O_RDWR, 0);
+    if (fd < 0) {
+        printf("failed to open /proc/self/0\n");
+        fatal_error(1);
+    }
+#endif
 
     if (testing)
 	exit(0);

@@ -199,3 +199,56 @@ void ideSetup(moduleList modLoaded, moduleDeps modDeps,
               struct knownDevices * kd) {
     mlLoadModuleSet("ide-cd", modLoaded, modDeps, modInfo, flags);
 }
+
+
+/* check if the system has been booted with dasd parameters */
+/* These parameters define the order in which the DASDs */
+/* are visible to Linux. Otherwise load dasd modules probeonly, */
+/* then parse proc to find active DASDs */
+/* Reload dasd_mod with correct range o DASD ports */
+static void dasdSetup(moduleList modLoaded, moduleDeps modDeps,
+		moduleInfoSet modInfo, int flags,
+		struct knownDevices * kd) {
+
+	char **dasd_parms = NULL;
+	char *line;
+	char *parms = NULL, *parms_end;
+	FILE *fd;
+	fd = fopen ("/proc/cmdline", "r");
+	if(fd) {
+		line = (char *)malloc(sizeof(char) * 200);
+		while (fgets (line, 199, fd) != NULL) {
+			if((parms = strstr(line, " dasd="))) {
+			   parms++;
+			   parms_end = parms;
+			   while(*parms_end && !(isspace(*parms_end))) parms_end++;
+			   *parms_end = '\0';
+			   break;
+			}
+		}
+		if (!parms) free(line);
+		fclose(fd);
+	} else { 
+		mlLoadModuleSet("dasd_mod:dasd_diag_mod:dasd_fba_mod:dasd_eckd_mod", 
+		modLoaded, modDeps, modInfo, flags);
+		if(getDasdPorts()) {
+			parms = (char *)malloc(strlen("dasd=") + strlen(getDasdPorts()) + 1);
+			strcpy(parms,"dasd=");
+			strcat(parms, getDasdPorts());
+		}
+	}
+	if(parms) {
+		dasd_parms = malloc(sizeof(*dasd_parms) * 2);
+		dasd_parms[0] = parms;
+		dasd_parms[1] = NULL;
+		simpleRemoveLoadedModule("dasd_eckd_mod", modLoaded, flags);
+		simpleRemoveLoadedModule("dasd_fba_mod", modLoaded, flags);
+		simpleRemoveLoadedModule("dasd_diag_mod", modLoaded, flags);
+		simpleRemoveLoadedModule("dasd_mod", modLoaded, flags);
+		reloadUnloadedModule("dasd_mod", NULL, modLoaded, dasd_parms, flags);
+		reloadUnloadedModule("dasd_eckd_mod", NULL, modLoaded, dasd_parms, flags);
+		free(parms);
+		free(dasd_parms);
+	}
+}
+
