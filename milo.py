@@ -32,7 +32,7 @@ def wholeDevice (path):
     while path[i] in string.digits:
         i = i - 1
     extra = 1
-    if len(path) >= 7 and path[:7] == "/dev/rd":
+    if string.find(path, "rd/") >= 0:
         extra = 0
     return path[:i + extra]
 
