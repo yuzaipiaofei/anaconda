@@ -49,7 +49,7 @@ class DefaultsWindow(InstallWindow):
         
     # MouseWindow tag="mouse"
     def getScreen(self, defaultLang, keyboard, mouse):
-        print "in defaults getScreen", keyboard
+        print "in defaults getScreen", keyboard, mouse
 
         print keyboard.get()
 
