@@ -339,7 +339,8 @@ class AutoPartitionWindow(InstallWindow):
         # XXX hack
         if self.todo.instClass.clearType:
             self.ics.readHTML (self.todo.instClass.clearType)
-
+	else:
+	    self.ics.readHTML (None)
 	todo = self.todo
 	self.druid = None
 
