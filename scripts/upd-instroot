@@ -478,8 +478,7 @@ cat $DESTGR/usr/lib/anaconda/lang-table* | awk '
   print gensub(/\..*$/,"","",$5);
   print gensub(/_.*$/,"","",$5);
   if (split ($5, a, "\.") > 1) {
-    foo=tolower("." a[2]);
-    print gensub(/\..*$/,foo,"",$5);
+    print gensub(/\..*$/,tolower("." a[2]),"",$5);
   };
 }
 ' | LC_ALL=C sort -u > $DESTGR/locales
