@@ -12,6 +12,7 @@
 #
 
 import iutil
+import isys
 from snack import *
 from constants_text import *
 from rhpl.translate import _
@@ -30,7 +31,9 @@ class ZiplWindow:
         chandeventry2 = Entry(48, scroll = 1, returnExit = 1)
 
         if bl.args and bl.args.get():
-            kernelentry.set(bl.args.get())
+            kernelentry.set(bl.args.get() % ("dasd=" + isys.getDasdPorts()))
+        else:
+            kernelentry.set("dasd=" + isys.getDasdPorts())
 
         if bl.args and bl.args.chandevget():
             cdevs = bl.args.chandevget()
@@ -58,7 +61,6 @@ class ZiplWindow:
         sg.setField(chandeventry2, 1, 0, anchorLeft=1)
         grid.add(sg, 0, 3, padding = (0, 1, 0, 1))
         grid.add(buttons, 0, 4, growx = 1)
-        sg = Grid(2, 1)
 
         result = grid.runOnce ()
         button = buttons.buttonPressed(result)

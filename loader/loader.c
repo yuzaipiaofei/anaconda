@@ -3282,41 +3282,20 @@ static void ideSetup(moduleList modLoaded, moduleDeps modDeps,
 static void dasdSetup(moduleList modLoaded, moduleDeps modDeps,
 		moduleInfoSet modInfo, int flags,
 		struct knownDevices * kd) {
-	char port[6];
-	char *line;
-	FILE *fd;
+
 	char **dasd_parms = NULL;
 	char *parms = NULL;
-
 	mlLoadModuleSet("dasd_mod:dasd_eckd_mod", modLoaded, modDeps, modInfo, flags);
-	fd = fopen ("/proc/dasd/devices", "r");
-	if(!fd) {
-		return;
-	}
-	line = (char *)malloc(100*sizeof(char));
-	while (fgets (line, 100, fd) != NULL) {
-		if ((strstr(line, "accepted") == NULL)) {
-			continue;
-		}
-		if(sscanf (line, "%[A-Za-z0-9](%*s", port)) {
-			if(!parms) {
-				parms = (char *)malloc(strlen("dasd=") + strlen(port) + 1);
-				strcpy(parms,"dasd=");
-				strcat(parms, port);
-			} else {
-				parms = realloc(parms, strlen(parms) + strlen(port) + 2);   /* portnumber + ',' */
-				strcat(parms, ",");
-				strcat(parms, port);
-			}
-		}
-	}
-	if (fd) fclose(fd);
-
-	if(parms) {
+	if(getDasdPorts()) {
+		parms = (char *)malloc(strlen("dasd=") + strlen(getDasdPorts()) + 1);
+		strcpy(parms,"dasd=");
+		strcat(parms, getDasdPorts());
 		dasd_parms = malloc(sizeof(*dasd_parms) * 2);
 		dasd_parms[0] = parms;
 		dasd_parms[1] = NULL;
 		simpleRemoveLoadedModule("dasd_eckd_mod", modLoaded, flags);
+		simpleRemoveLoadedModule("dasd_fba_mod", modLoaded, flags);
+		simpleRemoveLoadedModule("dasd_diag_mod", modLoaded, flags);
 		simpleRemoveLoadedModule("dasd_mod", modLoaded, flags);
 		reloadUnloadedModule("dasd_mod", NULL, modLoaded, dasd_parms, flags);
 		reloadUnloadedModule("dasd_eckd_mod", NULL, modLoaded, dasd_parms, flags);
