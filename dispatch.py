@@ -65,8 +65,6 @@ installSteps = [
 #    ("defaults", ("dispatch", "id.instLanguage", "id.keyboard", "id.mouse")),
     ("defaults", ("dispatch", "id")),    
 
-    ("network", ("id.network", "dir", "intf")),
-
     ("keyboard", ("id.instLanguage.getDefaultKeyboard()", "id.keyboard")),    
 #    ("keyboard", ("id.instLanguage.getDefaultKeyboard()", "id.keyboard", "id.xsetup")),
     ("mouse", ("id.mouse",)),
@@ -104,8 +102,8 @@ installSteps = [
                             "id.diskset")),
 ##     ("networkdevicecheck", networkDeviceCheck, ("id.network", "dispatch")),
 ##     ("network", ("id.network", "dir", "intf")),
-    ("firewall", ("intf", "id.network", "id.firewall")),
-    ("languagesupport", ("id.langSupport",)),
+#    ("firewall", ("intf", "id.network", "id.firewall")),
+#    ("languagesupport", ("id.langSupport",)),
     ("timezone", ("id.instLanguage", "id.timezone")),
     ("accounts", ("intf", "id.rootPassword")),
     ("readcomps", readPackages, ("intf", "method", "id")),
