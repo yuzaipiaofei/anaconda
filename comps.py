@@ -17,9 +17,8 @@ ExcludePackages = { 'XFree86-3DLabs' : None, 	'XFree86-8514' : None,
                     'kernel' : None,		'kernel-BOOT' : None,
                     'kernel-smp' : None,
 
-                    'kinput2-canna' : None,
-                    'kinput2-wnn4' : None,	'kinput-canna-wnn4' : None,
-                    'kinput2-wnn6' : None }
+                    'kinput2-canna' : None,	'kinput-canna-wnn4' : None,
+                    'kinput2-wnn4' : None,	'kinput2-wnn6' : None }
 
 # Package selection is complicated. Here are the rules:
 #
