@@ -89,7 +89,7 @@ mkdir -p $DEST
 mkdir -p $DESTGR
 
 PACKAGES="glibc setup openssl python newt libtermcap zlib ash
-	 e2fsprogs util-linux raidtools locale-ja popt mount procps
+	 e2fsprogs util-linux raidtools popt mount procps slang slang-j
 	 rpm XFree86 Xconfigurator anaconda anaconda-runtime
 	 kudzu-devel kudzu db3 rpm-python bzip2 dosfstools pciutils"
 
@@ -201,6 +201,7 @@ usr/lib/libnewt*
 usr/lib/libpopt*
 usr/lib/librpm.so*
 usr/lib/librpmio.so*
+usr/lib/libslang*
 usr/lib/libz.*
 usr/lib/python*
 usr/lib/python1.5/site-packages/kudzumodule.so
