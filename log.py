@@ -31,14 +31,14 @@ class LogFile:
 		if iutil.getArch() != "s390" and iutil.getArch() != "s390x":
 		    self.logFile = sys.stderr
 		else:
-		    self.logFile = open("/tmp/anaconda-s390.log", "w")
+		    self.logFile = open("/anaconda-s390.log", "w")
 	elif file:
 	    self.logFile = file
 	else:
 	    if iutil.getArch() != "s390" and iutil.getArch() != "s390x":
 		self.logFile = open("/dev/tty3", "w")
 	    else:
-		self.logFile = open("/tmp/anaconda-s390.log", "w")
+		self.logFile = open("/anaconda-s390.log", "w")
 
     def __call__ (self, format, *args):
         if not self.logFile:

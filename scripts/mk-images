@@ -61,7 +61,11 @@ TOPDIR=$(cd $TOPDIR; pwd)
     FONTS=$IMGPATH/usr/lib/anaconda-runtime/fonts-${BASEARCH}
     GETMODDEPS=$IMGPATH/usr/lib/anaconda-runtime/moddeps
     MODLIST=$IMGPATH/usr/lib/anaconda-runtime/modlist
-    MODINFO=$IMGPATH/usr/lib/anaconda-runtime/loader/module-info
+    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
+       MODINFO=$IMGPATH/usr/lib/anaconda-runtime/loader/module-info.s390
+    else
+       MODINFO=$IMGPATH/usr/lib/anaconda-runtime/loader/module-info
+    fi
     FILTERMODDEPS=$IMGPATH/usr/lib/anaconda-runtime/filtermoddeps
     LOADERBINDIR=$IMGPATH/usr/lib/anaconda-runtime/loader
     BOOTDISKDIR=$IMGPATH/usr/lib/anaconda-runtime/boot
@@ -408,6 +412,12 @@ EOF
     install -m 644 $MYLANGTABLE $MBD_DIR/etc/lang-table
     install -m 644 $LOADERBINDIR/$MYLOADERTR $MBD_DIR/etc/loader.tr
     install -m 644 $IMGPATH/usr/share/terminfo/l/linux $MBD_DIR/etc/terminfo/l/linux
+    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
+      mkdir -p $MBD_DIR/etc/terminfo/{a,d,s,v}
+      for i in a/ansi d/dumb s/screen v/vt100 v/vt102 ; do
+         install -m 644 $IMGPATH/usr/share/terminfo/$i $MBD_DIR/etc/terminfo/$i
+      done
+    fi
     if [ -n "$JAPANESE" ]; then
         mkdir -p $MBD_DIR/etc/terminfo/k
         install -m 644 $IMGPATH/usr/share/terminfo/k/kon $MBD_DIR/etc/terminfo/k/kon
@@ -426,7 +436,11 @@ EOF
     done
 
     ln -s /usr/bin/sh $MBD_DIR/sbin/sh
-    ln -s /sbin/init $MBD_DIR/linuxrc
+    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
+       cp /usr/lib/anaconda/loader/linuxrc-s390 $MBD_DIR/linuxrc
+    else
+       ln -s /sbin/init $MBD_DIR/linuxrc
+    fi
     ln -s /proc/mounts $MBD_DIR/etc/mtab
     ln -s sbin $MBD_DIR/bin
 
@@ -624,7 +638,6 @@ makeinstimage () {
     imagename=$1
     modlist=$(expandModuleSet "$2")
     tmpdir=/tmp/instimage.dir.$$
-    IMGFILE=`mktemp -d /tmp/instimgXXXXXX`
 
     rm -rf $tmpimage $tmpdir
     mkdir -p $mntpoint $tmpdir
@@ -632,6 +645,7 @@ makeinstimage () {
     mkdir -p $tmpdir
     # No 2.4 kernel on S390 yet:
     if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
+        IMGFILE=`mktemp /tmp/instimgXXXXXX`
 	dd if=/dev/zero of=$IMGFILE bs=1024 count=40000
 	echo y | /sbin/mke2fs -i 4096  $IMGFILE > /dev/null 2>/dev/null
         mount -o loop $IMGFILE $tmpdir
@@ -765,10 +779,14 @@ makedriverdisk () {
 }
 
 # Find the kernel, unpack it, and verify it
-    kpackage=$($LATEST $KERNELPATH kernel-BOOT)
+    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
+       kpackage=$($LATEST $KERNELPATH kernel-vrdr)
+    else
+       kpackage=$($LATEST $KERNELPATH kernel-BOOT)
+    fi
     vertag=BOOT
     if [ ! -f "$kpackage" ]; then
-	if [ "$BUILDARCH" == "ia64" ]; then
+	if [ "$BUILDARCH" = "ia64" ]; then
 	    # XXX remove me post beta
 	    echo 'kernel-BOOT does not exist -- using kernel-smp package on ia64'
 	    kpackage=$($LATEST $KERNELPATH kernel-smp)
@@ -786,6 +804,7 @@ makedriverdisk () {
     fi
 
     version=$(rpm --qf '%{VERSION}-%{RELEASE}' -qp $kpackage)${vertag}
+    echo "unpacking $kpackage"
 
     rpm2cpio $kpackage | (cd $KERNELROOT; cpio --quiet -iumd)
     if [ ! -z $ppackage ]; then 
@@ -802,7 +821,7 @@ makedriverdisk () {
 	usage
     fi
 
-    if [ -d $KERNELROOT/lib/modules/$version/pcmcia ]; then
+    if [ -d $KERNELROOT/lib/modules/$version/pcmcia -a -f KERNELROOT/etc/pcmcia/config ]; then
 	# This gets all of the modules in the pcmcia directory, as well as
 	# everything mentioned in /etc/pcmcia/config
 	PCMCIAMODULES=$((perl -e 'while (<>) { s/^.*class.*module +"// || next; s/[" ]//g; s/,/\n/g; print }' $KERNELROOT/etc/pcmcia/config;

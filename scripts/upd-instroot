@@ -106,7 +106,7 @@ if [ $ARCH = ia64 ]; then
 fi
 
 if [ $ARCH = s390 -o $ARCH = s390x ]; then
-    PACKAGES="$PACKAGES s390utils oco-utils binutils"
+    PACKAGES="$PACKAGES s390utils oco-utils binutils installer"
 fi
 
 # xpm is missing
