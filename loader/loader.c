@@ -2622,9 +2622,8 @@ int main(int argc, char ** argv) {
 #endif
 
     if (!continuing) {
-	if (((access("/proc/bus/pci/devices", X_OK) &&
-	      access("/proc/openprom", X_OK)) || FL_MODDISK(flags)) 
-	    && !ksFile) {
+	if ((access("/proc/bus/pci/devices", X_OK) &&
+	      access("/proc/openprom", X_OK)) || FL_MODDISK(flags)) {
 	    startNewt(flags);
 	    devLoadDriverDisk(modInfo, modLoaded, &modDeps, flags, 1, 1,
 			      floppyDevice);
