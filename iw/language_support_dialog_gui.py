@@ -110,6 +110,7 @@ class LangSupportWindow(FirstbootGuiWindow):
         self.installAllRadio = gtk.RadioButton(None, (_("Install _all available languages")))
         self.installSomeRadio = gtk.RadioButton(self.installAllRadio, (_("Select _addition languages "
                                                                          "to install on the system")))
+        self.installAllRadio.connect("toggled", self.toggleAll)
         self.installSomeRadio.connect("toggled", self.toggleList)
 
         self.myVbox.pack_start(self.installAllRadio, gtk.FALSE)
@@ -121,6 +122,9 @@ class LangSupportWindow(FirstbootGuiWindow):
         # langs we want to support
         self.languageList = checklist.CheckList(1)
         label.set_mnemonic_widget(self.languageList)
+
+        self.languageList.checkboxrenderer.connect("toggled",
+					       self.toggled_language)
 
 
         self.maxrows = 0
@@ -177,19 +181,52 @@ class LangSupportWindow(FirstbootGuiWindow):
         print langSupportLabel
         self.doDebug = None
         self.setupScreen()
+        self.rebuild_optionmenu()
         return FirstbootGuiWindow.anacondaScreen(self, LangSupportWindow.windowTitle, iconPixbuf, 550, 500)
 
     def okAnacondaClicked(self, *args):
         self.getNext()
         self.mainWindow.destroy()
 
+    def toggled_language(self, data, row):
+#        row = int(row)
+#        lang = self.languageList.get_text(row, 1)
+# 	 val = self.languageList.get_active(row)
+#
+	# may be too slow to redo everytime they select/deselect a lang
+	# but worth trying since its simple
+	olddef = self.defaultLang
+	oldidx = None
+	for row in range(self.maxrows):
+	    selected = self.languageList.get_text (row, 1)
+	    if selected == olddef:
+		oldidx = row
+		break
+
+	self.rebuild_optionmenu()
+
+	# if no default lang now restore
+	# this can happen if they clicked on the only remaining selected
+	# language.  If we dont reset to previous default lang selected
+	# the UI is confusing because there is no default lang and no
+	# langauges supported
+	if self.defaultLang is None or self.defaultLang == "":
+            self.languageList.set_active(oldidx, gtk.TRUE)
+	    self.rebuild_optionmenu()
+
     def rebuild_optionmenu(self):
         list = []
 
 	for row in range(self.maxrows):
-	    if self.languageList.get_active(row) == 1:
-		selected = self.languageList.get_text (row, 1)
-		list.append (selected)
+            if self.installAllRadio.get_active() == gtk.TRUE:
+                #If they are installing all langs, append all to the menu
+                selected = self.languageList.get_text (row, 1)
+                list.append(selected)
+            else:
+                #If they are installing only a subset, only append the ones selected in the list
+                if self.languageList.get_active(row) == 1:
+                    selected = self.languageList.get_text (row, 1)
+                    list.append (selected)
 	
 	if len(list) == 0:
 	    list = [""]
@@ -259,6 +296,9 @@ class LangSupportWindow(FirstbootGuiWindow):
 	    self.deflang_optionmenu.set_history(sel)
 
 	self.deflang_values = values
+
+    def toggleAll(self, *args):
+        self.rebuild_optionmenu()
 
     def toggleList(self, *args):
         self.sw.set_sensitive(self.installSomeRadio.get_active())
