@@ -26,10 +26,14 @@ from flags import flags
 import sys
 import keyboard_gui
 import mouse_gui
+import network_dialog_gui
 
 class DefaultsWindow(InstallWindow):
     windowTitle = N_("Defaults")
     htmlTag = "defaults"
+
+    def __init__(self, ics):
+        self.ics = ics
 
     def getNext(self):
 ##         self.mouse.set(self.currentMouse, self.emulate3.get_active())
@@ -45,24 +49,21 @@ class DefaultsWindow(InstallWindow):
 ## 	if self.flags.setupFilesystems:
 ## 	    self.mouse.setXProtocol()
 
+        self.dispatch.skipStep("keyboard")
+        self.dispatch.skipStep("mouse")
         return None
     
         
     # MouseWindow tag="mouse"
-    def getScreen(self, defaultLang, keyboard, mouse):
-        print "in defaults getScreen", keyboard, mouse
+    def getScreen(self, dispatch, id):
+        print "in defaults getScreen"
 
-        print keyboard.get()
-
-#        print defaultLang.getCurrent()
-#        print defaultLang.current
-#        print defaultLang.getDefaultTimeZone()
-#        print mouse
-#        print dir(timezone)
-#        print timezone.getTimezoneInfo()
-        
-        self.keyboard = keyboard
-	self.mouse = mouse
+        self.dispatch = dispatch
+        self.keyboard = id.keyboard
+	self.mouse = id.mouse
+        self.network = id.network
+        print self.network.available()
+        print dir(self.network)
 
 	self.flags = flags
 
@@ -131,6 +132,10 @@ class DefaultsWindow(InstallWindow):
         label = gtk.Label("")
         label.set_markup("<span foreground='#000000' size='large' font_family='Helvetica'><b>%s:</b></span>" % _("Network"))
         label.set_alignment(0.0, 0.5)
+
+        devices = self.network.available().keys()
+        devices.sort()
+#        self.networkLabel = gtk.Label("%s : %s " % (devices[0], devices[0].)
         self.networkLabel = gtk.Label("")
         self.networkLabel.set_alignment(0.0, 0.5)
         networkButton = gtk.Button()
@@ -139,32 +144,12 @@ class DefaultsWindow(InstallWindow):
                                     '%s</u></span>' % (_('Change'),))
         networkButton.add(buttonLabel)
         networkButton.set_relief(gtk.RELIEF_NONE)
-#        mouseButton.connect("clicked", self.keyboardClicked)
+        networkButton.connect("clicked", self.networkClicked)
 
         self.defaultsTable.attach(icon, 0, 1, 2, 3, gtk.SHRINK)
         self.defaultsTable.attach(label, 1, 2, 2, 3, gtk.SHRINK|gtk.FILL)
         self.defaultsTable.attach(self.networkLabel, 2, 3, 2, 3, gtk.SHRINK|gtk.FILL)
         self.defaultsTable.attach(networkButton, 3, 4, 2, 3,  gtk.SHRINK, gtk.SHRINK)    
-
-        icon = self.ics.readPixmap("timezone.png")
-        label = gtk.Label("")
-        label.set_markup("<span foreground='#000000' size='large' font_family='Helvetica'><b>%s:</b></span>" % _("Timezone"))
-        label.set_alignment(0.0, 0.5)
-        self.timezoneLabel = gtk.Label(defaultLang.getDefaultTimeZone())
-        self.timezoneLabel.set_alignment(0.0, 0.5)
-        timezoneButton = gtk.Button()
-        buttonLabel = gtk.Label("")
-        buttonLabel.set_markup('<span foreground="#3030c0"><u>'
-                                    '%s</u></span>' % (_('Change'),))
-        timezoneButton.add(buttonLabel)
-        timezoneButton.set_relief(gtk.RELIEF_NONE)
-#        mouseButton.connect("clicked", self.keyboardClicked)
-
-        self.defaultsTable.attach(icon, 0, 1, 3, 4, gtk.SHRINK)
-        self.defaultsTable.attach(label, 1, 2, 3, 4, gtk.SHRINK|gtk.FILL)
-        self.defaultsTable.attach(self.timezoneLabel, 2, 3, 3, 4, gtk.SHRINK|gtk.FILL)
-        self.defaultsTable.attach(timezoneButton, 3, 4, 3, 4,  gtk.SHRINK, gtk.SHRINK)    
-
 
 
         lowerVBox = gtk.VBox()
@@ -185,3 +170,6 @@ class DefaultsWindow(InstallWindow):
         app = mouse_gui.childWindow()
         app.anacondaScreen(self.mouse, self.mouseLabel)
 
+    def networkClicked(self, *args):
+        app = network_dialog_gui.childWindow(self.ics)
+        app.anacondaScreen(self.networkLabel, self.network)
