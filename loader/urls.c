@@ -115,6 +115,23 @@ int urlinstFinishTransfer(struct iurlinfo * ui, int fd) {
     return 0;
 }
 
+int setupRemote(struct iurlinfo * ui) {
+    char * env, *dir;
+     
+    env = getenv("RPMSERVER");
+    if (env) {
+        if(strstr(env, "ftp://"))
+            env += 6;
+        else if(strstr(env, "http://"))
+            env += 7;
+        dir = strdup(env);
+        strtok(env,"/");
+       	ui->address = strdup(env);
+        ui->prefix = index(dir,'/');
+    }
+    return 0;
+}
+
 char * addrToIp(char * hostname) {
     struct in_addr ad;
     char * chptr;
