@@ -44,15 +44,14 @@ class CongratulationWindow (InstallWindow):
             a.set (0.5, 0.5, 1.0, 1.0)
             hbox.pack_start (a, gtk.FALSE)
 
-        if iutil.getArch() != "ia64" and iutil.getArch() != "s390" and
-           iutil.getArch() != "s390x":
+        if iutil.getArch() != "ia64" and iutil.getArch() != "s390":
             bootstr = _("If you created a boot disk to use to boot your "
                         "%s system, insert it before you "
                         "press <Enter> to reboot.\n\n") % (productName,)
         else:
             bootstr = ""
 
-        if iutil.getArch() != "s390" and iutil.getArch() != "s390x":
+        if iutil.getArch() != "s390":
             confirmstr = "Remove any floppy diskettes you used during the "
                          "installation process and press <Enter> to reboot "
                          "your system. "
@@ -80,7 +79,7 @@ class CongratulationWindow (InstallWindow):
         box.pack_start (label, gtk.TRUE, gtk.TRUE, 0)
 
         hbox.pack_start (box)
-        if iutil.getArch() == "s390" or iutil.getArch() == "s390x":
+        if iutil.getArch() == "s390":
         try:
             f = open("/proc/mounts", "r")
         except:

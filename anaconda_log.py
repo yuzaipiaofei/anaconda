@@ -37,7 +37,7 @@ class Anaconda_LogFile:
 	elif file:
 	    self.logFile = file
 	else:
-            if iutil.getArch() != "s390" and iutil.getArch() != "s390x":
+            if iutil.getArch() != "s390":
                 self.logFile = open("/dev/tty3", "w")
             else:
                 try:

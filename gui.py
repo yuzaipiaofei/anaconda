@@ -71,7 +71,7 @@ stepToClass = {
 
 if iutil.getArch() == 'sparc':
     stepToClass["bootloader"] = ("silo_gui", "SiloWindow")
-elif iutil.getArch() == 's390' or iutil.getArch() == 's390x':
+elif iutil.getArch() == 's390':
     stepToClass["bootloader"] = ("zipl_gui", "ZiplWindow")
 else:
     stepToClass["bootloader"] = ("bootloader_gui", "BootloaderWindow")
@@ -224,7 +224,7 @@ class ExceptionWindow:
 ##         if file:
 ##             hbox.pack_start (GnomePixmap (file), gtk.FALSE)
 
-        if iutil.getArch() == 's390' or iutil.getArch() == 's390x':
+        if iutil.getArch() == 's390':
              info = WrappingLabel(_("An unhandled exception has occured.  This "
                                "is most likely a bug.  Please copy the "
                                "full text of this exception and file a "

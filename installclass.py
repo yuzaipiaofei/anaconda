@@ -132,7 +132,7 @@ class BaseInstallClass:
             dispatch.skipStep("bootloader")
             dispatch.skipStep("bootloaderadvanced")            
             dispatch.skipStep("fdasd", permanent = 1)
-        elif iutil.getArch() == "s390" or iutil.getArch() == "s390x":
+        elif iutil.getArch() == "s390":
 	    dispatch.skipStep("keyboard", permanent = 1)
 	    dispatch.skipStep("mouse", permanent = 1)
             dispatch.skipStep("partitionmethod", permanent = 1)
