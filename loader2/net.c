@@ -464,7 +464,6 @@ int readNetConfig(char * device, struct networkDeviceConfig * cfg, int flags) {
 
     fillInIpInfo(cfg);
 
-#if !defined(__s390__) && !defined(__s390x__)
     if (!(cfg->dev.set & PUMP_NETINFO_HAS_GATEWAY)) {
         if (*c.gw && inet_aton(c.gw, &addr)) {
             cfg->dev.gateway = addr;
@@ -480,7 +479,6 @@ int readNetConfig(char * device, struct networkDeviceConfig * cfg, int flags) {
     }
 
     newtPopWindow();
-#endif
     if (!FL_TESTING(flags)) {
         configureNetwork(cfg);
         findHostAndDomain(cfg, flags);
