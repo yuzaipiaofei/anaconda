@@ -65,7 +65,7 @@ static pythonPartTable * readTable(PyObject * s, PyObject * args) {
 	return NULL;
     }
 
-    balkanReadTable(fd, &table->table);
+    balkanReadTable(device, fd, &table->table);
     close(fd);
 
     return table;

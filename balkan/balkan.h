@@ -28,6 +28,6 @@ struct partitionTable {
     struct partition parts[50];
 };
 
-int balkanReadTable(int fd, struct partitionTable * table);
+int balkanReadTable(char *device, int fd, struct partitionTable * table);
 
 #endif

@@ -825,7 +825,7 @@ static char * mountHardDrive(struct installMethod * method,
 	    if (kd->known[i].class == CLASS_HD) {
 		devMakeInode(kd->known[i].name, "/tmp/hddevice");
 		if ((fd = open("/tmp/hddevice", O_RDONLY)) >= 0) {
-		    if ((rc = balkanReadTable(fd, &table))) {
+		    if ((rc = balkanReadTable(kd->known[i].name, fd, &table))) {
 			logMessage("failed to read partition table for "
 				   "device %s: %d", kd->known[i].name, rc);
 		    } else {
@@ -2271,7 +2271,7 @@ void loadUfs(struct knownDevices *kd, moduleList modLoaded,
 	if (kd->known[i].class == CLASS_HD) {
 	    devMakeInode(kd->known[i].name, "/tmp/hddevice");
 	    if ((fd = open("/tmp/hddevice", O_RDONLY)) >= 0) {
-		if ((rc = balkanReadTable(fd, &table))) {
+		if ((rc = balkanReadTable(kd->known[i].name, fd, &table))) {
 		    logMessage("failed to read partition table for "
 			       "device %s: %d", kd->known[i].name, rc);
 		} else {
@@ -2454,10 +2454,8 @@ static void ideSetup(moduleList modLoaded, moduleDeps modDeps,
 static void checkForRam(int flags) {
     if (!FL_EXPERT(flags) && (totalMemory() < MIN_RAM)) {
 	startNewt(flags);
-	newtWinMessage(_("Error"), _("OK"), _("You do not have enough "
-			"RAM to install Red Hat Linux on this machine."
-	                "You need at least 32 MB of RAM to complete the "
-	                "installation."));
+	newtWinMessage(_("Error"), _("OK"), _("You don't have enough "
+			"system memory to install Red Hat on this machine."));
 	stopNewt();
 	exit(0);
     }

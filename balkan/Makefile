@@ -2,7 +2,7 @@ include ../Makefile.inc
 
 #PYTHONLIBDIR = $(DESTDIR)/usr/lib/python1.5/site-packages
 
-OBJECTS = rw.o dos.o sun.o bsdlabel.o
+OBJECTS = rw.o dos.o sun.o bsdlabel.o proc.o
 CFLAGS=-I/usr/include/python1.5 -O2
 
 TARGET = libbalkan.a
@@ -31,6 +31,8 @@ clean:
 dos.o: dos.h
 
 sun.o: sun.h
+
+proc.o: proc.h
 
 install: all
 	mkdir -p $(DESTDIR)/$(PYTHONLIBDIR)

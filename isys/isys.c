@@ -879,7 +879,7 @@ static int ideFilter(struct kddevice * dev) {
 
     /* it's a pdc device w/o a valid partition table, skip it (probably
        raid 5) */
-    if (balkanReadTable(fd, &table)) {
+    if (balkanReadTable(where, fd, &table)) {
 	close(fd);
 	return 0;
     }

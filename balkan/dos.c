@@ -157,6 +157,10 @@ int dospReadTable(int fd, struct partitionTable * table) {
 	      case 0x82:
 		table->parts[i].type = BALKAN_PART_SWAP;
 		break;
+		    
+	      /* pay no attention to the table behind the curtain */
+	      case 0xee:
+		return BALKAN_ERROR_BADMAGIC;
 
 	      default:
 		table->parts[i].type = BALKAN_PART_OTHER;

@@ -49,8 +49,8 @@ def findExistingRoots (intf, theFstab):
 		    try:
 			isys.mount(dev, '/mnt/sysimage')
 		    except SystemError, (errno, msg):
-			intf.messageWindow(_("Error"),
-						_("Error mounting ext2 filesystem on %s: %s") % (dev, msg))
+			#intf.messageWindow(_("Error"),
+			#			_("Error mounting ext2 filesystem on %s: %s") % (dev, msg))
 			continue
 		    if os.access ('/mnt/sysimage/etc/fstab', os.R_OK):
 			rootparts.append ((dev, "ext2"))
