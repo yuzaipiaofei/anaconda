@@ -1,4 +1,4 @@
-#!/bin/bash -x 
+#!/bin/bash
 
 PATH=$PATH:/sbin:/usr/sbin
 
@@ -457,12 +457,12 @@ EOF
        cp -f $IMGPATH/usr/bin/ksh $MBD_DIR/sbin/ksh
        ln -sf ksh $MBD_DIR/sbin/sh
        cp -f $IMGPATH/usr/bin/login $MBD_DIR/sbin/login
-       cp -f $IMGPATH/usr/lib/anaconda-runtime/loader/formatmnt \
+       cp -f $IMGPATH/usr/bin/formatmnt \
 	   $MBD_DIR/sbin/formatmnt
-       cp -f $IMGPATH/usr/bin/wget $MBD_DIR/bin/wget
-       cp -f $IMGPATH/usr/bin/head $MBD_DIR/bin/head
-       cp -f $IMGPATH/usr/bin/printf $MBD_DIR/bin/printf
-       cp -f $IMGPATH/usr/bin/tee $MBD_DIR/bin/tee
+       cp -f $IMGPATH/usr/bin/wget $MBD_DIR/sbin/wget
+       cp -f $IMGPATH/usr/bin/head $MBD_DIR/sbin/head
+       cp -f $IMGPATH/usr/bin/printf $MBD_DIR/sbin/printf
+       cp -f $IMGPATH/usr/bin/tee $MBD_DIR/sbin/tee
        cp -f $IMGPATH/usr/sbin/chroot $MBD_DIR/sbin/chroot
        cp -f $IMGPATH/usr/sbin/consoletype $MBD_DIR/sbin/consoletype
        cp -f $IMGPATH/usr/sbin/rhsetup $MBD_DIR/sbin/rhsetup
@@ -470,21 +470,21 @@ EOF
        cp -f $IMGPATH/usr/sbin/swapoff $MBD_DIR/sbin/swapoff
        cp -f $IMGPATH/usr/sbin/mkswap $MBD_DIR/sbin/mkswap
        cp -f $IMGPATH/usr/sbin/tune2fs $MBD_DIR/sbin/tune2fs
-       cp -f $IMGPATH/usr/bin/ls $MBD_DIR/bin/ls
-       cp -f $IMGPATH/usr/bin/ln $MBD_DIR/bin/ln
-       cp -f $IMGPATH/usr/bin/dd $MBD_DIR/bin/dd
-       cp -f $IMGPATH/usr/bin/mv $MBD_DIR/bin/mv
-       cp -f $IMGPATH/usr/bin/rm $MBD_DIR/bin/rm
-       cp -f $IMGPATH/usr/bin/sort $MBD_DIR/bin/sort
-       cp -f $IMGPATH/usr/bin/more $MBD_DIR/bin/more
-       cp -f $IMGPATH/usr/bin/mkdir $MBD_DIR/bin/mkdir
-       cp -f $IMGPATH/usr/bin/grep $MBD_DIR/bin/grep
-       cp -f $IMGPATH/usr/bin/gzip $MBD_DIR/bin/gzip
-       cp -f $IMGPATH/usr/bin/mount $MBD_DIR/bin/mount
-       cp -f $IMGPATH/usr/bin/umount $MBD_DIR/bin/umount
-       cp -f $IMGPATH/usr/bin/uname $MBD_DIR/bin/uname
-       cp -f $IMGPATH/usr/bin/ps $MBD_DIR/bin/ps
-       ln -s gzip $MBD_DIR/bin/zcat
+       cp -f $IMGPATH/usr/bin/ls $MBD_DIR/sbin/ls
+       cp -f $IMGPATH/usr/bin/ln $MBD_DIR/sbin/ln
+       cp -f $IMGPATH/usr/bin/dd $MBD_DIR/sbin/dd
+       cp -f $IMGPATH/usr/bin/mv $MBD_DIR/sbin/mv
+       cp -f $IMGPATH/usr/bin/rm $MBD_DIR/sbin/rm
+       cp -f $IMGPATH/usr/bin/sort $MBD_DIR/sbin/sort
+       cp -f $IMGPATH/usr/bin/more $MBD_DIR/sbin/more
+       cp -f $IMGPATH/usr/bin/mkdir $MBD_DIR/sbin/mkdir
+       cp -f $IMGPATH/usr/bin/grep $MBD_DIR/sbin/grep
+       cp -f $IMGPATH/usr/bin/gzip $MBD_DIR/sbin/gzip
+       cp -f $IMGPATH/usr/bin/mount $MBD_DIR/sbin/mount
+       cp -f $IMGPATH/usr/bin/umount $MBD_DIR/sbin/umount
+       cp -f $IMGPATH/usr/bin/uname $MBD_DIR/sbin/uname
+       cp -f $IMGPATH/usr/bin/ps $MBD_DIR/sbin/ps
+       ln -s gzip $MBD_DIR/sbin/zcat
        cp -f $IMGPATH/usr/bin/ldd $MBD_DIR/sbin/ldd
        cp -f $IMGPATH/usr/bin/strace $MBD_DIR/sbin/strace
        cp -f $IMGPATH/usr/sbin/sshd $MBD_DIR/sbin/sshd

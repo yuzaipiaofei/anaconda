@@ -280,6 +280,7 @@ EOF
 
 if [ $ARCH = s390 -o $ARCH = s390x ]; then
     cat >> $KEEPFILE <<EOF
+linuxrc
 usr/share/terminfo/a/ansi
 usr/share/terminfo/d/dumb
 usr/share/terminfo/s/screen
@@ -292,6 +293,12 @@ usr/bin/wget
 usr/bin/head
 usr/bin/printf
 usr/bin/tee
+usr/bin/dasdformat
+usr/bin/formatmnt
+usr/bin/mountpoint
+usr/bin/netsetup
+usr/bin/pkgselect
+usr/bin/pkgsrc
 usr/sbin/chroot
 usr/sbin/sshd
 usr/sbin/glibc_post_upgrade
