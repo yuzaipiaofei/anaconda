@@ -40,9 +40,10 @@ mainWindow = None
 
 stepToClass = {
     "language" : ("language_gui", "LanguageWindow"),
-    "keyboard" : ("keyboard_gui", "KeyboardWindow"),
-    "mouse" : ("mouse_gui", "MouseWindow"),
-    "welcome" : ("welcome_gui", "WelcomeWindow"),
+    "defaults" : ("defaults_gui", "DefaultsWindow"),
+#    "keyboard" : ("keyboard_gui", "KeyboardWindow"),
+#    "mouse" : ("mouse_gui", "MouseWindow"),
+#    "welcome" : ("welcome_gui", "WelcomeWindow"),
     "installtype" : ("installpath_gui", "InstallPathWindow"),
     "partitionmethod" : ("partmethod_gui", "PartitionMethodWindow"),
     "partition" : ("partition_gui", "PartitionWindow"),

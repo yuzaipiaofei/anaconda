@@ -53,11 +53,14 @@ from rhpl.log import log
 # in the second case, the function is called directly from the dispatcher
 
 installSteps = [
-    ("welcome", ("id.configFileData",)),
-    ("betanag", betaNagScreen, ("intf", "dir")),
+#    ("welcome", ("id.configFileData",)),
+#    ("betanag", betaNagScreen, ("intf", "dir")),
     ("language", ("intf", "id.instLanguage")),
-    ("keyboard", ("id.instLanguage.getDefaultKeyboard()", "id.keyboard", "id.xsetup")),
-    ("mouse", ("id.mouse",)),
+#    ("keyboard", ("id.instLanguage.getDefaultKeyboard()", "id.keyboard", "id.xsetup")),
+#    ("mouse", ("id.mouse",)),
+
+    ("defaults", ("id.instLanguage.getDefaultKeyboard()", "id.instLanguage", "id.mouse")),
+
     ("findrootparts", findRootParts, ("intf", "id", "dispatch", "dir", "instPath")),
     ("findinstall", ("dispatch", "intf", "id", "instPath")),
     ("installtype", ("dispatch", "id", "method", "intf")),

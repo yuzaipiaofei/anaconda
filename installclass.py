@@ -96,11 +96,12 @@ class BaseInstallClass:
     def setSteps(self, dispatch):
 	dispatch.setStepList(
 		 "language",
-		 "keyboard",
-		 "mouse",
-		 "welcome",
+#		 "keyboard",
+                 "defaults",
+#		 "mouse",
+#		 "welcome",
                  "findrootparts",
-		 "betanag",
+#		 "betanag",
 		 "installtype",
                  "partitionmethod",
                  "partitionobjinit",
