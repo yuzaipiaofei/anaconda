@@ -2045,7 +2045,7 @@ class ToDo:
                 if unmountUSB:
                     isys.umount(self.instPath + '/proc/bus/usb', removeDir = 0)
 		if arch == 'ia64':
-		    argv = [ "/usr/sbin/efibootmgr", "-c" , "-l",
+		    argv = [ "/usr/sbin/efibootmgr", "-c" , "-L",
 		    	     "Red Hat Linux" ]
 		    devnull = os.open("/dev/null", os.O_RDWR)
 		    iutil.execWithRedirect(argv[0], argv, root = self.instPath,
