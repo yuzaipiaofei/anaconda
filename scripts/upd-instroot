@@ -89,7 +89,7 @@ mkdir -p $DEST
 mkdir -p $DESTGR
 
 PACKAGES="glibc setup openssl python newt libtermcap zlib ash kon2
-	 e2fsprogs util-linux raidtools popt mount procps slang slang-j
+	 e2fsprogs util-linux raidtools popt mount procps slang-j
 	 rpm XFree86 Xconfigurator anaconda anaconda-runtime
 	 kudzu-devel kudzu db3 rpm-python bzip2 dosfstools pciutils"
 
