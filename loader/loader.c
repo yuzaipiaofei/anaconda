@@ -2377,10 +2377,11 @@ int main(int argc, char ** argv) {
 
 #ifdef INCLUDE_KON
     else if (!strcmp(argv[0] + strlen(argv[0]) - 3, "kon")) {
-        putenv("TERM=kon");
+        setenv("TERM", "kon", 1);
 	i = kon_main(argc, argv);
 	return i;
     } else if (!strcmp(argv[0] + strlen(argv[0]) - 8, "continue")) {
+        setenv("TERM", "kon", 1);
 	continuing = 1;
     }
 #endif
