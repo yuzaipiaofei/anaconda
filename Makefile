@@ -107,8 +107,9 @@ create-snapshot:
 	@rm -rf /tmp/anaconda-$(VERSION)
 	@tag=`cvs status Makefile | awk ' /Sticky Tag/ { print $$3 } '` 2> /dev/null; \
 	[ x"$$tag" = x"(none)" ] && tag=HEAD; \
-	echo "*** Pulling off $$tag!"; \
-	cd /tmp ; cvs -Q -d $(CVSROOT) export -r $$tag anaconda || echo "Um... export aborted."
+	cvsroot=`cat CVS/Root` 2>/dev/null; \
+        echo "*** Pulling off $$tag from $$cvsroot!"; \
+	cd /tmp ; cvs -Q -d $$cvsroot export -r $$tag anaconda || echo "Um... export aborted."
 	@cd /tmp/anaconda ; rm -f isys/modutils/modutils.spec
 	@cd /tmp/anaconda ; rm -f pycheckrc-for-anaconda
 	@cd /tmp/anaconda ; rm -rf comps
