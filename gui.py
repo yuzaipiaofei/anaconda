@@ -74,10 +74,10 @@ class WaitWindow:
     def __init__(self, title, text):
 	threads_enter ()
         self.window = GtkWindow (WINDOW_POPUP)
-        self.window.set_title (_(title))
+        self.window.set_title (title)
         self.window.set_position (WIN_POS_CENTER)
         self.window.set_modal (TRUE)
-        label = GtkLabel (_(text))
+        label = GtkLabel (text)
         label.set_line_wrap (TRUE)
         box = GtkFrame ()
         box.set_border_width (10)
@@ -103,13 +103,13 @@ class ProgressWindow:
     def __init__(self, title, text, total):
 	threads_enter ()
         self.window = GtkWindow (WINDOW_POPUP)
-        self.window.set_title (_(title))
+        self.window.set_title (title)
         self.window.set_position (WIN_POS_CENTER)
         self.window.set_modal (TRUE)
         box = GtkVBox (5)
         box.set_border_width (10)
 
-        label = GtkLabel (_(text))
+        label = GtkLabel (text)
         label.set_line_wrap (TRUE)
         label.set_alignment (0.0, 0.5)
         box.pack_start (label)
@@ -159,10 +159,10 @@ class MessageWindow:
     def __init__ (self, title, text, type = "ok"):
         threads_enter ()
         if type == "ok":
-            self.window = GnomeOkDialog (_(text))
+            self.window = GnomeOkDialog (text)
             self.window.connect ("clicked", self.quit)
         if type == "okcancel":
-            self.window = GnomeOkCancelDialog (_(text), self.okcancelquit)
+            self.window = GnomeOkCancelDialog (text, self.okcancelquit)
         # this is the pixmap + the label
         hbox = self.window.vbox.children ()[0]
         label = hbox.children ()[1]
@@ -224,18 +224,12 @@ class InstallInterface:
         gtkThread.start ()
 
         # This is the same as the file
-	if todo.serial:
-	    commonSteps = [ ( LanguageWindow, "language" ), 
-			    ( WelcomeWindow, "welcome" ),
-			    ( InstallPathWindow, "installtype" ),
-			  ]
-	else:
-	    commonSteps = [ ( LanguageWindow, "language" ), 
-			    ( KeyboardWindow, "keyboard" ),
-			    ( MouseWindow, "mouse" ),
-			    ( WelcomeWindow, "welcome" ),
-			    ( InstallPathWindow, "installtype" ),
-			  ]
+	commonSteps = [ ( LanguageWindow, "language" ), 
+			( KeyboardWindow, "keyboard" ),
+			( MouseWindow, "mouse" ),
+			( WelcomeWindow, "welcome" ),
+			( InstallPathWindow, "installtype" ),
+		      ]
 
         self.finishedTODO = Event ()
         self.icw = InstallControlWindow (self, commonSteps, todo)
@@ -251,6 +245,7 @@ class InstallControlWindow (Thread):
         if len(lang) > 2:
             newlangs.append(lang[:2])
         self.locale = lang[:2]
+            
         gettext.setlangs (newlangs)
         cat = gettext.Catalog ("anaconda", "/usr/share/locale")
         for l in newlangs:
@@ -471,35 +466,7 @@ class InstallControlWindow (Thread):
         _root_window ().set_cursor (cursor)
 
         self.window.set_border_width (10)
-
-	title = _("Red Hat Linux Installer")
-	if os.environ["DISPLAY"][:1] != ':':
-	    # from gnome.zvt import *
-	    # zvtwin = GtkWindow ()
-	    shtitle = _("Red Hat Linux Install Shell")
-	    try:
-		f = open ("/tmp/netinfo", "r")
-	    except:
-		pass
-	    else:
-		lines = f.readlines ()
-		f.close ()
-		for line in lines:
-		    netinf = string.splitfields (line, '=')
-		    if netinf[0] == "HOSTNAME":
-			title = _("Red Hat Linux Installer on %s") % string.strip (netinf[1])
-			shtitle = _("Red Hat Linux Install Shell on %s") % string.strip (netinf[1])
-			break
-
-	    # zvtwin.set_title (shtitle)
-	    # zvt = ZvtTerm (80, 24)
-	    # if zvt.forkpty() == 0:
-	    #     os.execv ("/bin/sh", [ "/bin/sh" ])
-	    # zvt.show ()
-	    # zvtwin.add (zvt)
-	    # zvtwin.show_all ()
-
-	self.window.set_title (title)
+        self.window.set_title (_("Red Hat Linux Installer"))
         self.window.set_position (WIN_POS_CENTER)
         vbox = GtkVBox (FALSE, 10)
 
@@ -583,6 +550,7 @@ class InstallControlState:
     def __init__ (self, cw, ii, todo, title = "Install Window",
                   prevEnabled = 1, nextEnabled = 0, html = ""):
         self.searchPath = [ "/usr/share/anaconda/", "./" ]
+        self.locale = 'C'
         self.ii = ii
         self.cw = cw
         self.todo = todo
@@ -590,7 +558,6 @@ class InstallControlState:
         self.nextEnabled = nextEnabled
         self.title = title
         self.html = html
-        self.htmlFile = None
         self.nextButton = STOCK_BUTTON_NEXT
         self.prevButton = STOCK_BUTTON_PREV
         self.nextButtonLabel = None
@@ -640,35 +607,32 @@ class InstallControlState:
         return im
 
     def readHTML (self, file):
-        self.htmlFile = file
+        text = None
+        for path in self.searchPath:
+            try:
+                text = open("%s/help/%s/s1-help-screens-%s.html" %
+                            (path, self.locale, file)).read ()
+            except IOError:
+                try:
+                    text = open("%s/help/C/s1-help-screens-%s.html" %
+                                (path, file)).read ()
+                except IOError:
+                    continue
+                
+            if text:
+                break
+
+        if text:
+            self.html = text
+            self.cw.update (self)
+        else:
+            print "Unable to read %s help text" % (file,)
 
     def setHTML (self, text):
         self.html = text
         self.cw.update (self)
 
     def getHTML (self):
-        text = None
-        if self.htmlFile:
-            file = self.htmlFile
-            for path in self.searchPath:
-                try:
-                    text = open("%s/help/%s/s1-help-screens-%s.html" %
-                                (path, self.cw.locale, file)).read ()
-                except IOError:
-                    try:
-                        text = open("%s/help/C/s1-help-screens-%s.html" %
-                                    (path, file)).read ()
-                    except IOError:
-                        continue
-
-                if text:
-                    break
-
-            if text:
-                return text
-            else:
-                print "Unable to read %s help text" % (file,)
-
         return self.html
     
     def getToDo (self):
