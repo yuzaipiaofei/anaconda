@@ -70,5 +70,6 @@ unset BOOTDIR
 makemainmodules "=scsi =net $SECSTAGE"
 
 makeinstimage "netstg" "=scsi $SECSTAGE"
-makeinstimage "hdstg" "=net $SECSTAGE"
-makemainimage "stage2" "cramfs"
+#makeinstimage "hdstg" "=net $SECSTAGE"
+#makemainimage "stage2" "cramfs"
+makemainimage "stage2" "ext2"

@@ -255,6 +255,17 @@ usr/share/pci.ids
 usr/share/themes/Raleigh/gtk/gtkrc
 EOF
 
+if [ $ARCH = s390 -o $ARCH = s390x ]; then
+    cat >> $KEEPFILE <<EOF
+usr/share/terminfo/a/ansi
+usr/share/terminfo/d/dumb
+usr/share/terminfo/s/screen
+usr/share/terminfo/v/vt100
+usr/share/terminfo/v/vt102
+EOF
+fi
+      
+
 KEEPFILEGR=/tmp/keepfilegr.$$
 cp $KEEPFILE $KEEPFILEGR
 cat >> $KEEPFILEGR <<EOF
@@ -690,17 +701,17 @@ for p in $DEST $DESTGR; do
 	done
 done
 
-if [ $NEEDGR ]; then
-    # Xserver needs a place to put the compiled xkb maps.
-    rm -rf $DESTGR/usr/X11R6/lib/X11/xkb/compiled
-    ln -s /tmp $DESTGR/usr/X11R6/lib/X11/xkb/compiled
-fi
-
 # this is only for the minimal second stage
 echo "Cleaning ramdisk install images..."
     rm -rf $DEST/usr/lib/anaconda-runtime
 
 if [ "$ARCH" != "s390" -a "$ARCH" != "s390x" ]; then
+   if [ $NEEDGR ]; then
+       # Xserver needs a place to put the compiled xkb maps.
+       rm -rf $DESTGR/usr/X11R6/lib/X11/xkb/compiled
+       ln -s /tmp $DESTGR/usr/X11R6/lib/X11/xkb/compiled
+   fi
+
    if [ -n "$NEEDGR" ]; then
     cd $ORIGDIR
     $DESTGR/usr/lib/anaconda-runtime/checkcards.py $DESTGR/usr/share/kudzu/pcitable $DESTGR/usr/X11R6/lib/X11/Cards

@@ -31,7 +31,11 @@ TOPDIR=$(cd $TOPDIR; pwd)
     MODDEPS=$KERNELROOT/moddeps
     BUILDARCH=$4
 
-    KERNELNAME=vmlinuz
+    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
+       KERNELNAME=image
+    else
+       KERNELNAME=vmlinuz
+    fi
     
     if [ "$BUILDARCH" = "sparc64" ]; then
 	BASEARCH=sparc
@@ -437,7 +441,7 @@ EOF
 
     ln -s /usr/bin/sh $MBD_DIR/sbin/sh
     if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
-       cp /usr/lib/anaconda/loader/linuxrc-s390 $MBD_DIR/linuxrc
+       cp /usr/lib/anaconda/loader/linuxrc.s390 $MBD_DIR/linuxrc
     else
        ln -s /sbin/init $MBD_DIR/linuxrc
     fi
@@ -781,10 +785,11 @@ makedriverdisk () {
 # Find the kernel, unpack it, and verify it
     if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
        kpackage=$($LATEST $KERNELPATH kernel-vrdr)
+       vertag=vrdr
     else
        kpackage=$($LATEST $KERNELPATH kernel-BOOT)
+       vertag=BOOT
     fi
-    vertag=BOOT
     if [ ! -f "$kpackage" ]; then
 	if [ "$BUILDARCH" = "ia64" ]; then
 	    # XXX remove me post beta
@@ -804,6 +809,10 @@ makedriverdisk () {
     fi
 
     version=$(rpm --qf '%{VERSION}-%{RELEASE}' -qp $kpackage)${vertag}
+echo "KERNELROOT: $KERNELROOT"
+echo "   Version: $version"
+echo "    VERTAG: $vertag"
+echo "   PACKAGE: $kpackage"
     echo "unpacking $kpackage"
 
     rpm2cpio $kpackage | (cd $KERNELROOT; cpio --quiet -iumd)
