@@ -1807,15 +1807,29 @@ static char * setupKickstart(char * location, struct knownDevices * kd,
 
 #ifdef INCLUDE_NETWORK
     if (ksType == KS_CMD_NFS) {
+	int count = 0, maxcount = 1, sleeptime = 1;
+	
 	mlLoadModule("nfs", NULL, modLoaded, *modDepsPtr, NULL, modInfo, flags);
 	fullPath = alloca(strlen(host) + strlen(dir) + 2);
 	sprintf(fullPath, "%s:%s", host, dir);
 
 	logMessage("mounting nfs path %s", fullPath);
 
-	if (doPwMount(fullPath, "/mnt/source", "nfs", 1, 0, NULL, NULL)) 
-	    return NULL;
+	if (FL_KICKSTART(flags)) {
+	    maxcount = 3;
+	    sleeptime = 3;
+	}
+	while (count < maxcount
+	       && doPwMount(fullPath, "/mnt/source", "nfs", 1, 0,
+			    NULL, NULL)) {
+	    logMessage("mount failed, retrying after 3 second sleep");
+	    sleep(sleeptime);
+	    count++;
+	}
 
+	if (count == maxcount)
+	    return NULL;
+	    
 	if (mountLoopback("/mnt/source/RedHat/base/stage2.img",
 			   "/mnt/runtime", "loop0")) {
 	    umount("/mnt/source");
