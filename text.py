@@ -4,7 +4,7 @@
 # Erik Troan <ewt@redhat.com>
 # Matt Wilson <msw@redhat.com>
 #
-# Copyright 2001 Red Hat, Inc.
+# Copyright 2002 Red Hat, Inc.
 #
 # This software may be freely redistributed under the terms of the GNU
 # library public license.
@@ -304,7 +304,7 @@ class InstallInterface:
 	return WaitWindow(self.screen, title, text)
 
     def drawFrame(self):
-        self.welcomeText = _("Red Hat Linux (C) 2001 Red Hat, Inc.")
+        self.welcomeText = _("Red Hat Linux (C) 2002 Red Hat, Inc.")
         self.screen.drawRootText (0, 0, self.welcomeText)
 	if (os.access("/usr/share/anaconda/help/C/s1-help-screens-lang.txt", os.R_OK)):
 	    self.screen.pushHelpLine(_(" <F1> for help | <Tab> between elements | <Space> selects | <F12> next screen"))
@@ -347,12 +347,13 @@ class InstallInterface:
 	#self.screen.drawRootText (0 - len(_(step[0])), 0, _(step[0]))
         lang = id.instLanguage.getCurrent()
         # if we don't have any way to display the preselected language,
-        # fall back to English.
-        if ((id.instLanguage.getFontFile(lang) == "Kon" and not
-             isys.isPsudoTTY(0)) or
-            id.instLanguage.getFontFile(lang) == "None"):
-            lang = "English"
-            id.instLanguage.setRuntimeLanguage(lang)
+        # fall back to English. This doesn't apply to S/390 and zSeries.
+        if iutil.getArch() != 's390' and iutil.getArch() != 's390x':
+            if ((id.instLanguage.getFontFile(lang) == "Kon" and not
+                 isys.isPsudoTTY(0)) or
+                id.instLanguage.getFontFile(lang) == "None"):
+                lang = "English"
+                id.instLanguage.setRuntimeLanguage(lang)
         lang = id.instLanguage.getLangNick(lang)
         self.langSearchPath = expandLangs(lang) + ['C']
         self.instLanguage = id.instLanguage

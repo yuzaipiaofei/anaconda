@@ -72,7 +72,11 @@ static int myerror = 0;
 
 /* from sundries.c */
 /* Fatal error.  Print message and exit.  */
+#if defined(__GNUC_MINOR__) && __GNUC__ == 2 && __GNUC_MINOR__ >= 5
 void
+#else /* GNUC < 2.5 */
+void volatile
+#endif /* GNUC < 2.5 */
 die (int err, const char *fmt, ...) {
      va_list args;
 

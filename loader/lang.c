@@ -252,8 +252,10 @@ void setLanguage (char * key, int flags) {
 
     for (i = 0; i < numLanguages; i++) {
 	if (!strcmp(languages[i].key, key)) {
+#if !defined (__s390__) && !defined (__s390x__)
 	    if (!strcmp(languages[i].font, "Kon") && !haveKon)
 		break;
+#endif
 	    if (!strcmp(languages[i].font, "None"))
 		break;
 	    setenv("LANG", languages[i].lc_all, 1);
@@ -294,9 +296,15 @@ int chooseLanguage(char ** lang, int flags) {
 	if (choice == numLanguages) choice = 0;
     }
 
+#if defined (__s390__) || defined (__s390x__)
+    if(!choice) {
+#endif
     newtWinMenu(_("Choose a Language"), _("What language should be used "
 		"during the installation process?"), 40, 5, 5, 8,
 		langs, &choice, _("OK"), NULL);
+#if defined (__s390__) || defined (__s390x__)
+    }
+#endif
 
     *lang = languages[choice].lc_all;
 
@@ -319,9 +327,12 @@ int chooseLanguage(char ** lang, int flags) {
 
     /* only set the environment variables when we actually have a way
        to display the language */
+#if !defined (__s390__) && !defined (__s390x__)
     if ((!strcmp(languages[choice].font, "Kon") && haveKon) ||
 	(strcmp(languages[choice].font, "None") &&
-	 strcmp(languages[choice].font, "Kon"))) {
+	 strcmp(languages[choice].font, "Kon")))
+#endif
+    {
 	setenv("LANG", languages[choice].lc_all, 1);
 	setenv("LANGKEY", languages[choice].key, 1);
 	setenv("LC_ALL", languages[choice].lc_all, 1);
@@ -351,6 +362,11 @@ int chooseLanguage(char ** lang, int flags) {
 	}
     }
 
+    /* S/390 is different because everything depends on the capabilities */
+    /* of the xterm/kterm... where anaconda will be started */
+#if defined (__s390__) || defined (__s390x__)
+    loadLanguage (NULL, flags);
+#else
     /* load the language only if it is displayable */
     /* If we need kon and have it, or if it's not kon or none, load the lang */
     if ((!strcmp(languages[choice].font, "Kon") && haveKon) ||
@@ -364,6 +380,7 @@ int chooseLanguage(char ** lang, int flags) {
 		       "display of %s is possible.", languages[choice].lang,
 		       languages[choice].lang);
     }
+#endif
     if (languages[choice].map)
 	loadFont(languages[choice].map, flags);
 
