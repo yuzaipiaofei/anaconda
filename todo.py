@@ -35,154 +35,6 @@ import upgrade
 from translate import _
 from log import log
 
-class NetworkDevice (SimpleConfigFile):
-    def __str__ (self):
-        s = ""
-        s = s + "DEVICE=" + self.info["DEVICE"] + "\n"
-        keys = self.info.keys ()
-        keys.sort ()
-        keys.remove ("DEVICE")
-
-	# Don't let onboot be turned on unless we have config information
-	# to go along with it
-	if self.get('bootproto') != 'dhcp' and not self.get('ipaddr'):
-	    forceOffOnBoot = 1
-	else:
-	    forceOffOnBoot = 0
-
-	onBootWritten = 0
-        for key in keys:
-	    if key == 'ONBOOT' and forceOffOnBoot:
-		s = s + key + "=" + 'no' + "\n"
-	    else:
-		s = s + key + "=" + self.info[key] + "\n"
-
-	    if key == 'ONBOOT':
-		onBootWritten = 1
-
-	if not onBootWritten:
-	    s = s + 'ONBOOT=no\n'
-
-        return s
-
-    def __init__ (self, dev):
-        self.info = { "DEVICE" : dev }
-
-class Network:
-    def __init__ (self):
-        self.netdevices = {}
-        self.gateway = ""
-        self.primaryNS = ""
-        self.secondaryNS = ""
-        self.ternaryNS = ""
-        self.domains = []
-        self.readData = 0
-	self.isConfigured = 0
-        self.hostname = "localhost.localdomain"
-
-        try:
-            f = open ("/tmp/netinfo", "r")
-        except:
-            pass
-        else:
-            lines = f.readlines ()
-	    f.close ()
-            info = {}
-	    self.isConfigured = 1
-            for line in lines:
-                netinf = string.splitfields (line, '=')
-                info [netinf[0]] = string.strip (netinf[1])
-            self.netdevices [info["DEVICE"]] = NetworkDevice (info["DEVICE"])
-            if info.has_key ("IPADDR"):
-                self.netdevices [info["DEVICE"]].set (("IPADDR", info["IPADDR"]))
-            if info.has_key ("NETMASK"):
-                self.netdevices [info["DEVICE"]].set (("NETMASK", info["NETMASK"]))
-            if info.has_key ("BOOTPROTO"):
-                self.netdevices [info["DEVICE"]].set (("BOOTPROTO", info["BOOTPROTO"]))
-            if info.has_key ("ONBOOT"):
-                self.netdevices [info["DEVICE"]].set (("ONBOOT", info["ONBOOT"]))
-            if info.has_key ("GATEWAY"):
-                self.gateway = info["GATEWAY"]
-            if info.has_key ("DOMAIN"):
-                self.domains.append(info["DOMAIN"])
-            if info.has_key ("HOSTNAME"):
-                self.hostname = info["HOSTNAME"]
-            
-            self.readData = 1
-	try:
-	    f = open ("/etc/resolv.conf", "r")
-	except:
-	    pass
-	else:
-	    lines = f.readlines ()
-	    f.close ()
-	    for line in lines:
-		resolv = string.split (line)
-		if resolv and resolv[0] == 'nameserver':
-		    if self.primaryNS == "":
-			self.primaryNS = resolv[1]
-		    elif self.secondaryNS == "":
-			self.secondaryNS = resolv[1]
-		    elif self.ternaryNS == "":
-			self.ternaryNS = resolv[1]
-
-    def getDevice(self, device):
-	return self.netdevices[device]
-
-    def available (self):
-        f = open ("/proc/net/dev")
-        lines = f.readlines()
-        f.close ()
-        # skip first two lines, they are header
-        lines = lines[2:]
-        for line in lines:
-            dev = string.strip (line[0:6])
-            if dev != "lo" and not self.netdevices.has_key (dev):
-                self.netdevices[dev] = NetworkDevice (dev)
-        return self.netdevices
-
-    def lookupHostname (self):
-	# can't look things up if they don't exist!
-	if not self.hostname or self.hostname == "localhost.localdomain": return None
-	if not self.primaryNS: return
-	if not self.isConfigured:
-	    for dev in self.netdevices.values():
-		if dev.get('bootproto') == "dhcp":
-		    self.primaryNS = isys.pumpNetDevice(dev.get('device'))
-                    self.isConfigured = 1
-                    break
-		elif dev.get('ipaddr') and dev.get('netmask'):
-                    try:
-                        isys.configNetDevice(dev.get('device'),
-                                             dev.get('ipaddr'),
-                                             dev.get('netmask'),
-                                             self.gateway)
-                        self.isConfigured = 1
-                        break
-                    except SystemError:
-                        log ("failed to configure network device %s when "
-                             "looking up host name", dev.get('device'))
-
-	if not self.isConfigured:
-            log ("no network devices were availabe to look up host name")
-            return None
-
-	f = open("/etc/resolv.conf", "w")
-	f.write("nameserver %s\n" % self.primaryNS)
-	f.close()
-	isys.resetResolv()
-	isys.setResolvRetry(2)
-
-	try:
-	    ip = socket.gethostbyname(self.hostname)
-	except:
-	    return None
-
-	return ip
-
-    def nameservers (self):
-        return [ self.primaryNS, self.secondaryNS, self.ternaryNS ]
-
 class Password:
     def __init__ (self):
         self.crypt = None
@@ -282,7 +134,6 @@ class ToDo:
 	self.installSystem = installSystem
 	self.serial = serial
         self.reconfigOnly = reconfigOnly
-        self.network = Network ()
         self.rootpassword = Password ()
         self.extraModules = extraModules
         self.verifiedState = None
@@ -573,78 +424,6 @@ class ToDo:
 	    str = "package %s is not available" % (package,)
 	    raise ValueError, str
 	self.hdList.packages[package].selected = 1
-
-    def writeNetworkConfig (self):
-        # /etc/sysconfig/network-scripts/ifcfg-*
-        for dev in self.network.netdevices.values ():
-            device = dev.get ("device")
-	    fn = self.instPath + "/etc/sysconfig/network-scripts/ifcfg-" + device
-            f = open (fn, "w")
-	    os.chmod(fn, 0600)
-            f.write (str (dev))
-            f.close ()
-
-        # /etc/sysconfig/network
-
-        f = open (self.instPath + "/etc/sysconfig/network", "w")
-        f.write ("NETWORKING=yes\n"
-                 "HOSTNAME=")
-
-
-        # use instclass hostname if set (kickstart) to override
-        if self.instClass.getHostname():
-              f.write(self.instClass.getHostname() + "\n")
-        elif self.network.hostname:
-	    f.write(self.network.hostname + "\n")
-	else:
-	    f.write("localhost.localdomain" + "\n")
-	if self.network.gateway:
-	    f.write("GATEWAY=" + self.network.gateway + "\n")
-        f.close ()
-
-        # /etc/hosts
-        f = open (self.instPath + "/etc/hosts", "w")
-        localline = "127.0.0.1\t\t"
-
-        log ("self.network.hostname = %s", self.network.hostname)
-
-	ip = self.network.lookupHostname()
-
-	# If the hostname is not resolvable, tie it to 127.0.0.1
-	if not ip and self.network.hostname != "localhost.localdomain":
-	    localline = localline + self.network.hostname + " "
-	    l = string.split(self.network.hostname, ".")
-	    if len(l) > 1:
-		localline = localline + l[0] + " "
-                
-	localline = localline + "localhost.localdomain localhost\n"
-        f.write("# Do not remove the following line, or various programs\n")
-        f.write("# that require network functionality will fail.\n")
-        f.write (localline)
-
-	if ip:
-	    f.write ("%s\t\t%s\n" % (ip, self.network.hostname))
-
-	# If the hostname was not looked up, but typed in by the user,
-	# domain might not be computed, so do it now.
-	if self.network.domains == [ "localdomain" ] or not self.network.domains:
-	    if '.' in self.network.hostname:
-		# chop off everything before the leading '.'
-		domain = self.network.hostname[(string.find(self.network.hostname, '.') + 1):]
-		self.network.domains = [ domain ]
-
-        # /etc/resolv.conf
-        f = open (self.instPath + "/etc/resolv.conf", "w")
-
-	if self.network.domains != [ 'localdomain' ] and self.network.domains:
-	    f.write ("search " + string.joinfields (self.network.domains, ' ') 
-			+ "\n")
-
-        for ns in self.network.nameservers ():
-            if ns:
-                f.write ("nameserver " + ns + "\n")
-
-        f.close ()
 
     def writeRootPassword (self):
 	pure = self.rootpassword.getPure()
@@ -1144,27 +923,6 @@ class ToDo:
             #todo.language.setDefault(todo.language.getLangNameByNick(
                 #todo.instClass.langdefault))
             
-	(bootProto, ip, netmask, gateway, nameserver, netDevice) = \
-		todo.instClass.getNetwork()
-	if bootProto:
-	    todo.network.gateway = gateway
-	    todo.network.primaryNS = nameserver
-
-	    devices = todo.network.available ()
-	    if (devices and bootProto):
-		if not netDevice:
-		    list = devices.keys ()
-		    list.sort()
-		    netDevice = list[0]
-		dev = devices[netDevice]
-                dev.set (("bootproto", bootProto))
-                dev.set (("onboot", "yes"))
-                if bootProto == "static":
-                    if (ip):
-                        dev.set (("ipaddr", ip))
-                    if (netmask):
-                        dev.set (("netmask", netmask))
-
 	if (todo.instClass.x):
 	    todo.x = todo.instClass.x
 
