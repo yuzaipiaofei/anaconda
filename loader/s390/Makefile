@@ -8,6 +8,7 @@ SOURCES=dasdformat.c mountpoint.c netsetup.c pkgsrc.c pkgselect.c Makefile insta
 APPS=dasdformat mountpoint netsetup pkgsrc pkgselect
 
 all:	$(APPS)
+	strip $(APPS)
 
 dasdformat: dasdformat.c
 mountpoint: mountpoint.c
