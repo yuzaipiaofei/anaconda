@@ -70,9 +70,7 @@ def splashScreenShow(configFileData):
         splashwindow = gtk.Window ()
         splashwindow.set_position (gtk.WIN_POS_CENTER)
         box = gtk.EventBox ()
-        style = box.get_style ().copy ()
-##         style.bg[STATE_NORMAL] = style.white
-##         box.set_style (style)
+        box.modify_bg(gtk.STATE_NORMAL, box.get_style ().white)
         box.add (p)
         splashwindow.add (box)
         box.show_all()

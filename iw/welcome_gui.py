@@ -34,9 +34,7 @@ class WelcomeWindow (InstallWindow):
         
         if pix:
             box = gtk.EventBox ()
-            style = box.get_style ().copy ()
-#            style.bg[gtk.STATE_NORMAL] = style.white
-            box.set_style (style)
+            box.modify_bg(gtk.STATE_NORMAL, box.get_style ().white)
             box.add (pix)
             frame.add (box)
 
@@ -79,9 +77,7 @@ class ReconfigWelcomeWindow (InstallWindow):
         
         if pix:
             ebox = gtk.EventBox ()
-            style = ebox.get_style ().copy ()
-            style.bg[gtk.STATE_NORMAL] = style.white
-            ebox.set_style (style)
+            ebox.modify_bg(gtk.STATE_NORMAL, ebox.get_style ().white)
             ebox.add (pix)
             box.pack_start (ebox, gtk.FALSE)
 
