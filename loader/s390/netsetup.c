@@ -23,7 +23,7 @@ main (int argc, char **argv)
 	FILE *f;
 
 	/* XXX should be passed in argv instead */
-	txt_hostname = getenv ("HNAME");
+	txt_hostname = getenv ("HOSTNAME");
 	txt_search = getenv ("SEARCHDNS");
 	txt_dns = getenv ("DNS");
 
