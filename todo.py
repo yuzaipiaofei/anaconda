@@ -173,37 +173,6 @@ class ToDo:
 	# XXX
 	#self.mouse.writeConfig(self.instPath)
 
-    def needBootdisk (self):
-	if self.bootdisk or self.fstab.rootOnLoop(): return 1
-
-    def makeBootdisk (self):
-	# this is faster then waiting on mkbootdisk to fail
-	device = self.fdDevice
-	file = "/tmp/floppy"
-	isys.makeDevInode(device, file)
-	try:
-	    fd = os.open(file, os.O_RDONLY)
-	except:
-            raise RuntimeError, "boot disk creation failed"
-	os.close(fd)
-
-	kernel = self.hdList['kernel']
-        kernelTag = "-%s-%s" % (kernel[rpm.RPMTAG_VERSION],
-                                kernel[rpm.RPMTAG_RELEASE])
-
-        w = self.intf.waitWindow (_("Creating"), _("Creating boot disk..."))
-        rc = iutil.execWithRedirect("/sbin/mkbootdisk",
-                                    [ "/sbin/mkbootdisk",
-                                      "--noprompt",
-                                      "--device",
-                                      "/dev/" + self.fdDevice,
-                                      kernelTag[1:] ],
-                                    stdout = '/dev/tty5', stderr = '/dev/tty5',
-				    searchPath = 1, root = self.instPath)
-        w.pop()
-        if rc:
-            raise RuntimeError, "boot disk creation failed"
-
     def freeHeaderList(self):
 	if (self.hdList):
 	    self.hdList = None
