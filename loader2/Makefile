@@ -10,6 +10,14 @@ ifeq (ppc, $(ARCH))
 USEDIET=1
 endif
 
+ifeq (s390, $(ARCH))
+USEDIET=0
+endif
+
+ifeq (s390x, $(ARCH))
+USEDIET=0
+endif
+
 ifeq (.depend,$(wildcard .depend))
 TARGET=$(PROGS)
 else
@@ -53,6 +61,10 @@ BTERMLIB = -lbtermdiet -lbogldiet
 WLITELIB = -lwlite
 ISYSLIB = ../isys/libisys-diet.a
 GUNZIP = ../isys/gzlib/libgunzip-diet.a
+else
+DIET=
+REALCC=gcc
+CC=$(DIET) $(REALCC)
 endif
 
 ifeq (i386, $(ARCH))
