@@ -26,7 +26,9 @@ output = "/tmp/lvmout"
 
 def vgscan():
     """Runs vgscan."""
-    if flags.test:
+    # FIXME: Temporary hack until we have a kernel with lvm enabled on S390
+    #if flags.test:
+    if flags.test or iutil.getArch() == "s390":
         return
 
     rc = iutil.execWithRedirect("vgscan",
@@ -42,7 +44,9 @@ def vgactivate(volgroup = None):
 
     volgroup - optional single volume group to activate
     """
-    if flags.test:
+    # FIXME: Temporary hack until we have a kernel with lvm enabled on S390
+    #if flags.test:
+    if flags.test or iutil.getArch() == "s390":
         return
 
     args = ["vgchange", "-ay", "-An"]
@@ -60,7 +64,9 @@ def vgdeactivate(volgroup = None):
 
     volgroup - optional single volume group to deactivate
     """
-    if flags.test:
+    # FIXME: Temporary hack until we have a kernel with lvm enabled on S390
+    #if flags.test:
+    if flags.test or iutil.getArch() == "s390":
         return
 
     args = ["vgchange", "-an", "-An"]
@@ -80,7 +86,9 @@ def lvremove(lvname, vgname):
     lvname - name of logical volume to remove.
     vgname - name of volume group lv is in.
     """
-    if flags.test:
+    # FIXME: Temporary hack until we have a kernel with lvm enabled on S390
+    #if flags.test:
+    if flags.test or iutil.getArch() == "s390":
         return
 
     args = ["lvremove", "-f", "-An"]
@@ -100,7 +108,9 @@ def vgremove(vgname):
 
     vgname - name of volume group.
     """
-    if flags.test:
+    # FIXME: Temporary hack until we have a kernel with lvm enabled on S390
+    #if flags.test:
+    if flags.test or iutil.getArch() == "s390":
         return
 
     # we'll try to deactivate... if it fails, we'll probably fail on

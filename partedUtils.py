@@ -409,36 +409,34 @@ class DiskSet:
                 isys.umount(mountpoint)
 
         # now, look for candidate lvm roots
-	# FIXME: Temporary hack until we have a kernel with lvm enabled on S390!
-	if iutil.getArch() != "s390":
-		lvm.vgscan()
-		lvm.vgactivate()
+	lvm.vgscan()
+	lvm.vgactivate()
 
-		vgs = []
-		if os.path.isdir("/proc/lvm/VGs"):
-		    vgs = os.listdir("/proc/lvm/VGs")
-		for vg in vgs:
-		    if not os.path.isdir("/proc/lvm/VGs/%s/LVs" %(vg,)):
-			log("Unable to find LVs for %s" % (vg,))
-			continue
-		    lvs = os.listdir("/proc/lvm/VGs/%s/LVs" % (vg,))
-		    for lv in lvs:
-			dev = "/dev/%s/%s" %(vg, lv)
-			found = 0
-			for fs in fsset.getFStoTry(dev):
-			    try:
-				isys.mount(dev, mountpoint, fs, readOnly = 1)
-				found = 1
-				break
-			    except SystemError:
-				pass
+	vgs = []
+	if os.path.isdir("/proc/lvm/VGs"):
+	    vgs = os.listdir("/proc/lvm/VGs")
+	for vg in vgs:
+	    if not os.path.isdir("/proc/lvm/VGs/%s/LVs" %(vg,)):
+		log("Unable to find LVs for %s" % (vg,))
+		continue
+	    lvs = os.listdir("/proc/lvm/VGs/%s/LVs" % (vg,))
+	    for lv in lvs:
+		dev = "/dev/%s/%s" %(vg, lv)
+		found = 0
+		for fs in fsset.getFStoTry(dev):
+		    try:
+			isys.mount(dev, mountpoint, fs, readOnly = 1)
+			found = 1
+			break
+		    except SystemError:
+			pass
 
-			if found:
-			    if os.access (mountpoint + '/etc/fstab', os.R_OK):
-				rootparts.append ((dev, fs))
-			    isys.umount(mountpoint)
+		if found:
+		    if os.access (mountpoint + '/etc/fstab', os.R_OK):
+			rootparts.append ((dev, fs))
+		    isys.umount(mountpoint)
 
-		lvm.vgdeactivate()
+	lvm.vgdeactivate()
 
         # don't stop raid until after we've looked for lvm on top of it
         self.stopAllRaid()
