@@ -11,12 +11,11 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 
-from gtk import *
+import gtk
 from iw_gui import *
 from translate import _, N_
 import re
 import string
-from gnome.ui import *
 from flags import flags
 
 class AccountWindow (InstallWindow):
@@ -45,7 +44,7 @@ class AccountWindow (InstallWindow):
         confirm = self.confirm.get_text ()
 
         if pw == confirm and len (pw) >= 6:
-            self.ics.setNextEnabled (TRUE)
+            self.ics.setNextEnabled (gtk.TRUE)
             self.rootStatus.set_text (_("Root password accepted."))
         else:
 	    if not pw and not confirm:
@@ -55,7 +54,7 @@ class AccountWindow (InstallWindow):
             else:
                 self.rootStatus.set_text (_("Root passwords do not match."))
                 
-            self.ics.setNextEnabled (FALSE)
+            self.ics.setNextEnabled (gtk.FALSE)
 
     def userOkay(self, *args):
 	accountName = self.accountName.get_text()
@@ -74,9 +73,9 @@ class AccountWindow (InstallWindow):
              len(accountName) <= 8 and len(password1) > 5) and
             accountName != "root" and accountName not in systemUsers):
 	    self.userPwLabel.set_text(_("User password accepted."))
-            self.win.set_sensitive(0, TRUE)
+            self.win.set_sensitive(0, gtk.TRUE)
 	else:
-            self.win.set_sensitive(0, FALSE)
+            self.win.set_sensitive(0, gtk.FALSE)
 	    if not accountName:
 		self.userPwLabel.set_text("")
 	    elif accountName == "root":
@@ -97,8 +96,8 @@ class AccountWindow (InstallWindow):
 	accountName = self.userList.get_text(index, 0)
 	fullName = self.userList.get_text(index, 1)
 	password = self.passwords[accountName]
-        self.edit.set_sensitive(TRUE)
-        self.delete.set_sensitive(TRUE)
+        self.edit.set_sensitive(gtk.TRUE)
+        self.delete.set_sensitive(gtk.TRUE)
         #Keep track of the data in the CList so we can edit the entry when Edit button is clicked
         self.data = [index, accountName, password, password, fullName]
 
@@ -125,8 +124,8 @@ class AccountWindow (InstallWindow):
         self.accountName.grab_focus ()
 	self.passwords[accountName] = password1
 
-        self.edit.set_sensitive(FALSE)
-        self.delete.set_sensitive(FALSE)
+        self.edit.set_sensitive(gtk.FALSE)
+        self.delete.set_sensitive(gtk.FALSE)
         self.win.destroy()
         
     def editUser_cb(self, widget, *args):
@@ -149,8 +148,8 @@ class AccountWindow (InstallWindow):
         self.userList.set_text(index, 0, accountName)
         self.userList.set_text(index, 1, fullName)
 
-        self.edit.set_sensitive(FALSE)
-        self.delete.set_sensitive(FALSE)
+        self.edit.set_sensitive(gtk.FALSE)
+        self.delete.set_sensitive(gtk.FALSE)
         self.userList.unselect_all()
         self.win.destroy()
 
@@ -161,7 +160,7 @@ class AccountWindow (InstallWindow):
         self.win.append_button_with_pixmap(_("Cancel"), STOCK_BUTTON_CANCEL)
         self.win.button_connect(0, self.addUser_cb)
         self.win.button_connect(1, self.win.destroy)
-        self.win.set_sensitive(0, FALSE)
+        self.win.set_sensitive(0, gtk.FALSE)
         self.win.show_all()
 
     def editUser (self, widget):
@@ -175,43 +174,43 @@ class AccountWindow (InstallWindow):
             self.win.show_all()
 
     def userWindow (self, title, data=None):
-        userWin = GnomeDialog()
-        userWin.set_modal(TRUE)
+        userWin = gtk.Dialog()
+        userWin.set_modal(gtk.TRUE)
         userWin.set_usize(350, 200)		
-        userWin.set_position (WIN_POS_CENTER)
+        userWin.set_position (gtk.WIN_POS_CENTER)
 
-        userTable = GtkTable (5,2)
-        userTable.set_homogeneous(FALSE)
+        userTable = gtk.Table (5,2)
+        userTable.set_homogeneous(gtk.FALSE)
 
-        vbox = GtkVBox()
+        vbox = gtk.VBox()
         vbox.pack_start(userTable)
-        userAddFrame = GtkFrame (title)
+        userAddFrame = gtk.Frame (title)
         userAddFrame.add(vbox)
         userWin.vbox.pack_start(userAddFrame)
 
         #Labels
-        label = GtkLabel (_("User Name:"))
+        label = gtk.Label (_("User Name:"))
         userTable.attach(label, 0, 1, 0, 1)
-        label = GtkLabel (_("Full Name:"))
+        label = gtk.Label (_("Full Name:"))
         userTable.attach(label, 0, 1, 1, 2)
-        label = GtkLabel (_("Password:"))
+        label = gtk.Label (_("Password:"))
         userTable.attach(label, 0, 1, 2, 3)
-        label = GtkLabel (_("Confirm:"))
+        label = gtk.Label (_("Confirm:"))
         userTable.attach(label, 0, 1, 3, 4)
         #user password label
-        self.userPwLabel = GtkLabel(_("Please enter user name"))
+        self.userPwLabel = gtk.Label(_("Please enter user name"))
         vbox.pack_start(self.userPwLabel)
 
         #entry boxes
-        self.accountName = GtkEntry (8)
+        self.accountName = gtk.Entry (8)
         userTable.attach(self.accountName, 1, 2, 0, 1, SHRINK, SHRINK)
-        self.fullName = GtkEntry ()
+        self.fullName = gtk.Entry ()
         userTable.attach(self.fullName, 1, 2, 1, 2, SHRINK, SHRINK)
-        self.userPass1 = GtkEntry ()
-        self.userPass1.set_visibility(FALSE)
+        self.userPass1 = gtk.Entry ()
+        self.userPass1.set_visibility(gtk.FALSE)
         userTable.attach(self.userPass1, 1, 2, 2, 3, SHRINK, SHRINK)
-        self.userPass2 = GtkEntry ()
-        self.userPass2.set_visibility(FALSE)
+        self.userPass2 = gtk.Entry ()
+        self.userPass2.set_visibility(gtk.FALSE)
         userTable.attach (self.userPass2, 1, 2, 3, 4, SHRINK, SHRINK)
 
         if data:
@@ -238,8 +237,8 @@ class AccountWindow (InstallWindow):
 
 	del self.passwords[accountName]
 	self.userList.remove(index)
-        self.edit.set_sensitive(FALSE)
-        self.delete.set_sensitive(FALSE)
+        self.edit.set_sensitive(gtk.FALSE)
+        self.delete.set_sensitive(gtk.FALSE)
 
     def filter(self, widget, text, len, pos):
         # XXX this doesn't check copy/pase
@@ -270,117 +269,117 @@ class AccountWindow (InstallWindow):
 	self.passwords = {}
 	self.editingUser = None
 
-        box = GtkVBox ()
+        box = gtk.VBox ()
 
-        hbox = GtkHBox()
+        hbox = gtk.HBox()
         pix = self.ics.readPixmap ("root-password.png")
         if pix:
-            a = GtkAlignment ()
+            a = gtk.Alignment ()
             a.add (pix)
             a.set (0.0, 0.0, 0.0, 0.0)
-            hbox.pack_start (a, FALSE)
+            hbox.pack_start (a, gtk.FALSE)
 
-        label = GtkLabel (_("Enter the password for the root user (administrator) of this system."))
-        label.set_line_wrap(TRUE)
+        label = gtk.Label (_("Enter the password for the root user (administrator) of this system."))
+        label.set_line_wrap(gtk.TRUE)
         label.set_usize(350, -1)
 
-        a = GtkAlignment ()
+        a = gtk.Alignment ()
         a.add (label)
         a.set (0.0, 0.5, 0.0, 0.0)
-        hbox.pack_start(a, FALSE, 20)
-        box.pack_start(hbox, FALSE)
+        hbox.pack_start(a, gtk.FALSE, 20)
+        box.pack_start(hbox, gtk.FALSE)
        
         self.forward = lambda widget, box=box: box.focus (DIR_TAB_FORWARD)
 
-        table = GtkTable (2, 2)
+        table = gtk.Table (2, 2)
         table.set_row_spacings (5)
 	table.set_col_spacings (5)
 
-        pass1 = GtkLabel (_("Root Password: "))
+        pass1 = gtk.Label (_("Root Password: "))
         pass1.set_alignment (0.0, 0.5)
-        table.attach (pass1, 0, 1, 0, 1, FILL, 0, 10)
-        pass2 = GtkLabel (_("Confirm: "))
+        table.attach (pass1, 0, 1, 0, 1, gtk.FILL, 0, 10)
+        pass2 = gtk.Label (_("Confirm: "))
         pass2.set_alignment (0.0, 0.5)
-        table.attach (pass2, 0, 1, 1, 2, FILL, 0, 10)
-        self.pw = GtkEntry (128)
+        table.attach (pass2, 0, 1, 1, 2, gtk.FILL, 0, 10)
+        self.pw = gtk.Entry (128)
         self.pw.connect ("activate", self.forward)
         self.pw.connect ("changed", self.rootPasswordsMatch)
         self.pw.connect ("draw", self.setFocus)
-        self.pw.set_visibility (FALSE)
-        self.confirm = GtkEntry (128)
+        self.pw.set_visibility (gtk.FALSE)
+        self.confirm = gtk.Entry (128)
         self.confirm.connect ("activate", self.forward)
-        self.confirm.set_visibility (FALSE)
+        self.confirm.set_visibility (gtk.FALSE)
         self.confirm.connect ("changed", self.rootPasswordsMatch)
-        table.attach (self.pw,      1, 2, 0, 1, FILL|EXPAND, 5)
-        table.attach (self.confirm, 1, 2, 1, 2, FILL|EXPAND, 5)
+        table.attach (self.pw,      1, 2, 0, 1, gtk.FILL|gtk.EXPAND, 5)
+        table.attach (self.confirm, 1, 2, 1, 2, gtk.FILL|gtk.EXPAND, 5)
 
-        box.pack_start (table, FALSE)
+        box.pack_start (table, gtk.FALSE)
 
         # root password statusbar
-        self.rootStatus = GtkLabel ("")
+        self.rootStatus = gtk.Label ("")
         self.rootPasswordsMatch ()
-        wrapper = GtkHBox(0, FALSE)
+        wrapper = gtk.HBox(0, gtk.FALSE)
         wrapper.pack_start (self.rootStatus)
-        box.pack_start (wrapper, FALSE)
+        box.pack_start (wrapper, gtk.FALSE)
 
-        box.pack_start (GtkHSeparator (), FALSE, padding=3)
+        box.pack_start (gtk.HSeparator (), gtk.FALSE, padding=3)
 
  	pw = self.rootPw.getPure()
 	if pw:
 	    self.pw.set_text(pw)
 	    self.confirm.set_text(pw)
 
-        sw = GtkScrolledWindow ()
-        sw.set_policy (POLICY_AUTOMATIC, POLICY_AUTOMATIC)
+        sw = gtk.ScrolledWindow ()
+        sw.set_policy (gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 
-        self.userList = GtkCList (2, (_("Account Name"), _("Full Name")))
+        self.userList = gtk.CList (2, (_("Account Name"), _("Full Name")))
         for x in range (2):
             self.userList.column_title_passive (x)
 
 	self.userList.connect("select_row", self.userSelected)
         sw.add (self.userList)
 
-        self.add = GtkButton (_("Add"))
+        self.add = gtk.Button (_("Add"))
 	self.add.connect("clicked", self.addUser)
-        self.edit = GtkButton (_("Edit"))
+        self.edit = gtk.Button (_("Edit"))
 	self.edit.connect("clicked", self.editUser)
-        self.edit.set_sensitive(FALSE)
-        self.delete = GtkButton (_("Delete"))
+        self.edit.set_sensitive(gtk.FALSE)
+        self.delete = gtk.Button (_("Delete"))
 	self.delete.connect("clicked", self.deleteUser)
-        self.delete.set_sensitive(FALSE)
+        self.delete.set_sensitive(gtk.FALSE)
 
-        bb = GtkVButtonBox ()
+        bb = gtk.VButtonBox ()
         bb.set_border_width (5)
         bb.set_layout_default(BUTTONBOX_START)
         bb.pack_start (self.add)
         bb.pack_start (self.edit)
         bb.pack_start (self.delete)
 
-        hbox = GtkHBox()
+        hbox = gtk.HBox()
         pix = self.ics.readPixmap ("users.png")
         if pix:
-            a = GtkAlignment ()
+            a = gtk.Alignment ()
             a.add (pix)
             a.set (0.5, 0.5, 0, 0)
-            hbox.pack_start (a, FALSE, padding=7)
+            hbox.pack_start (a, gtk.FALSE, padding=7)
 
-        a = GtkAlignment (0.0, 0.5)
-        label = GtkLabel (_("Additional accounts can be created for other "
+        a = gtk.Alignment (0.0, 0.5)
+        label = gtk.Label (_("Additional accounts can be created for other "
                             "users of this system. Such accounts could be for "
                             "a personal login account, or for other "
                             "non-administrative users who need to use this "
                             "system. Use the <Add> button to enter additional "
                             "user accounts."))
-        label.set_line_wrap(TRUE)
+        label.set_line_wrap(gtk.TRUE)
         label.set_usize(350, -1)
         a.add(label)
-        hbox.pack_start(a, FALSE)
+        hbox.pack_start(a, gtk.FALSE)
 
-        box.pack_start(hbox, FALSE)
+        box.pack_start(hbox, gtk.FALSE)
         
-        hbox = GtkHBox(FALSE)
-        hbox.pack_start(sw, TRUE)
-        hbox.pack_start(bb, FALSE)
+        hbox = gtk.HBox(gtk.FALSE)
+        hbox.pack_start(sw, gtk.TRUE)
+        hbox.pack_start(bb, gtk.FALSE)
         box.pack_start(hbox)
         
         index = 0
@@ -390,11 +389,11 @@ class AccountWindow (InstallWindow):
 	    index = index + 1
 
         if flags.reconfig:
-            label.set_sensitive(FALSE)
-            self.userList.set_sensitive(FALSE)
-            self.add.set_sensitive(FALSE)
-            self.edit.set_sensitive(FALSE)
-            self.delete.set_sensitive(FALSE)
+            label.set_sensitive(gtk.FALSE)
+            self.userList.set_sensitive(gtk.FALSE)
+            self.add.set_sensitive(gtk.FALSE)
+            self.edit.set_sensitive(gtk.FALSE)
+            self.delete.set_sensitive(gtk.FALSE)
 
 	box.set_border_width (5)
 

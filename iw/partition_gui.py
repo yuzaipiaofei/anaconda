@@ -758,7 +758,6 @@ class PartitionWindow(InstallWindow):
                 self.editCb(tree)
 
     def treeSelectCb(self, tree, node, column):
-        node = gtk.ctree_node_from_cobject(node)
         partition = tree.node_get_row_data(node)
         if partition:
             self.diskStripeGraph.selectSlice(partition)
