@@ -30,12 +30,7 @@ TOPDIR=$(cd $TOPDIR; pwd)
     KERNELROOT=/tmp/updboot.kernel.$$
     MODDEPS=$KERNELROOT/moddeps
     BUILDARCH=$4
-
-    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
-       KERNELNAME=image
-    else
-       KERNELNAME=vmlinuz
-    fi
+    KERNELNAME=vmlinuz
     
     if [ "$BUILDARCH" = "sparc64" ]; then
 	BASEARCH=sparc
@@ -450,6 +445,7 @@ EOF
        cp -f $IMGPATH/usr/bin/ssh-keygen $MBD_DIR/sbin/ssh-keygen
        cp -f $IMGPATH/usr/bin/ldd $MBD_DIR/sbin/ldd
        cp -f $IMGPATH/usr/bin/ps $MBD_DIR/sbin/ps
+       cp -f $IMGPATH/usr/bin/strace $MBD_DIR/sbin/strace
        cp -f $IMGPATH/usr/sbin/sshd $MBD_DIR/sbin/sshd
        cp -f $IMGPATH/usr/sbin/insmod $MBD_DIR/sbin/insmod
        cp -f $IMGPATH/usr/sbin/ifconfig $MBD_DIR/sbin/ifconfig
@@ -468,6 +464,7 @@ EOF
        cp -df $IMGPATH/lib/libdl-*.so* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libnsl.so* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libnsl-*.so* $MBD_DIR/lib
+       cp -df $IMGPATH/lib/libnss_compat* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libutil.so* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libutil-*.so* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libcrypto.so* $MBD_DIR/lib
@@ -485,6 +482,9 @@ EOF
           cp -f $KERNELROOT/lib/modules/*/kernel/drivers/s390/*/* $MBD_DIR/lib/modules/misc
           cp -f $IMGPATH/lib/modules/ibm-2.4*/kernel/drivers/net/* $MBD_DIR/lib/modules/misc
        fi
+       sed -e "s/PermitEmptyPasswords no/PermitEmptyPasswords yes/; \
+	  s/^Gssapi/\# Gssapi/; s/X11Forwarding yes/X11Forwarding no/" \
+                < $IMGPATH/etc/ssh/sshd_config > $MBD_DIR/etc/ssh/sshd_config
     else
        ln -s /usr/bin/sh $MBD_DIR/sbin/sh
        ln -s /sbin/init $MBD_DIR/linuxrc
@@ -708,22 +708,11 @@ makeinstimage () {
     mkdir -p $mntpoint $tmpdir
 
     mkdir -p $tmpdir
-    # No 2.4 kernel on S390 yet:
-    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
-        IMGFILE=`mktemp /tmp/instimgXXXXXX`
-	dd if=/dev/zero of=$IMGFILE bs=1024 count=50000
-	echo y | /sbin/mke2fs -i 4096  $IMGFILE > /dev/null 2>/dev/null
-        mount -o loop $IMGFILE $tmpdir
-    fi
 
     (cd $INSTIMGTEMPLATE; find . | cpio --quiet -p $tmpdir)
     makemoduleball $tmpdir/modules "$modlist"
 
-    if [ "$BUILDARCH" != "s390" -a "$BUILDARCH" != "s390x" ]; then
-       mkcramfs $tmpdir $INSTIMGPATH/${imagename}1.img
-    else
-       umount $tmpdir
-    fi
+    mkcramfs $tmpdir $INSTIMGPATH/${imagename}1.img
     size=$(ls -l $INSTIMGPATH/${imagename}1.img | awk '{print $5}')
     size=$(expr $size / 1024)
     echo "Wrote $INSTIMGPATH/${imagename}1.img (${size}k)..."
@@ -844,13 +833,8 @@ makedriverdisk () {
 }
 
 # Find the kernel, unpack it, and verify it
-    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
-       kpackage=$($LATEST $KERNELPATH kernel-BOOTvrdr)
-       vertag=BOOTvrdr
-    else
-       kpackage=$($LATEST $KERNELPATH kernel-BOOT)
-       vertag=BOOT
-    fi
+    kpackage=$($LATEST $KERNELPATH kernel-BOOT)
+    vertag=BOOT
     if [ ! -f "$kpackage" ]; then
 	if [ "$BUILDARCH" = "ia64" ]; then
 	    # XXX remove me post beta

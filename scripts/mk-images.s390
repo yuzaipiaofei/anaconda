@@ -7,8 +7,7 @@ prepareBootImage() {
 	(cd $BOOTDISKDIR; find . ! -name "*.msg" -maxdepth 1 ! -type d | cpio --quiet -p $MBD_BOOTTREE)
 	
 	cp $MBD_FSIMAGE $MBD_BOOTTREE/initrd.img
-	#FIXME: This is for 2.2 kernels only:
-	cp $KERNELROOT/boot/image-* $MBD_BOOTTREE/vmlinuz
+	cp $KERNELROOT/boot/vmlinuz-* $MBD_BOOTTREE/vmlinuz
 	if [ -d $BOOTDISKDIR/$BOOTLANG ]; then
 	    # fb console and kon don't get along...
 	    for file in $BOOTDISKDIR/$BOOTLANG/*.msg; do
