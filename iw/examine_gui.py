@@ -167,6 +167,9 @@ class UpgradeExamineWindow (InstallWindow):
 	# all done phew
 	r.packWidgetInEntry(UPGRADE_STR, upbox)
 
+        # XXX - for testing only
+        r.setCurrent(REINSTALL_STR)        
+
 	# set default
 	if self.doupgrade:
 	    idx = 0
