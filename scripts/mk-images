@@ -463,7 +463,7 @@ makeinitrd() {
        cp -f $IMGPATH/usr/bin/ksh $MBD_DIR/sbin/ksh
        ln -sf ksh $MBD_DIR/sbin/sh
        cp -f $IMGPATH/usr/bin/login $MBD_DIR/sbin/login
-       cp -f $IMGPATH/usr/bin/gawk-3.1.0 $MBD_DIR/sbin/awk
+       cp -f $IMGPATH/usr/bin/gawk-3.0.6 $MBD_DIR/sbin/awk
        cp -f $IMGPATH/usr/bin/formatmnt $MBD_DIR/sbin/formatmnt
        cp -f $IMGPATH/usr/bin/netsetup $MBD_DIR/sbin/netsetup
        cp -f $IMGPATH/usr/bin/gettext $MBD_DIR/sbin/gettext
@@ -530,7 +530,11 @@ makeinitrd() {
        cp -df $IMGPATH/lib/libcrypt* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libc.so* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libc-*.so* $MBD_DIR/lib
-       cp -df $IMGPATH/lib/ld.so* $MBD_DIR/lib
+       if [ "$BUILDARCH" = "s390" ]; then
+          cp -df $IMGPATH/lib/ld.so* $MBD_DIR/lib
+       else   # (s390x)
+          cp -df $IMGPATH/lib/ld64.so* $MBD_DIR/lib
+       fi
        cp -df $IMGPATH/lib/ld-*.so* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libresolv.so* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libresolv-*.so* $MBD_DIR/lib
@@ -538,7 +542,11 @@ makeinitrd() {
        cp -df $IMGPATH/lib/libm.so* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libm-*.so* $MBD_DIR/lib
        cp -df $IMGPATH/usr/lib/libz.so* $MBD_DIR/lib
-       cp -df $IMGPATH/lib/libssl* $MBD_DIR/lib
+       if [ "$BUILDARCH" = "s390" ]; then
+         cp -df $IMGPATH/lib/libssl* $MBD_DIR/lib
+       else
+         cp -df $IMGPATH/usr/lib/libssl* $MBD_DIR/lib
+       fi
        cp -df $IMGPATH/lib/libext2* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libcom_err* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libe2p* $MBD_DIR/lib

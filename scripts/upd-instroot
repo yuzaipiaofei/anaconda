@@ -318,7 +318,7 @@ sbin/swapoff
 sbin/mkswap
 sbin/tune2fs
 bin/dd
-bin/gawk-3.1.0
+bin/gawk-3.0.6
 bin/gettext
 bin/mknod
 bin/login
@@ -342,7 +342,7 @@ lib/libutil-*.so*
 lib/libcrypt*
 lib/libc.so*
 lib/libc-*so*
-lib/ld.so*
+lib/ld*.so*
 lib/ld-*.so*
 lib/libresolv.so*
 lib/libresolv-*.so*
