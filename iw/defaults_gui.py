@@ -28,7 +28,7 @@ import mouse_gui
 class DefaultsWindow(InstallWindow):
     windowTitle = N_("Defaults")
     htmlTag = "mouse"
-    kbd = rhpl.keyboard.Keyboard()
+#    kbd = rhpl.keyboard.Keyboard()
 
     def getNext(self):
 ##         self.mouse.set(self.currentMouse, self.emulate3.get_active())
@@ -48,17 +48,18 @@ class DefaultsWindow(InstallWindow):
     
         
     # MouseWindow tag="mouse"
-    def getScreen(self, defaultKeyboard, defaultLang, mouse):
-        print "in defaults getScreen", defaultKeyboard,
-        print dir(defaultLang)
-        print defaultLang.getCurrent()
-        print defaultLang.current
-        print defaultLang.getDefaultTimeZone()
-        print mouse
+    def getScreen(self, defaultKeyboard, defaultLang, keyboard, mouse):
+        print "in defaults getScreen", defaultKeyboard, keyboard
+#        print dir(defaultLang)
+#        print defaultLang.getCurrent()
+#        print defaultLang.current
+#        print defaultLang.getDefaultTimeZone()
+#        print mouse
 #        print dir(timezone)
 #        print timezone.getTimezoneInfo()
         
         self.defaultKeyboard = defaultKeyboard
+        self.keyboard = keyboard
 	self.mouse = mouse
 
 	self.flags = flags
@@ -90,7 +91,7 @@ class DefaultsWindow(InstallWindow):
         label = gtk.Label("")
         label.set_markup("<span foreground='#000000' size='large' font_family='Helvetica'><b>%s:</b></span>" % _("Keyboard"))
         label.set_alignment(0.0, 0.5)
-        self.keyboardLabel = gtk.Label(self.kbd.modelDict[self.defaultKeyboard][0])
+        self.keyboardLabel = gtk.Label(self.keyboard.modelDict[self.defaultKeyboard][0])
         self.keyboardLabel.set_alignment(0.0, 0.5)
         keyboardButton = gtk.Button()
         buttonLabel = gtk.Label("")
@@ -117,7 +118,7 @@ class DefaultsWindow(InstallWindow):
                                     '%s</u></span>' % (_('Change'),))
         mouseButton.add(buttonLabel)
         mouseButton.set_relief(gtk.RELIEF_NONE)
-#        mouseButton.connect("clicked", self.keyboardClicked)
+        mouseButton.connect("clicked", self.mouseClicked)
 
         self.defaultsTable.attach(icon, 0, 1, 1, 2, gtk.SHRINK)
         self.defaultsTable.attach(label, 1, 2, 1, 2, gtk.SHRINK|gtk.FILL)
@@ -174,12 +175,15 @@ class DefaultsWindow(InstallWindow):
         return mainBox
 
     def keyboardClicked(self, *args):
-        print "keyboard clicked"
+        print "keyboard clicked", keyboard_gui
+        print dir(keyboard_gui)
         app = keyboard_gui.childWindow()
-        app.anacondaScreen(self.defaultKeyboard, self.keyboardLabel, self.kbd)
+        app.anacondaScreen(self.defaultKeyboard, self.keyboardLabel, self.keyboard, self.keyboard)
 
     def mouseClicked(self, *args):
-        print "mouse clicked"
+        print "mouse clicked", mouse_gui, self.mouse
+        
+#        print dir(self.mouse)
         app = mouse_gui.childWindow()
         app.anacondaScreen(self.mouse, self.mouseLabel)
 
