@@ -1130,15 +1130,6 @@ class ToDo:
 			      isCrypted = todo.instClass.rootPasswordCrypted)
 
 	# XXX
-	#if todo.instClass.language:
-	    #langName = todo.language.getLangNameByNick(todo.instClass.language)
-            #if todo.instClass.langsupported != None:
-                #todo.language.setSupported([langName])
-            #if not todo.instClass.langdefault:
-                #todo.language.setDefault(langName)
-	    #instLangName = todo.instTimeLanguage.getLangNameByNick(todo.instClass.language)
-	    #todo.instTimeLanguage.setRuntimeLanguage(instLangName)
-
 	#if todo.instClass.langsupported != None:
             #if len (todo.instClass.langsupported) == 0:
                 #all = todo.language.getAllSupported()
@@ -1153,19 +1144,6 @@ class ToDo:
             #todo.language.setDefault(todo.language.getLangNameByNick(
                 #todo.instClass.langdefault))
             
-	# XXX
-	#if todo.instClass.keyboard:
-	    #todo.keyboard.set(todo.instClass.keyboard)
-            #if todo.instClass.keyboard != "us":
-                #xkb = todo.keyboard.getXKB ()
-
-                #if xkb:
-                    #apply (todo.x.setKeyboard, xkb)
-
-                    ## hack - apply to instclass preset if present as well
-                    #if (todo.instClass.x):
-                        #apply (todo.instClass.x.setKeyboard, xkb)
-
 	(bootProto, ip, netmask, gateway, nameserver, netDevice) = \
 		todo.instClass.getNetwork()
 	if bootProto:
