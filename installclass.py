@@ -280,18 +280,14 @@ class ClusterServer(InstallClass):
 /sbin/chkconfig --del named	 > /dev/null 2>&1
 /sbin/chkconfig --del identd	 > /dev/null 2>&1
 /sbin/chkconfig --del innd	 > /dev/null 2>&1
-/sbin/chkconfig --del inetd	 > /dev/null 2>&1
 /sbin/chkconfig --del linuxconf	 > /dev/null 2>&1
 /sbin/chkconfig --del lpd	 > /dev/null 2>&1
 /sbin/chkconfig --del nfs	 > /dev/null 2>&1
 /sbin/chkconfig --del nfslock	 > /dev/null 2>&1
 /sbin/chkconfig --del pulse	 > /dev/null 2>&1
-/sbin/chkconfig --del portmap	 > /dev/null 2>&1
 /sbin/chkconfig --del pvmd	 > /dev/null 2>&1
-/sbin/chkconfig --del rstatd	 > /dev/null 2>&1
 /sbin/chkconfig --del rusersd	 > /dev/null 2>&1
 /sbin/chkconfig --del rwalld	 > /dev/null 2>&1
-/sbin/chkconfig --del rwhod	 > /dev/null 2>&1
 /sbin/chkconfig --del smb	 > /dev/null 2>&1
 /sbin/chkconfig --del sendmail	 > /dev/null 2>&1
 /sbin/chkconfig --del snmpd	 > /dev/null 2>&1
@@ -310,6 +306,8 @@ class ClusterServer(InstallClass):
 #
 /bin/mv /etc/inetd.conf /etc/inetd.conf.orig
 /bin/cat /etc/inetd.conf.orig | /bin/sed -e 's,^[a-z],#\\0,' > /etc/inetd.conf
+/bin/sed -e 's/#shell/shell/' < /etc/inetd.conf > /etc/inetd.conf.orig
+/bin/sed -e 's/#login/login/' < /etc/inetd.conf.orig > /etc/inetd.conf
 
 # inetd needs a kick to reread the config file
 #
@@ -320,11 +318,16 @@ class ClusterServer(InstallClass):
 # A Few example lines are added to /etc/hosts.allow for referance
 # This is an extra safeguard that should be enabled in a secure enviroment
 #
+echo "# you could extend this file beyond the basic ALL:ALL" >> /etc/hosts.deny
+echo "# See man hosts.deny for more details" >> /etc/hosts.deny
 echo "ALL: ALL" >> /etc/hosts.deny
+
 echo "# These two are examples. Please edit these to" >> /etc/hosts.allow 
 echo "# your local setup requirements" >> /etc/hosts.allow
-echo "# in.telnetd: 127.0.0.1" >> /etc/hosts.allow
-echo "# in.ftp: host.domain domain domain 127.0.0.1" >> /etc/hosts.allow
+echo "# in.telnetd: myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
+echo "# in.ftp:     myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
+echo "# in.rshd:    myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
+echo "# in.rlogind: myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
 
 # Passwords by default should rotate on a regular basis
 # /etc/login.defs offers a mechanism to tweek the defaults
