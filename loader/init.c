@@ -528,6 +528,8 @@ int main(int argc, char **argv) {
     signal(SIGINT, SIG_IGN);
     signal(SIGTSTP, SIG_IGN);
 
+    umask(022);
+
     for (i = 1; i < argc; i++)
 	if (!strcmp (argv[i], "serial")) {
 	    isSerial = 1;
