@@ -21,7 +21,6 @@ class i18n:
     def __init__(self):
         try:
             self.cat = gettext.translation("anaconda")
-            print self.cat.charset()
         except IOError:
             self.cat = None
 

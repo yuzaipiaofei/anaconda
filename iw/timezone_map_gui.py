@@ -72,14 +72,13 @@ class TimezoneMap(gtk.VBox):
         self.statusContext = self.status.get_context_id("")
         self.pack_start(self.status, gtk.FALSE, gtk.FALSE)
 
-        self.columns = Enum("TZ", "COMMENTS", "INDEX")
+        self.columns = Enum("TZ", "COMMENTS", "ENTRY")
         
         # set up list of timezones
         self.listStore = gtk.ListStore(gobject.TYPE_STRING,
                                        gobject.TYPE_STRING,
-                                       gobject.TYPE_INT)
+                                       gobject.TYPE_PYOBJECT)
         
-        i = 0
         for entry in zonetab.getEntries():
             iter = self.listStore.append()
             self.listStore.set_value(iter, self.columns.TZ, entry.tz)
@@ -88,8 +87,7 @@ class TimezoneMap(gtk.VBox):
                                          entry.comments)
             else:
                 self.listStore.set_value(iter, self.columns.COMMENTS, "")
-            self.listStore.set_value(iter, self.columns.INDEX, i)
-            i+=1
+            self.listStore.set_value(iter, self.columns.ENTRY, entry)
             
             x, y = self.map2canvas(entry.lat, entry.long)
             marker = root.add(gnome.canvas.CanvasText, x=x, y=y,
@@ -175,11 +173,10 @@ class TimezoneMap(gtk.VBox):
         if skipList:
             return
 
-        index = self.zonetab.getEntries().index(self.currentEntry)
         iter = self.listStore.get_iter_root()
         next = 1
         while next:
-            if self.listStore.get_value(iter, self.columns.INDEX) == index:
+            if self.listStore.get_value(iter, self.columns.ENTRY) == self.currentEntry:
                 selection = self.listView.get_selection()
                 selection.unselect_all()
                 selection.select_iter(iter)
