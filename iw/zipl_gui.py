@@ -67,7 +67,7 @@ class ZiplWindow (InstallWindow):
 	defaultDevice = bl.images.getDefault()
         self.ignoreSignals = 0
 
-        box  = gtk.VBox(FALSE, 5)
+        box  = gtk.VBox(gtk.FALSE, 5)
         box.set_border_width(5)
         label = gtk.Label(_("The z/IPL Boot Loader will now be installed "
                            "on your system."
@@ -89,21 +89,21 @@ class ZiplWindow (InstallWindow):
                            "You can now enter any additional kernel parameters "
                            "which your machine or your setup may require."))
         label.set_size_request(500, -1)
-        label.set_line_wrap(TRUE)
+        label.set_line_wrap(gtk.TRUE)
         label.set_alignment(0.0, 0.0)
         label.set_padding(50,50)
-        box.pack_start(label, FALSE)
+        box.pack_start(label, gtk.FALSE)
 
-        box.pack_start (gtk.HSeparator (), FALSE)
+        box.pack_start (gtk.HSeparator (), gtk.FALSE)
 
         label = gtk.Label(_("Kernel Parameters") + ":")
         label.set_alignment(0.0, 0.5)
         self.appendEntry = gtk.Entry()
         if bl.args and bl.args.get():
             self.appendEntry.set_text(bl.args.get())
-        hbox = gtk.HBox(FALSE, 5)
-        hbox.pack_start(label, FALSE)
+        hbox = gtk.HBox(gtk.FALSE, 5)
+        hbox.pack_start(label, gtk.FALSE)
         hbox.pack_start(self.appendEntry)
-        box.pack_start(hbox, FALSE)
+        box.pack_start(hbox, gtk.FALSE)
 
         return box
