@@ -334,11 +334,12 @@ class InstallInterface:
 
 	self.dispatch = dispatch
 
-        if flags.setupFilesystems:
-            try:
-                kb.setMouseKeys (1)
-            except:
-                pass
+	if iutil.getArch() != "s390x":
+            if flags.setupFilesystems:
+                try:
+                    kb.setMouseKeys (1)
+                except SystemError:
+                    pass
 
         if id.keyboard and not id.x_already_set:
 	    info = id.keyboard.getXKB()

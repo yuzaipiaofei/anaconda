@@ -513,7 +513,7 @@ makeinitrd() {
           cp -pRf $IMGPATH/usr/lib/locale/$loc/* \
 		$MBD_DIR/usr/lib/locale/$loc/
        done
-       ln -sf $MBD_DIR/usr/lib/locale/ja_JP.eucjp ja_JP
+       ln -sf ja_JP.eucjp $MBD_DIR/usr/lib/locale/ja_JP
        cp -f $IMGPATH/etc/services $MBD_DIR/etc/
        #cp -f $IMGPATH/etc/motd $MBD_DIR/etc/
        #cp -f $IMGPATH/etc/issue.net $MBD_DIR/etc/
