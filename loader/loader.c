@@ -1439,9 +1439,11 @@ static int parseCmdLineFlags(int flags, char * cmdLine, char ** ksSource) {
         else if (!strncasecmp(argv[i], "ks=hd:", 6)) {
 	    flags |= LOADER_FLAGS_KSHD;
 	    *ksSource = argv[i] + 6;
-	}
-        else if (!strncasecmp(argv[i], "display=", 8))
+	} else if (!strncasecmp(argv[i], "display=", 8))
 	    setenv("DISPLAY", argv[i] + 8, 1);
+        else if (!strncasecmp(argv[i], "lang=", 5)) {
+	    setLanguage (argv[i] + 5);
+        }
     }
 
     return flags;
