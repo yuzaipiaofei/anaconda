@@ -800,9 +800,9 @@ class s390BootloaderInfo(bootloaderInfo):
 
 	    f.write('[%s]\n' % (label))
 	    f.write('\ttarget=%s\n' % (self.kernelLocation))
-	    f.write('\timage=%s' % (kernelFile))
+	    f.write('\timage=%s\n' % (kernelFile))
 	    if self.args.get():
-		f.write('parameters="root=%s %s"\n' % (rootDev, self.args.get()))
+		f.write('\tparameters="root=%s %s"\n' % (rootDev, self.args.get()))
 	    f.write('\n')
 
 	f.close()
