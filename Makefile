@@ -11,7 +11,7 @@ endif
 
 SUBDIRSHD = balkan isys collage $(MINISLANG) loader po text-help \
 	    textw utils scripts bootdisk installclasses \
-	    keymaps fonts gnome-map iw help pixmaps $(STUBS)
+	    keymaps fonts gnome-map iw help pixmaps $(STUBS) iconvmodule
 SUBDIRS = $(SUBDIRSHD)
 
 ifeq (i386, $(ARCH))

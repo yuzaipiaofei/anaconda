@@ -282,7 +282,6 @@ class InstallInterface:
             self.runres = "800x600"
         else:
             self.runres = "640x480"
-        self.runres = "640x480"
 
     def __del__ (self):
         pass
