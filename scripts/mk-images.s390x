@@ -120,7 +120,12 @@ makeS390initrd() {
 
     cat > $MBD_DIR/etc/passwd << EOF
     root::0:0:root:/tmp:/bin/bash
+    sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
 EOF
+    echo "sshd:x:74:" >> $MBD_DIR/etc/group
+
+    mkdir -p $MBD_DIR/var/empty/sshd
+    chmod 111 $MBD_DIR/var/empty/sshd
 
     install -s -m 755 $LOADERBINDIR/$LOADERBIN $MBD_DIR/sbin/loaderbin
     install -s -m 755 $LOADERBINDIR/load_anaconda $MBD_DIR/sbin/loader

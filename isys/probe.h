@@ -22,6 +22,7 @@ typedef int (*kdFilterType)(const struct kddevice * dev);
 
 struct knownDevices kdInit(void);
 int kdFindNetList(struct knownDevices * devices, int code);
+int kdFindDasdList(struct knownDevices * devices, int code);
 int kdFindIdeList(struct knownDevices * devices, int code);
 int kdFindFilteredIdeList(struct knownDevices * devices, int code, 
 			  kdFilterType filter);

@@ -3298,6 +3298,13 @@ static void ideSetup(moduleList modLoaded, moduleDeps modDeps,
     kdFindIdeList(kd, 0);
 }
 
+static void dasdSetup(moduleList modLoaded, moduleDeps modDeps,
+               moduleInfoSet modInfo, int flags,
+               struct knownDevices * kd) {
+    mlLoadModuleSet("dasd_eckd_mod:dasd_mod", modLoaded, modDeps, modInfo, flags);
+    kdFindDasdList(kd, 0);
+}
+
 static void checkForRam(int flags) {
     if (!FL_EXPERT(flags) && (totalMemory() < MIN_RAM)) {
 	char *buf;
@@ -3546,7 +3553,10 @@ int main(int argc, char ** argv) {
 	flags |= LOADER_FLAGS_KICKSTART;
     }
 #else
-	 mlLoadModuleSet("cramfs:loop", modLoaded, modDeps, modInfo, flags);
+    mlLoadModuleSet("cramfs:loop", modLoaded, modDeps, modInfo, flags);
+    if (!continuing) {
+	 dasdSetup(modLoaded, modDeps, modInfo, flags, &kd);
+    }
 #endif
 
 #ifdef INCLUDE_KON
@@ -3576,6 +3586,7 @@ int main(int argc, char ** argv) {
        inserted, but they're *not* PCMCIA */
     kdFindIdeList(&kd, continuing ? 0 : CODE_PCMCIA);
     kdFindScsiList(&kd, continuing ? 0 : CODE_PCMCIA);
+    kdFindDasdList(&kd, continuing ? 0 : CODE_PCMCIA);
     kdFindNetList(&kd, continuing ? 0 : CODE_PCMCIA);
 #endif
 
@@ -3742,7 +3753,6 @@ int main(int argc, char ** argv) {
 	exit(1);
     }
 
-#if !defined (__s390__) && !defined (__s390x__)
     /* merge in drivers we know about from a driver disk so we probe things
        properly */
     ddReadDriverDiskModInfo(modInfo);
@@ -3754,7 +3764,7 @@ int main(int argc, char ** argv) {
        hurt. */
     ideSetup(modLoaded, modDeps, modInfo, flags, &kd);
     scsiSetup(modLoaded, modDeps, modInfo, flags, &kd);
-#endif
+    dasdSetup(modLoaded, modDeps, modInfo, flags, &kd);
 
     busProbe(modInfo, modLoaded, modDeps, 0, &kd, flags);
 

@@ -151,6 +151,42 @@ bye:
     return 0;
 }
 
+int kdFindDasdList(struct knownDevices * devices, int code) {
+  char format[10], devname[10], active[10];
+  char *line;
+  int ret;
+  FILE *fd;
+
+  struct kddevice device;
+
+  fd = fopen ("/proc/dasd/devices", "r");
+  if(!fd) {
+    fprintf(stderr, "Fehler: %s\n", strerror(errno));
+    return 0;
+  }
+
+  line = (char *)malloc(100*sizeof(char));
+  while (fgets (line, 100, fd) != NULL) {
+      ret = sscanf (line,
+	       "%*x(%[A-Za-z]) at ( %*d: %*d) is %s : %s at blocksize: %*d, %*d blocks, %*d MB",
+		format, devname, active);
+      if ((ret != 3) || (strncmp("active", active, 6) != 0)) {
+	  continue;
+      }
+      if(!deviceKnown(devices, devname)) {
+          device.code = code;
+          device.class = CLASS_HD;
+          device.name = strdup(devname);
+          device.model = strdup(format);
+          addDevice(devices, device);
+       }
+  }
+  if (fd) fclose(fd);
+  qsort(devices->known, devices->numKnown, sizeof(*devices->known),
+        sortDevices);
+  return 0;
+}
+
 int kdFindIdeList(struct knownDevices * devices, int code) {
     return kdFindFilteredIdeList(devices, code, NULL);
 }
@@ -403,8 +439,7 @@ bye:
     return val;
 }
 
-#if defined (__s390__) || defined (__s390x__)
-int kdFindDasdList(struct knownDevices * devices, int code) {
+int old_kdFindDasdList(struct knownDevices * devices, int code) {
    /* patch for s390 by Oliver Paukstadt <oliver.paukstadt@millenux.com> */
    /* based upon code by Erik Tews <erik.tews@gmx.net> */
    FILE * fd;
@@ -418,7 +453,7 @@ int kdFindDasdList(struct knownDevices * devices, int code) {
    /* a system without /proc/dasd/devices is nothing to worry about */
 
    fd = fopen ("/proc/dasd/devices", "r");
-   if (fd == NULL) return 1;
+   if (!fd) return 1;
 
    /* Every line in this file is a harddisk */
    while ((fgets(line, 190, fd)) != NULL) {
@@ -442,7 +477,6 @@ int kdFindDasdList(struct knownDevices * devices, int code) {
 	sortDevices);
    return 0;
 }
-#endif
 
 struct knownDevices kdInit(void) {
     struct knownDevices kd;
