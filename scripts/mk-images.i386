@@ -131,14 +131,14 @@ NETWORKMODULES="$COMMONMODULES 3c509 3c59x 3c90x 8390 ac3200 at1700 de4x5
 makebootdisk --bootdisksize 1440 \
 	     --imagename ja/boot.img \
 	     --initrdflags '--japanese
-			    --initrdsize 2100 \
+			    --initrdsize 2600 \
 			    --loaderbin loader-local-kon \
 			    --modules "$LOCALMODULES"'
 
 makebootdisk --bootdisksize 1440 \
 	     --imagename ja/bootnet.img \
 	     --initrdflags '--japanese
-			    --initrdsize 2100 \
+			    --initrdsize 2600 \
 			    --loaderbin loader-network-kon \
 		 	    --modules "$NETWORKMODULES"'
 
@@ -146,7 +146,7 @@ makebootdisk --imagename ja/pcmcia.img \
 	     --bootdisksize 1440 \
 	     --initrdflags '--japanese
 			    --pcmcia \
-		     	    --initrdsize 2100 \
+		     	    --initrdsize 2600 \
 			    --loaderbin loader-pcmcia-kon \
 			    --modules "$PCMCIAMODULES nfs vfat"'
 
@@ -157,5 +157,5 @@ makedriverdisk "Parallel port IDE Drivers" "paride" "parport_pc parport pcd pari
 makemainmodules "=scsi =net $SECSTAGE"
 
 makeinstimage --size1 3100 --size2 4096 "netstg" "=scsi $SECSTAGE"
-makeinstimage --size1 2900 --size2 4096 "hdstg" "=net $SECSTAGE"
+makeinstimage --size1 3100 --size2 4096 "hdstg" "=net $SECSTAGE"
 makemainimage "stage2"
