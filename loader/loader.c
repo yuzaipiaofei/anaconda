@@ -450,6 +450,7 @@ int busProbe(moduleInfoSet modInfo, moduleList modLoaded, moduleDeps modDeps,
 
 	    kdFindScsiList(kd, 0);
 	    kdFindNetList(kd, 0);
+	    kdFindDasdList(kd, 0);
 	} else 
 	    logMessage("found nothing");
     }
@@ -3283,11 +3284,53 @@ static void ideSetup(moduleList modLoaded, moduleDeps modDeps,
     kdFindIdeList(kd, 0);
 }
 
+/* Load dasd modules probeonly, then parse proc to find active DASDs */
+/* Reload dasd_mod with correct range o DASD ports */
 static void dasdSetup(moduleList modLoaded, moduleDeps modDeps,
-               moduleInfoSet modInfo, int flags,
-               struct knownDevices * kd) {
-    mlLoadModuleSet("dasd_eckd_mod:dasd_mod", modLoaded, modDeps, modInfo, flags);
-    kdFindDasdList(kd, 0);
+		moduleInfoSet modInfo, int flags,
+		struct knownDevices * kd) {
+	char port[6];
+	char *line;
+	FILE *fd;
+	char **dasd_parms = NULL;
+	char *parms = NULL;
+
+	mlLoadModuleSet("dasd_eckd_mod:dasd_mod", modLoaded, modDeps, modInfo, flags);
+	fd = fopen ("/proc/dasd/devices", "r");
+	if(!fd) {
+		fprintf(stderr, "Fehler: %s\n", strerror(errno));
+		return;
+	}
+	line = (char *)malloc(100*sizeof(char));
+	while (fgets (line, 100, fd) != NULL) {
+		if ((strstr(line, "accepted") == NULL)) {
+			continue;
+		}
+		if(sscanf (line, "%[A-Za-z0-9](%*s", port)) {
+			if(!parms) {
+				parms = (char *)malloc(strlen("dasd=") + strlen(port) + 1);
+				strcpy(parms,"dasd=");
+				strcat(parms, port);
+			} else {
+				parms = realloc(parms, strlen(parms) + strlen(port) + 2);   /* portnumber + ',' */
+				strcat(parms, ",");
+				strcat(parms, port);
+			}
+		}
+	}
+	if (fd) fclose(fd);
+
+	if(parms) {
+		dasd_parms = malloc(sizeof(*dasd_parms) * 2);
+		dasd_parms[0] = parms;
+		dasd_parms[1] = NULL;
+		simpleRemoveLoadedModule("dasd_eckd_mod", modLoaded, flags);
+		simpleRemoveLoadedModule("dasd_mod", modLoaded, flags);
+		reloadUnloadedModule("dasd_mod", NULL, modLoaded, dasd_parms, flags);
+		reloadUnloadedModule("dasd_eckd_mod", NULL, modLoaded, dasd_parms, flags);
+		free(parms);
+		free(dasd_parms);
+	}
 }
 
 static void checkForRam(int flags) {
@@ -3571,8 +3614,8 @@ int main(int argc, char ** argv) {
        inserted, but they're *not* PCMCIA */
     kdFindIdeList(&kd, continuing ? 0 : CODE_PCMCIA);
     kdFindScsiList(&kd, continuing ? 0 : CODE_PCMCIA);
-    kdFindDasdList(&kd, continuing ? 0 : CODE_PCMCIA);
     kdFindNetList(&kd, continuing ? 0 : CODE_PCMCIA);
+    kdFindDasdList(&kd, continuing ? 0 : CODE_PCMCIA);
 #endif
 
 #if !defined (__s390__) && !defined (__s390x__)
@@ -3749,7 +3792,6 @@ int main(int argc, char ** argv) {
        hurt. */
     ideSetup(modLoaded, modDeps, modInfo, flags, &kd);
     scsiSetup(modLoaded, modDeps, modInfo, flags, &kd);
-    dasdSetup(modLoaded, modDeps, modInfo, flags, &kd);
 
     busProbe(modInfo, modLoaded, modDeps, 0, &kd, flags);
 

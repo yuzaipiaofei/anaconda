@@ -16,6 +16,7 @@ struct knownDevices {
     int numKnownAlloced;
 };
 
+
 /* 0 if the device should be filtered from the list, 1 if it should be 
    included */
 typedef int (*kdFilterType)(const struct kddevice * dev);
