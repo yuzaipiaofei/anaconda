@@ -3022,8 +3022,8 @@ msgid "DNS Name Server"
 msgstr "DNS ネームサーバ"
 
 # ../comps/comps-master:570
-msgid "Postgres (SQL) Server"
-msgstr "Postgres SQLサーバ"
+msgid "SQL Server"
+msgstr "SQLサーバ"
 
 # ../comps/comps-master:577
 msgid "Network Management Workstation"
