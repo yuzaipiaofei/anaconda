@@ -38,12 +38,9 @@ startinetd()
 	/sbin/sshd
    while : ; do
 		echo
-		#echo "Please connect now to $IPADDR and start 'rhsetup' or start"
-		#echo "'rhsetup nointeractive' from this shell."
-		echo "Please connect now to $IPADDR and start 'loader' from this shell."
+		echo "Please connect now to $IPADDR and start 'rhsetup' or 'loader' from this shell."
 		/bin/sh -l
 	done
-	#	/sbin/mingetty console --noclear
 }
 
 
@@ -52,9 +49,8 @@ echo "Starting the S390 initrd to configure networking. Version is 0.32."
 PATH="/bin:/sbin:/usr/bin:/usr/sbin"
 export PATH
 
-#mount -n -o remount,rw /
 mount -t proc none /proc
-mount -t devpts /dev/pts /dev/pts 
+mount -t devpts /dev/pts /dev/pts
 
 ifconfig lo 127.0.0.1 netmask 255.0.0.0
 route add -host 127.0.0.1 dev lo
@@ -209,66 +205,6 @@ DNS=`echo $DNS |sed -e 's/:/ /g'`
 SEARCHDNS=`echo $SEARCHDNS |sed -e 's/:/ /g'`
 for i in "$SEARCHDNS"; do echo "search $i"; done >> /etc/resolv.conf
 for i in "$DNS"; do echo "nameserver $i"; done   >> /etc/resolv.conf
- 
-# transfer options into install environment
-cat >> /etc/profile <<EOF
-CHANDEV="$CHANDEV"
-HOSTNAME="$HNAME"
-DEVICE="$DEVICE"
-NETTYPE="$NETTYPE"
-IPADDR="$IPADDR"
-GATEWAY="$GATEWAY"
-MTU="$MTU"
-NETWORKIP="$NETWORKIP"
-NETMASK="$NETMASK"
-BROADCAST="$BROADCAST"
-INSTALL="$INSTALL"
-INTERACTIVE="$INTERACTIVE"
-DNS="$DNS"
-SEARCHDNS="$SEARCHDNS"
-RPMSERVER="$RPMSERVER"
-MOUNTS="$MOUNTS"
-FORCEDASDFORMAT="$FORCEDASDFORMAT"
-SWAP="$SWAP"
-DASD="$DASD"
-LCS="$LCS"
-QETH="$QETH"
-IUCV="$IUCV"
-CTC="$CTC"
-DTZ="$DTZ"
-ROOTPW="$ROOTPW"
-CROOTPW="$CROOTPW"
-export CHANDEV
-export HNAME DEVICE NETTYPE IPADDR GATEWAY MTU INTERACTIVE
-export NETWORKIP NETMASK BROADCAST INSTALL DNS SEARCHDNS FORCEDASDFORMAT
-export RPMSERVER MOUNTS SWAP DASD LCS QETH IUCV DTZ ROOTPW CROOTPW
-if [ -n "\$SSH_TTY" ]; then
-	echo "Please start the program 'loader' to proceed with the installation"
-	echo 
-fi
-EOF
-# immediately read it in again to export these into the shell below
-. /etc/profile
-
-[ -n "$DEBUG" ] && debugshell
-
-get_all_dasds()
-{
-	unset online_dasds
-	TMP="`grep ':active' < /proc/dasd/devices | grep -v '\(^019\|none\)'`"
-	for i in "$TMP"; do 
-		online_dasds="`echo "$i" | 
-			sed -e 's/.*   \(.*\):.*:.*/\/dev\/\1/'` $online_dasds"
-	done
-	if [ -z "$online_dasds" ]; then
-		echo "No DASD devices found. Please check your setup."
-		return 1
-	else
-		echo "DASD devices "
-		echo "$online_dasds found."
-		return 0
-	fi
-}
 
 # Probe for DASD devices
 if [ -z "$DASD" ]; then
@@ -319,6 +255,51 @@ if [ -n "$DASD" ]; then
 	 insmod dasd_mod.o dasd=$DASD
 	 insmod dasd_eckd_mod.o
 fi
+ 
+# transfer options into install environment
+cat >> /etc/profile <<EOF
+CHANDEV="$CHANDEV"
+HOSTNAME="$HNAME"
+DEVICE="$DEVICE"
+NETTYPE="$NETTYPE"
+IPADDR="$IPADDR"
+GATEWAY="$GATEWAY"
+MTU="$MTU"
+NETWORKIP="$NETWORKIP"
+NETMASK="$NETMASK"
+BROADCAST="$BROADCAST"
+INSTALL="$INSTALL"
+INTERACTIVE="$INTERACTIVE"
+DNS="$DNS"
+SEARCHDNS="$SEARCHDNS"
+RPMSERVER="$RPMSERVER"
+MOUNTS="$MOUNTS"
+FORCEDASDFORMAT="$FORCEDASDFORMAT"
+SWAP="$SWAP"
+DASD="$DASD"
+LCS="$LCS"
+QETH="$QETH"
+IUCV="$IUCV"
+CTC="$CTC"
+DTZ="$DTZ"
+ROOTPW="$ROOTPW"
+CROOTPW="$CROOTPW"
+VERBOSEWGET="$VERBOSEWGET"
+export CHANDEV
+export HOSTNAME DEVICE NETTYPE IPADDR GATEWAY MTU INTERACTIVE VERBOSEWGET
+export NETWORKIP NETMASK BROADCAST INSTALL DNS SEARCHDNS FORCEDASDFORMAT
+export RPMSERVER MOUNTS SWAP DASD LCS QETH IUCV DTZ ROOTPW CROOTPW
+if [ -n "\$SSH_TTY" ]; then
+	echo
+	echo "Please start the program 'rhsetup' or 'loader' to proceed with "
+	echo "the installation."
+	echo
+fi
+EOF
+# immediately read it in again to export these into the shell below
+. /etc/profile
+
+[ -n "$DEBUG" ] && debugshell
 
 if [ ":$INTERACTIVE" = ":0" ]; then
 	rhsetup nointeractive || startinetd
@@ -328,7 +309,6 @@ fi
 
 umount -a
 umount /proc
-#umount /
 
 exit 0
 # vim:ts=3:sw=3
