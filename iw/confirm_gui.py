@@ -64,7 +64,7 @@ class InstallConfirmWindow (ConfirmWindow):
 	    return ConfirmWindow.getScreen(self,
 	        _("Click next to begin installation of Red Hat Linux."),
                 text)
-        else
+        else:
 	    return ConfirmWindow.getScreen(self,
 	        _("Click next to begin installation of Red Hat Linux."),
 	        text + kstext)
