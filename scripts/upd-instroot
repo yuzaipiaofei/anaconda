@@ -121,7 +121,7 @@ mkdir -p $DESTGR
 
 PACKAGES="glibc glibc-common setup openssl python python2 newt libtermcap zlib
 	 ash kon2 e2fsprogs util-linux raidtools popt mount procps rpm
-	 XFree86 XFree86-libs Xconfigurator anaconda anaconda-runtime 
+	 XFree86 XFree86-libs anaconda anaconda-runtime 
          kudzu-devel kudzu hwdata db3 bzip2 bzip2-libs dosfstools pciutils 
 	 reiserfs-utils parted busybox-anaconda rpm404-python anaconda-help booty
          hdparm lvm librpm404 rhpl libxml2 libxml2-python rdate"
@@ -158,7 +158,7 @@ PACKAGESGR="anaconda XFree86-libs imlib libpng libtiff libjpeg
            ftp readline gzip popt specspo util-linux rpm librpm404
            open grep net-tools traceroute tar procps textutils sed
            ncurses bash cpio mt-st iputils sh-utils
-           XFree86 Xconfigurator gnome-python2 pygtk2 gdk-pixbuf 
+           XFree86 gnome-python2 pygtk2 gdk-pixbuf 
            XFree86-KOI8-R XFree86-KOI8-R-75dpi-fonts pciutils pam 
            reiserfs-utils atk pango freetype gnome-python2-canvas 
            libgnomecanvas libart_lgpl vte
@@ -305,7 +305,6 @@ sbin/vgrename
 sbin/vgscan
 sbin/vgsplit
 usr/X11R6/lib/X11/Cards
-usr/X11R6/share/Xconfigurator/MonitorsDB
 usr/bin/python
 usr/bin/python2.2
 usr/bin/rdate
@@ -439,8 +438,6 @@ usr/lib/gconv/EUC-JP.so
 usr/lib/gconv/libJIS.so
 usr/lib/gconv/gconv-modules
 usr/X11R6/bin/xauth
-usr/X11R6/lib/libXi.so*
-usr/X11R6/lib/libX11.so*
 usr/share/anaconda/*
 EOF
 fi
@@ -544,7 +541,6 @@ usr/X11R6/lib/libXpm*
 usr/X11R6/lib/libXrender*
 usr/X11R6/lib/libXt*
 usr/X11R6/lib/modules/*
-usr/X11R6/share/Xconfigurator/pixmaps/*
 usr/bin/chattr*
 usr/bin/ftp
 usr/bin/fc-cache
