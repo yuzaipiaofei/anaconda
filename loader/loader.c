@@ -1087,7 +1087,6 @@ static char * mountHardDrive(struct installMethod * method,
 
     while (!done) {
 	numPartitions = 0;
-#if !defined (__s390__) && !defined (__s390x__)
 	for (i = 0; i < kd->numKnown; i++) {
 	    if (kd->known[i].class == CLASS_HD) {
 		devMakeInode(kd->known[i].name, "/tmp/hddevice");
@@ -1151,7 +1150,7 @@ static char * mountHardDrive(struct installMethod * method,
 	    continue;
 	}
 
-#else
+#if !defined (__s390__) && !defined (__s390x__)
 	/* s390 */
 	memset(&ui, 0, sizeof(ui));
         memset(&netDev, 0, sizeof(netDev));
@@ -1164,20 +1163,6 @@ static char * mountHardDrive(struct installMethod * method,
                 return NULL;
 	}
 	setupRemote(&ui);
-	for(c = 'a'; c <= 'z'; c++) {
-	  for(i = 1; i < 4; i++) {
-	    char dev[7];
-	    sprintf(dev, "dasd%c%d", c, i);
-	    devMakeInode(dev, "/tmp/hddevice");
-	    fd = open("/tmp/hddevice", O_RDONLY);
-	    if (fd >= 0) {
-	      close(fd);
-	      sprintf(partitions[numPartitions].name, "/dev/%s", dev);
-	      partitions[numPartitions].type = BALKAN_PART_EXT2;
-	      numPartitions++;					
-	    }
-	  }
-        }
 	mlLoadModule("isofs", modLoaded, *modDepsPtr,
                  NULL, modInfo, flags);
 
