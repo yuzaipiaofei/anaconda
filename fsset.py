@@ -1437,6 +1437,9 @@ class FileSystemSet:
         if isys.isEMDLoaded():
             for disk in ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
                          'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'):
+                dev = "emd%s" %(disk, )
+                if not os.access("%s/dev/%s" %(instPath, dev), os.R_OK):
+                    isys.makeDevInode(dev, "%s/dev/%s" %(instPath, dev))
                 for part in range(1, 16):
                     dev = "emd%s%s" %(disk, part)
                     if not os.access("%s/dev/%s" %(instPath, dev), os.R_OK):
