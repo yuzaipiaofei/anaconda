@@ -22,6 +22,7 @@ from iw_gui import *
 from rhpl.translate import _, N_
 
 from bootlocwidget import BootloaderLocationWidget
+from blpasswidget import BootloaderPasswordWidget
 
 class AdvancedBootloaderWindow(InstallWindow):
     windowTitle = N_("Advanced Boot Loader Configuration")
@@ -63,6 +64,10 @@ class AdvancedBootloaderWindow(InstallWindow):
         # set the drive order
         self.bl.drivelist = self.blloc.getDriveOrder()
 
+        # set the password
+        self.bl.setPassword(self.blpass.getPassword(), isCrypted = 0)
+
+
 
     # set up the vbox with force lba32 and kernel append
     def setupOptionsVbox(self):
@@ -79,7 +84,7 @@ class AdvancedBootloaderWindow(InstallWindow):
 	label.set_alignment(0.0, 0.0)
         self.options_vbox.pack_start(label, gtk.FALSE)
 
-        label = gui.MnemonicLabel(_("_General kernel parameters"))
+        label = gui.MnemonicLabel(_("_General kernel parameters: "))
         self.appendEntry = gtk.Entry()
         label.set_mnemonic_widget(self.appendEntry)
         args = self.bl.args.get()
@@ -98,6 +103,14 @@ class AdvancedBootloaderWindow(InstallWindow):
         self.bl = bl
         self.intf = dispatch.intf
 
+        if self.bl.getPassword():
+            self.usePass = 1
+            self.password = self.bl.getPassword()
+        else:
+            self.usePass = 0
+            self.password = None
+
+
         thebox = gtk.VBox (gtk.FALSE, 10)
 
         # boot loader location bits (mbr vs boot, drive order)
@@ -110,6 +123,16 @@ class AdvancedBootloaderWindow(InstallWindow):
         # some optional things
         self.setupOptionsVbox()
         thebox.pack_start(self.options_vbox, gtk.FALSE)
+
+
+        # control whether or not there's a boot loader password and what it is
+        self.blpass = BootloaderPasswordWidget(self.bl, self.parent, self.intf)
+
+
+        thebox.pack_start(gtk.HSeparator(), gtk.FALSE)
+        thebox.pack_start(self.blpass.getWidget(), gtk.FALSE)
+
+
 
 
         return thebox

@@ -22,7 +22,6 @@ from iw_gui import *
 from rhpl.translate import _, N_
 
 from osbootwidget import OSBootWidget
-from blpasswidget import BootloaderPasswordWidget
 
 
 class MainBootloaderWindow(InstallWindow):
@@ -55,9 +54,6 @@ class MainBootloaderWindow(InstallWindow):
                 self.bl.setUseGrub(1)
             else:
                 self.bl.setUseGrub(0)
-
-        # set the password
-        self.bl.setPassword(self.blpass.getPassword(), isCrypted = 0)
 
         # set the bootloader images based on what's in our list
         self.oslist.setBootloaderImages()
@@ -171,7 +167,7 @@ class MainBootloaderWindow(InstallWindow):
             self.bllabel.set_text(_("No boot loader will be installed."))
             active = gtk.FALSE
 
-        for widget in [ self.oslist.getWidget(), self.blpass.getWidget(),
+        for widget in [ self.oslist.getWidget(), 
                         self.advanced ]:
             widget.set_sensitive(active)
             
@@ -180,13 +176,6 @@ class MainBootloaderWindow(InstallWindow):
         self.dispatch = dispatch
         self.bl = bl
         self.intf = dispatch.intf
-
-        if self.bl.getPassword():
-            self.usePass = 1
-            self.password = self.bl.getPassword()
-        else:
-            self.usePass = 0
-            self.password = None
 
         thebox = gtk.VBox (gtk.FALSE, 10)
         spacer = gtk.Label("")
@@ -238,12 +227,6 @@ class MainBootloaderWindow(InstallWindow):
         self.oslist = OSBootWidget(bl, fsset, diskSet, self.parent,
                                    self.intf, self.blname)
         thebox.pack_start(self.oslist.getWidget(), gtk.FALSE)
-
-        thebox.pack_start (gtk.HSeparator(), gtk.FALSE)
-
-        # control whether or not there's a boot loader password and what it is
-        self.blpass = BootloaderPasswordWidget(bl, self.parent, self.intf)
-        thebox.pack_start(self.blpass.getWidget(), gtk.FALSE)
 
         thebox.pack_start (gtk.HSeparator(), gtk.FALSE)
 
