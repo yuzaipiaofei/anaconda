@@ -375,7 +375,6 @@ class ToDo:
 	return 
 
 	todo.instClass = instClass
-	todo.hostname = todo.instClass.getHostname()
 	todo.updateInstClassComps()
 	( enable, policy, trusts, ports, dhcp, ssh,
 	  telnet, smtp, http, ftp ) = todo.instClass.getFirewall()
