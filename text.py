@@ -74,6 +74,15 @@ class LanguageWindow:
             newlangs.append(lang[:2])
         cat.setlangs (newlangs)
         todo.language.set (choice)
+        if lang[:2] == "ja":
+            if not isys.isPsudoTTY(0):
+                # we're not running KON yet, lets fire it up
+                global savedargs
+                savedargs.append ("--lang ja_JP")
+                sys.environ["ANACONDAARGS"] = string.join(savedargs)
+                args = [ "kon", "-e", "/usr/bin/anaconda" ]
+                os.execv ("/sbin/loader", args)
+                
 	if not todo.serial:
 	    map = todo.language.getFontMap(choice)
 	    font = todo.language.getFontFile(choice)

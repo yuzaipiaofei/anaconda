@@ -42,9 +42,12 @@ from exception import handleException
 
 setverPath = None
 
-
+if os.environ.has_key ("ANACONDAARGS"):
+    theargs = string.split (os.environ["ANACONDAARGS"])
+else:
+    theargs = sys.argv[1:]
 try:
-    (args, extra) = isys.getopt(sys.argv[1:], 'GTRxtdr:fm:', 
+    (args, extra) = isys.getopt(theargs, 'GTRxtdr:fm:', 
           [ 'gui', 'text', 'reconfig', 'xmode', 'test', 'debug', 'nofallback',
             'method=', 'rootpath=',
 	    'testpath=', 'mountfs', 'traceonly', 'kickstart=',
