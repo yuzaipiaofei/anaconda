@@ -260,6 +260,89 @@ class ClusterServer(InstallClass):
 	self.addToSkipList("package-selection")
 	self.addToSkipList("authentication")
 	self.setMakeBootdisk(1)
+	self.setPostScript(
+"""
+# The purpose of this script is to turn off any and all non
+# essential services. As we are flagging security as an issue
+# we will turn off almost all network services. The LVS routers
+# themselves should not provide services but masqarade those
+# services through to the second layer of hosts.
+# Consequently it is now the responsibility of the system administrator
+# to enable services on the LVS boxes that he/she deems fit and proper.
+
+# For LVS use, the following services should be turned off
+# They should not be automatically started
+# the output from this is directed to null for services that may not
+# be installed
+# 
+/sbin/chkconfig --del netfs	 > /dev/null 2>&1
+/sbin/chkconfig --del xfs	 > /dev/null 2>&1
+/sbin/chkconfig --del named	 > /dev/null 2>&1
+/sbin/chkconfig --del identd	 > /dev/null 2>&1
+/sbin/chkconfig --del innd	 > /dev/null 2>&1
+/sbin/chkconfig --del inetd	 > /dev/null 2>&1
+/sbin/chkconfig --del linuxconf	 > /dev/null 2>&1
+/sbin/chkconfig --del lpd	 > /dev/null 2>&1
+/sbin/chkconfig --del nfs	 > /dev/null 2>&1
+/sbin/chkconfig --del nfslock	 > /dev/null 2>&1
+/sbin/chkconfig --del pulse	 > /dev/null 2>&1
+/sbin/chkconfig --del portmap	 > /dev/null 2>&1
+/sbin/chkconfig --del pvmd	 > /dev/null 2>&1
+/sbin/chkconfig --del rstatd	 > /dev/null 2>&1
+/sbin/chkconfig --del rusersd	 > /dev/null 2>&1
+/sbin/chkconfig --del rwalld	 > /dev/null 2>&1
+/sbin/chkconfig --del rwhod	 > /dev/null 2>&1
+/sbin/chkconfig --del smb	 > /dev/null 2>&1
+/sbin/chkconfig --del sendmail	 > /dev/null 2>&1
+/sbin/chkconfig --del snmpd	 > /dev/null 2>&1
+/sbin/chkconfig --del ypbind	 > /dev/null 2>&1
+/sbin/chkconfig --del yppasswdd	 > /dev/null 2>&1
+/sbin/chkconfig --del ypserv	 > /dev/null 2>&1
+/sbin/chkconfig --del ldap	 > /dev/null 2>&1
+/sbin/chkconfig --del autofs	 > /dev/null 2>&1
+/sbin/chkconfig --del pcmcia	 > /dev/null 2>&1
+/sbin/chkconfig --del mars-nwe	 > /dev/null 2>&1
+
+# I honestly can't see a reason to let any service run
+# even telnet. As such, comment out ALL services
+# but leave it in such a manner that the inetd.conf entries can
+# be easily reenabled
+#
+/bin/mv /etc/inetd.conf /etc/inetd.conf.orig
+/bin/sed -e 's/^\([^#]\)/#\1/' < /etc/inetd.conf.orig > /etc/inetd.conf
+
+# inetd needs a kick to reread the config file
+#
+/usr/bin/killall -HUP inetd
+
+# TCP Wrappers
+# Even if services are turned on, we should deny EVERYTHING by default
+# A Few example lines are added to /etc/hosts.allow for referance
+# This is an extra safeguard that should be enabled in a secure enviroment
+#
+echo "ALL: ALL" >> /etc/hosts.deny
+echo "# These two are examples. Please edit these to" >> /etc/hosts.allow 
+echo "# your local setup requirements" >> /etc/hosts.allow
+echo "# in.telnetd: 127.0.0.1" >> /etc/hosts.allow
+echo "# in.ftp: host.domain domain domain 127.0.0.1" >> /etc/hosts.allow
+
+# Passwords by default should rotate on a regular basis
+# /etc/login.defs offers a mechanism to tweek the defaults
+# 30 day rotation
+#
+/bin/mv /etc/login.defs /etc/login.defs.orig
+/bin/sed -e 's/99999/30/' < /etc/login.defs.orig > /etc/login.defs
+
+# System logging
+# System logs should he held minimally for 60 days to cover legal
+# requirements for most contries.
+# There are other places this should be implemented however those services
+# are not enabled by default (eg squid)
+#
+/bin/mv /etc/logrotate.conf /etc/logrotate.conf.orig
+/bin/sed -e 's/rotate 4/rotate 9/' < /etc/logrotate.conf.orig > /etc/logrotate.conf
+""")
+
 
 # reconfig machine w/o reinstall
 class ReconfigStation(InstallClass):
