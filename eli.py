@@ -95,7 +95,7 @@ class EliConfiguration:
 	    initrd = self.makeInitrd (kernelTag, instRoot)
 
 	    sl.addEntry("label", label)
-	    if os.access (instRoot + initrd, os.R_OK):
+	    if os.access (instRoot + "/boot/efi/" + initrd, os.R_OK):
 		sl.addEntry("initrd", initrd)
 		
 	    sl.addEntry("read-only")
