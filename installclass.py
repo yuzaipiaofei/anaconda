@@ -316,19 +316,26 @@ echo "* Security script for HA started" >&2
 # A Few example lines are added to /etc/hosts.allow for referance
 # This is an extra safeguard that should be enabled in a secure enviroment
 #
-echo "# you could extend this file beyond the basic ALL:ALL" >> /etc/hosts.deny
-echo "# See man hosts.deny for more details" >> /etc/hosts.deny
-echo "ALL: ALL" >> /etc/hosts.deny
 
-echo "# Please replace 'myhost.mydomain.org' and IP address with your" >> /etc/hosts.allow 
-echo "# other participating cluster node." >> /etc/hosts.allow
-echo "# Don't forget to remove the leading # to enable!" >> /etc/hosts.allow
-echo "# See man hosts.allow for more details" >> /etc/hosts.allow
+COUNT=`/bin/grep -c "ALL: ALL" /etc/hosts.deny`
+if [ "$COUNT" = "0" ]; then
+	echo "# you could extend this file beyond the basic ALL:ALL" >> /etc/hosts.deny
+	echo "# See man hosts.deny for more details" >> /etc/hosts.deny
+	echo "ALL: ALL" >> /etc/hosts.deny
+fi
 
-echo "# in.telnetd: myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
-echo "# in.ftp:     myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
-echo "# in.rshd:    myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
-echo "# in.rlogind: myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
+COUNT=`/bin/grep -c "See man hosts.allow for more details" /etc/hosts.allow`
+if [ "$COUNT" = "0" ]; then
+	echo "# Please replace 'myhost.mydomain.org' and IP address with your" >> /etc/hosts.allow 
+	echo "# other participating cluster node." >> /etc/hosts.allow
+	echo "# Don't forget to remove the leading # to enable!" >> /etc/hosts.allow
+	echo "# See man hosts.allow for more details" >> /etc/hosts.allow
+
+	echo "# in.telnetd: myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
+	echo "# in.ftp:     myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
+	echo "# in.rshd:    myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
+	echo "# in.rlogind: myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
+fi
 
 # Example rhost file for root
 #
