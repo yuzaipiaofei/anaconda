@@ -1151,7 +1151,7 @@ static char * mountHardDrive(struct installMethod * method,
 	    continue;
 	}
 
-#if !defined (__s390__) && !defined (__s390x__)
+#if defined (__s390__) || defined (__s390x__)
 	/* s390 */
 	memset(&ui, 0, sizeof(ui));
         memset(&netDev, 0, sizeof(netDev));
@@ -1163,7 +1163,6 @@ static char * mountHardDrive(struct installMethod * method,
                 if (!FL_TESTING(flags)) pumpDisableInterface(devName);
                 return NULL;
 	}
-	setupRemote(&ui);
 	mlLoadModule("isofs", modLoaded, *modDepsPtr,
                  NULL, modInfo, flags);
 
@@ -1622,7 +1621,7 @@ static char * mountNfsImage(struct installMethod * method,
 		return NULL;
 	    }
 #if defined (__s390__) || defined (__s390x__)
-	    setupRemote(&ui);
+	    /* setupRemote(&ui); */  /*  FIXME: Test if it works without this */
 	    host = ui.address;
 	    dir = ui.prefix;
 #endif
@@ -1866,7 +1865,6 @@ static char * mountUrlImage(struct installMethod * method,
 	    if (dir == -1) {
 	      return NULL;
 	    }
-	    setupRemote(&ui);
 #endif
 	    stage = URL_STAGE_MAIN;
 	    dir = 1;
@@ -3709,20 +3707,16 @@ int main(int argc, char ** argv) {
     if (!FL_TESTING(flags)) {
        int fd;
      
+#if !defined (__s390__) && !defined (__s390x__)
 	unlink("/usr");
 	symlink("mnt/runtime/usr", "/usr");
-#if !defined (__s390__) && !defined (__s390x__)
 	unlink("/lib");
 	symlink("mnt/runtime/lib", "/lib");
 #else
-#define LD_SO_CONF_STR "/lib/\n/mnt/runtime/lib\n/usr/lib\n/usr/X11R6/lib\n"
-  fd = open("/etc/ld.so.conf", O_WRONLY|O_CREAT, 0644);
-  if (fd >= 0) {
-     const char *buf = LD_SO_CONF_STR;
-     write(fd, buf, sizeof(LD_SO_CONF_STR));
-     close(fd);
-  }
-  system("/sbin/ldconfig 2>/dev/null >/dev/null");
+	rename("/usr", "/usr_old");
+	symlink("mnt/runtime/usr", "/usr");
+	rename("/lib", "/lib_old");
+	symlink("mnt/runtime/lib", "/lib");
 #endif
 
 	unlink("/modules/modules.dep");

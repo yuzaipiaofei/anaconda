@@ -154,7 +154,6 @@ EOF
     done
 
     mkdir -p $MBD_DIR/lib $MBD_DIR/mnt1 \
-     $MBD_DIR/usr/lib/locale/{de_DE,en_US,ja_JP.eucjp}/LC_MESSAGES \
      $MBD_DIR/mnt/runtime $MBD_DIR/etc/ssh $MBD_DIR/mnt/source \
      $MBD_DIR/etc/locale/{de,en,ja}/LC_MESSAGES \
      $MBD_DIR/usr/lib/gconv/
@@ -168,7 +167,6 @@ EOF
     cp -f $IMGPATH/usr/bin/login $MBD_DIR/sbin/login
     cp -f $IMGPATH/usr/bin/gawk $MBD_DIR/sbin/awk
     cp -f $IMGPATH/usr/bin/sort_save $MBD_DIR/sbin/sort
-    cp -f $IMGPATH/usr/bin/printf $MBD_DIR/sbin/printf
     cp -f $IMGPATH/usr/sbin/chroot $MBD_DIR/sbin/chroot
     cp -f $IMGPATH/usr/sbin/consoletype $MBD_DIR/sbin/consoletype
     cp -f $IMGPATH/usr/sbin/mke2fs $MBD_DIR/sbin/mke2fs
@@ -200,11 +198,6 @@ EOF
        cp -pRf $IMGPATH/etc/locale/$loc/* \
          $MBD_DIR/etc/locale/$loc/
     done
-    for loc in de_DE en_US ja_JP.eucjp; do
-       cp -pRf $IMGPATH/usr/lib/locale/$loc/* \
-             $MBD_DIR/usr/lib/locale/$loc/
-    done
-    ln -sf ja_JP.eucjp $MBD_DIR/usr/lib/locale/ja_JP
     for file in ISO8859-15.so EUC-JP.so libJIS.so gconv-modules; do
        cp -f $IMGPATH/usr/lib/gconv/$file $MBD_DIR/usr/lib/gconv/$file
     done
@@ -220,7 +213,6 @@ EOF
     cp -df $IMGPATH/lib/libutil.so* $MBD_DIR/lib
     cp -df $IMGPATH/lib/libutil-*.so* $MBD_DIR/lib
     cp -df $IMGPATH/lib/libcrypt*so* $MBD_DIR/lib
-    cp -df $IMGPATH/usr/lib/libcrypt*so* $MBD_DIR/lib
     cp -df $IMGPATH/lib/libc.so* $MBD_DIR/lib
     cp -df $IMGPATH/lib/libc-*.so* $MBD_DIR/lib
     if [ "$BUILDARCH" = "s390" ]; then
