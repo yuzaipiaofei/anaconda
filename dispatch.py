@@ -65,7 +65,7 @@ installSteps = [
     ("setsanex", setSaneXSettings, ("id.xsetup",)),
     ("findrootparts", findRootParts, ("intf", "id", "dispatch", "dir", "instPath")),
     ("findinstall", ("dispatch", "intf", "id", "instPath")),
-    ("findconfig", findConfig, ("intf", "id", "instPath", "dir")),
+    ("findconfig", findConfig, ("intf", "id", "dispatch", "instPath", "dir")),
     ("installtype", ("dispatch", "id", "method", "intf")),
     ("partitionmethod", ("id.partitions", "id.instClass")),
     ("partitionobjinit", partitionObjectsInitialize, ("id.diskset",

@@ -1,6 +1,8 @@
 #
 # migrate.py - Anaconda config migration procedure
 #
+# Paul Nasrat <pnasrat@redhat.com>
+#
 # Copyright 2004 Red Hat, Inc.
 #
 # This software may be freely redistributed under the terms of the GNU
@@ -12,9 +14,9 @@
 #
 
 import os
-import os.path
 import md5
 import rpm
+import sys
 import shutil
 
 from flags import flags
@@ -23,12 +25,13 @@ from product import *
 from rhpl.log import log
 from rhpl.translate import _
 
-def findConfig(intf, id, instPath, dir):
-    rpm.addMacro("_dbPath",instPath + "/var/lib/rpm")
-    ts=rpm.ts()
+def findConfig(intf, id, dispatch, instPath, dir):
+    ts=rpm.TransactionSet(instPath)
+    ts.setVSFlags(~(rpm.RPMVSF_NODSA|rpm.RPMVSF_NORSA))
     mi=ts.dbMatch()
     configs=[]
 
+#TODO: progress bar rather than wait window
     win = intf.waitWindow(_("Finding"), _("Finding existing config files..."))
 
     for h in mi:
@@ -38,22 +41,35 @@ def findConfig(intf, id, instPath, dir):
         total=len(names)
 
         for i in xrange(total):
-            if (fileflags[i] & rpm.RPMFILE_CONFIG) and not (fileflags[i] & rpm.RPMFILE_GHOST) \
-                and isModified(names[i],md5sums[i],instPath):
+            if (fileflags[i] & rpm.RPMFILE_CONFIG): 
+                if fileflags[i] & rpm.RPMFILE_GHOST:
                     configs.append(names[i])
+                elif isModified(names[i],md5sums[i],instPath):
+                    configs.append(names[i])
+
     win.pop()
     config_full=addWhiteListed(instPath,configs)
-    backupConfig(instPath,config_full)
+    win = intf.waitWindow(_("Migrating"), _("Migratig existing config files..."))
+    try:
+        backupConfig(instPath,config_full)
+    except OSError, msg:
+        win.pop()
+        intf.messageWindow(_("Migration failed"), _("Config migration failed."))
+        sys.exit(0)
+    win.pop()
+    dispatch.skipStep("findconfig", skip = 1,permanent = 1)
 
 def backupConfig(instPath,configs):
     backupDir="%s/var/backup/%s-%s" %( instPath,productPath,productVersion)
 #TODO: exception handling
     os.makedirs(backupDir)
+
     for config in configs:
-        d=os.path.dirname(config)
-        if not os.path.exists(backupDir+d):
-            os.makedirs(backupDir+d)
-        shutil.copy(instPath+config,backupDir+d)
+        if os.path.exist(instPath+config):
+            d=os.path.dirname(config)
+            if not os.path.exists(backupDir+d):
+                os.makedirs(backupDir+d)
+            shutil.copy(instPath+config,backupDir+d)
         
 def addWhiteListed(instPath,configs):
 #TODO: whitelist/blacklist and do something meaningful
