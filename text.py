@@ -18,8 +18,6 @@ from textw.lilo import LiloImagesWindow
 from textw.silo import SiloWindow
 from textw.silo import SiloAppendWindow
 from textw.silo import SiloImagesWindow
-from textw.network import NetworkWindow
-from textw.network import HostnameWindow
 from textw.userauth import RootPasswordWindow
 from textw.userauth import UsersWindow
 from textw.userauth import AuthConfigWindow
@@ -34,8 +32,6 @@ from textw.packages import PackageGroupWindow
 from textw.packages import IndividualPackageWindow
 from textw.packages import PackageDepWindow
 from textw.timezone import TimezoneWindow
-from textw.bootdisk import BootDiskWindow
-from textw.bootdisk import MakeBootDiskWindow
 import installclass
 
 class LanguageWindow:
@@ -71,7 +67,7 @@ class LanguageWindow:
         cat.setlangs (newlangs)
         todo.language.set (choice)
 	if not todo.serial:
-	    font = todo.language.getFontFile(choice)
+	    font = todo.language.getFont(choice)
 	    if font != "None":
 		try:
 		    isys.loadFont(font)
@@ -221,11 +217,7 @@ class InstallPathWindow:
 	else:
 	    instClass = todo.getClass()
 	    orig = None
-	    if isinstance(instClass, installclass.GNOMEWorkstation):
-		orig = 0
-	    elif isinstance(instClass, installclass.KDEWorkstation):
-		orig = 1
-	    elif isinstance(instClass, installclass.Server):
+	    if isinstance(instClass, installclass.ClusterServer):
 		orig = 2
 	    elif isinstance(instClass, installclass.CustomInstall):
 		orig = 3
@@ -234,9 +226,7 @@ class InstallPathWindow:
 	    else:
 		default = 0
 
-	choices = [ _("Install GNOME Workstation"), 
-		    _("Install KDE Workstation"),
-		    _("Install Server System"),
+	choices = [ _("Install Cluster Server System"),
 		    _("Install Custom System"),
 		    _("Upgrade Existing Installation") ]
 	(button, choice) = ListboxChoiceWindow(screen, _("Installation Type"),
@@ -249,20 +239,14 @@ class InstallPathWindow:
 
 	needNewDruid = 0
 
-	if (choice == 4):
+	if (choice == 2):
             intf.steps = intf.commonSteps + intf.upgradeSteps
             todo.upgrade = 1
         else:
             intf.steps = intf.commonSteps + intf.installSteps
             todo.upgrade = 0
 	    if (choice == 0 and orig != 0):
-		todo.setClass(installclass.GNOMEWorkstation(todo.expert))
-		needNewDruid = 1
-	    elif (choice == 1 and orig != 1):
-		todo.setClass(installclass.KDEWorkstation(todo.expert))
-		needNewDruid = 1
-	    elif (choice == 2 and orig != 2):
-		todo.setClass(installclass.Server(todo.expert))
+		todo.setClass(installclass.ClusterServer(todo.expert))
 		needNewDruid = 1
 	    elif (choice == 3 and orig != 3):
 		todo.setClass(installclass.CustomInstall(todo.expert))
@@ -378,6 +362,190 @@ class ReconfigWelcomeWindow:
 	    os._exit(0)
 
         return INSTALL_OK
+
+class NetworkWindow:
+    def setsensitive (self):
+        if self.cb.selected ():
+            sense = FLAGS_SET
+        else:
+            sense = FLAGS_RESET
+
+        for n in self.ip, self.nm, self.gw, self.ns:
+            n.setFlags (FLAG_DISABLED, sense)
+
+    def calcNM (self):
+        ip = self.ip.value ()
+        if ip and not self.nm.value ():
+            try:
+                mask = isys.inet_calcNetmask (ip)
+            except ValueError:
+                return
+
+            self.nm.set (mask)
+
+    def calcGW (self):
+        ip = self.ip.value ()
+        nm = self.nm.value ()
+        if ip and nm:
+            try:
+                (net, bcast) = isys.inet_calcNetBroad (ip, nm)
+            except ValueError:
+                return
+
+            if not self.gw.value ():
+                gw = isys.inet_calcGateway (bcast)
+                self.gw.set (gw)
+            if not self.ns.value ():
+                ns = isys.inet_calcNS (net)
+                self.ns.set (ns)
+
+    def __call__(self, screen, todo):
+
+
+        devices = todo.network.available ()
+        if not devices:
+            return INSTALL_NOOP
+
+        if todo.network.readData:
+            # XXX expert mode, allow changing network settings here
+            return INSTALL_NOOP
+        
+	list = devices.keys ()
+	list.sort()
+        dev = devices[list[0]]
+
+        firstg = Grid (1, 1)
+        boot = dev.get ("bootproto")
+        
+        if not boot:
+            boot = "dhcp"
+        self.cb = Checkbox (_("Use bootp/dhcp"),
+                            isOn = (boot == "dhcp"))
+        firstg.setField (self.cb, 0, 0, anchorLeft = 1)
+
+        secondg = Grid (2, 4)
+        secondg.setField (Label (_("IP address:")), 0, 0, anchorLeft = 1)
+	secondg.setField (Label (_("Netmask:")), 0, 1, anchorLeft = 1)
+	secondg.setField (Label (_("Default gateway (IP):")), 0, 2, anchorLeft = 1)
+        secondg.setField (Label (_("Primary nameserver:")), 0, 3, anchorLeft = 1)
+
+        self.ip = Entry (16)
+        self.ip.set (dev.get ("ipaddr"))
+        self.nm = Entry (16)
+        self.nm.set (dev.get ("netmask"))
+        self.gw = Entry (16)
+        self.gw.set (todo.network.gateway)
+        self.ns = Entry (16)
+        self.ns.set (todo.network.primaryNS)
+
+        self.cb.setCallback (self.setsensitive)
+        self.ip.setCallback (self.calcNM)
+        self.nm.setCallback (self.calcGW)
+
+        secondg.setField (self.ip, 1, 0, (1, 0, 0, 0))
+	secondg.setField (self.nm, 1, 1, (1, 0, 0, 0))
+	secondg.setField (self.gw, 1, 2, (1, 0, 0, 0))
+        secondg.setField (self.ns, 1, 3, (1, 0, 0, 0))
+
+        bb = ButtonBar (screen, ((_("OK"), "ok"), (_("Back"), "back")))
+
+        toplevel = GridForm (screen, _("Network Configuration"), 1, 3)
+        toplevel.add (firstg, 0, 0, (0, 0, 0, 1), anchorLeft = 1)
+        toplevel.add (secondg, 0, 1, (0, 0, 0, 1))
+        toplevel.add (bb, 0, 2, growx = 1)
+
+        self.setsensitive ()
+
+        while 1:
+            result = toplevel.run ()
+            if self.cb.selected ():
+                dev.set (("bootproto", "dhcp"))
+                dev.unset ("ipaddr", "netmask", "network", "broadcast")
+            else:
+                try:
+                    (network, broadcast) = isys.inet_calcNetBroad (self.ip.value (), self.nm.value ())
+                except:
+                    ButtonChoiceWindow(screen, _("Invalid information"),
+                                       _("You must enter valid IP information to continue"),
+                                       buttons = [ _("OK") ])
+                    continue
+
+                dev.set (("bootproto", "static"))
+                dev.set (("ipaddr", self.ip.value ()), ("netmask", self.nm.value ()),
+                         ("network", network), ("broadcast", broadcast))
+                todo.network.gateway = self.gw.value ()
+                todo.network.primaryNS = self.ns.value ()
+            screen.popWindow()
+            break
+                     
+        dev.set (("onboot", "yes"))
+
+        rc = bb.buttonPressed (result)
+
+        todo.log ("\"" + dev.get ("device") + "\"")
+
+        if rc == "back":
+            return INSTALL_BACK
+        return INSTALL_OK
+
+class HostnameWindow:
+    def __call__(self, screen, todo):
+        entry = Entry (24)
+        if todo.network.hostname != "localhost.localdomain":
+            entry.set (todo.network.hostname)
+        rc, values = EntryWindow(screen, _("Hostname Configuration"),
+             _("The hostname is the name of your computer.  If your "
+               "computer is attached to a network, this may be "
+               "assigned by your network administrator."),
+             [(_("Hostname"), entry)], buttons = [ _("OK"), _("Back")])
+
+        if rc == string.lower (_("Back")):
+            return INSTALL_BACK
+
+        todo.network.hostname = entry.value ()
+        
+        return INSTALL_OK
+
+class BootDiskWindow:
+    def __call__(self, screen, todo):
+	# we *always* do this for loopback installs
+	if todo.fstab.rootOnLoop():
+	    return INSTALL_NOOP
+
+	buttons = [ _("Yes"), _("No"), _("Back") ]
+	text =  _("A custom boot disk provides a way of booting into your "
+		  "Linux system without depending on the normal bootloader. "
+		  "This is useful if you don't want to install lilo on your "
+		  "system, another operating system removes lilo, or lilo "
+		  "doesn't work with your hardware configuration. A custom "
+		  "boot disk can also be used with the Red Hat rescue image, "
+		  "making it much easier to recover from severe system "
+		  "failures.\n\n"
+		  "Would you like to create a boot disk for your system?")
+
+	if iutil.getArch () == "sparc":
+	    floppy = todo.silo.hasUsableFloppy()
+	    if floppy == 0:
+		todo.bootdisk = 0
+		return INSTALL_NOOP
+	    text = string.replace (text, "lilo", "silo")
+	    if floppy == 1:
+		buttons = [ _("No"), _("Yes"), _("Back") ]
+		text = string.replace (text, "\n\n",
+				       _("\nOn SMCC made Ultra machines floppy booting "
+					 "probably does not work\n\n"))
+
+	rc = ButtonChoiceWindow(screen, _("Bootdisk"), text, buttons = buttons)
+
+	if rc == string.lower (_("Yes")):
+	    todo.bootdisk = 1
+	
+	if rc == string.lower (_("No")):
+	    todo.bootdisk = 0
+
+	if rc == string.lower (_("Back")):
+	    return INSTALL_BACK
+	return INSTALL_OK
 
 class XConfigWindow:
     def __call__(self, screen, todo):
@@ -573,6 +741,36 @@ class ReconfigFinishedWindow:
                                    "Linux User's Guide."),
                                  [ _("OK") ])
 
+        return INSTALL_OK
+
+class BootdiskWindow:
+    def __call__ (self, screen, todo):
+        if not todo.needBootdisk():
+            return INSTALL_NOOP
+
+        rc = ButtonChoiceWindow (screen, _("Bootdisk"),
+		     _("Insert a blank floppy in the first floppy drive. "
+		       "All data on this disk will be erased during creation "
+		       "of the boot disk."),
+		     [ _("OK"), _("Skip") ])                
+        if rc == string.lower (_("Skip")):
+            return INSTALL_OK
+            
+        while 1:
+            try:
+                todo.makeBootdisk ()
+            except:
+                rc = ButtonChoiceWindow (screen, _("Error"),
+			_("An error occured while making the boot disk. "
+			  "Please make sure that there is a formatted floppy "
+			  "in the first floppy drive."),
+			  [ _("OK"), _("Skip")] )
+                if rc == string.lower (_("Skip")):
+                    break
+                continue
+            else:
+                break
+            
         return INSTALL_OK
 
 class InstallProgressWindow:
@@ -783,7 +981,7 @@ class InstallInterface:
         self.screen.pushHelpLine (_("  <Tab>/<Alt-Tab> between elements   |  <Space> selects   |  <F12> next screen"))
 # uncomment this line to make the installer quit on <Ctrl+Z>
 # handy for quick debugging.
-	self.screen.suspendCallback(killSelf, self.screen)
+	#self.screen.suspendCallback(killSelf, self.screen)
 # uncomment this line to drop into the python debugger on <Ctrl+Z>
 # --VERY handy--
 	#self.screen.suspendCallback(debugSelf, self.screen)
@@ -905,7 +1103,7 @@ class InstallInterface:
             [_("Install System"), InstallWindow, (self.screen, todo) ],
             [_("Boot Disk"), BootDiskWindow, (self.screen, todo),
 		"bootdisk" ],
-            [_("Boot Disk"), MakeBootDiskWindow, (self.screen, todo), "bootdisk"],
+            [_("Boot Disk"), BootdiskWindow, (self.screen, todo), "bootdisk"],
             [_("X Configuration"), XconfiguratorWindow, (self.screen, todo), 
 		    "xconfig"],
             [_("Installation Complete"), FinishedWindow, (self.screen, todo),
@@ -926,7 +1124,7 @@ class InstallInterface:
             [_("Upgrade System"), InstallWindow, (self.screen, todo)],
             [_("Boot Disk"), BootDiskWindow, (self.screen, todo),
 		"bootdisk" ],
-            [_("Boot Disk"), MakeBootDiskWindow, (self.screen, todo), "bootdisk"],
+            [_("Boot Disk"), BootdiskWindow, (self.screen, todo), "bootdisk"],
             [_("Upgrade Complete"), FinishedWindow, (self.screen, todo)]
             ]
 

@@ -29,17 +29,11 @@ UPGRADE = 0
 INSTALL = 1
 
 CUSTOM = 2
-WORKSTATION_GNOME = 3
-WORKSTATION_KDE = 4
 SERVER = 5
 
 class InstallPathWindow (InstallWindow):		
 
-    installTypes = ((WORKSTATION_GNOME, _("GNOME Workstation"),
-                     "gnome-workstation.png"),
-                    (WORKSTATION_KDE, _("KDE Workstation"),
-                     "kde-workstation.png"),
-                    (SERVER, _("Server"), "server.png"),
+    installTypes = ((SERVER, _("Cluster Server"), "server.png"),
                     (CUSTOM, _("Custom"), "custom.png"))
 
     def __init__ (self, ics):
@@ -119,14 +113,8 @@ class InstallPathWindow (InstallWindow):
 		if button.get_active():
 		    break
 
-	    if type == WORKSTATION_GNOME and self.orig != WORKSTATION_GNOME:
-		self.todo.setClass (installclass.GNOMEWorkstation (self.todo.expert))
-		needNewDruid = 1
-	    elif type == WORKSTATION_KDE and self.orig != WORKSTATION_KDE:
-		self.todo.setClass (installclass.KDEWorkstation (self.todo.expert))
-		needNewDruid = 1
-	    elif type == SERVER and self.orig != SERVER:
-		self.todo.setClass (installclass.Server (self.todo.expert))
+	    if type == SERVER and self.orig != SERVER:
+		self.todo.setClass (installclass.ClusterServer (self.todo.expert))
 		needNewDruid = 1
 	    elif type == CUSTOM and self.orig != CUSTOM:
 		self.todo.setClass (installclass.CustomInstall (self.todo.expert))
@@ -198,11 +186,7 @@ class InstallPathWindow (InstallWindow):
 	    instClass = self.todo.getClass()
 	    self.orig = None
 	    installButton.set_active(1)
-	    if isinstance(instClass, installclass.GNOMEWorkstation):
-		self.orig = WORKSTATION_GNOME
-	    elif isinstance(instClass, installclass.KDEWorkstation):
-		self.orig = WORKSTATION_KDE
-	    elif isinstance(instClass, installclass.Server):
+	    if isinstance(instClass, installclass.ClusterServer):
 		self.orig = SERVER
 	    elif isinstance(instClass, installclass.CustomInstall):
 		self.orig = CUSTOM
@@ -210,7 +194,7 @@ class InstallPathWindow (InstallWindow):
 	    if (self.orig):
 		default = self.orig
 	    else:
-		default = WORKSTATION_GNOME
+		default = SERVER
 
         self.installBox = GtkVBox (FALSE, 0)
         group = None

@@ -217,9 +217,6 @@ class InstallClass:
         if iutil.getArch () == "alpha":
             self.addToSkipList("bootdisk")
             self.addToSkipList("lilo")
-        elif iutil.getArch () == "ia64":
-            self.addToSkipList("bootdisk")
-            self.addToSkipList("lilo")
 
 # we need to be able to differentiate between this and custom
 class DefaultInstall(InstallClass):
@@ -252,43 +249,17 @@ class Workstation(InstallClass):
 	self.setClearParts(FSEDIT_CLEAR_LINUX, 
 	    warningText = _("You are about to erase any preexisting Linux "
 			    "installations on your system."))
-
-class GNOMEWorkstation(Workstation):
-
-    def __init__(self, expert):
-	Workstation.__init__(self, expert)
-        self.desktop = "GNOME"
-	self.setGroups(["GNOME Workstation"])
-
-class KDEWorkstation(Workstation):
-
-    def __init__(self, expert):
-	Workstation.__init__(self, expert)
-        self.desktop = "KDE"
-	self.setGroups(["KDE Workstation"])
-
-class Server(InstallClass):
+class ClusterServer(InstallClass):
 
     def __init__(self, expert):
 	InstallClass.__init__(self)
-	self.setGroups(["Server"])
+	self.setGroups(["Cluster Server"])
 	self.setHostname("localhost.localdomain")
 	if not expert:
 	    self.addToSkipList("lilo")
 	self.addToSkipList("package-selection")
 	self.addToSkipList("authentication")
 	self.setMakeBootdisk(1)
-
-	if os.uname ()[4] != 'sparc64':
-	    self.addNewPartition('/boot', 16, -1, 0, None)
-	self.addNewPartition('/', 256, -1, 0, None)
-	self.addNewPartition('/usr', 512, -1, 1, None)
-	self.addNewPartition('/var', 256, -1, 0, None)
-	self.addNewPartition('/home', 512, -1, 1, None)
-	self.addNewPartition('swap', 64, 256, 1, None)
-	self.setClearParts(FSEDIT_CLEAR_ALL, 
-	    warningText = _("You are about to erase ALL DATA on your hard "
-			    "drive to make room for your Linux installation."))
 
 # reconfig machine w/o reinstall
 class ReconfigStation(InstallClass):
