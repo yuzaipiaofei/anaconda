@@ -474,7 +474,7 @@ fi
 
 # Remove locales unused during the install
 cat $DESTGR/usr/lib/anaconda/lang-table* | awk '
-{ print $5; print gensub(/\..*$/,"","",$5); print gensub(/_.*$/,"","",$5); }
+{ print $5; print gensub(/\..*$/,"","",$5); print gensub(/_.*$/,"","",$5); print tolower($5) }
 ' | LC_ALL=C sort -u > $DESTGR/locales
 for p in lib share; do (
 cd $DESTGR/usr/$p/locale && {
