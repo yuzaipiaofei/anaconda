@@ -438,6 +438,8 @@ usr/lib/gconv/EUC-JP.so
 usr/lib/gconv/libJIS.so
 usr/lib/gconv/gconv-modules
 usr/X11R6/bin/xauth
+usr/X11R6/lib/libXi.so*
+usr/X11R6/lib/libX11.so*
 usr/share/anaconda/*
 EOF
 fi
@@ -782,9 +784,9 @@ if [ -n "$NEEDGR" ]; then
     	REALPATH=`(cd $DESTGR; /bin/pwd | sed 's,/md1/,/,g')`
     	runroot $COMPONENT --onlyone --arch $ARCH "LD_LIBRARY_PATH=/usr/X11R6/lib:$LD_LIBRARY_PATH /usr/sbin/chroot $REALPATH /usr/bin/pango-querymodules 2> $REALPATH/etc/pango/pango.modules"
     else
-	/usr/sbin/chroot $DESTGR /usr/bin/pango-querymodules > $DESTGR/etc/pango/pango.modules
+	LD_LIBRARY_PATH=/usr/X11R6/lib:$LD_LIBRARY_PATH /usr/sbin/chroot $DESTGR /usr/bin/pango-querymodules > $DESTGR/etc/pango/pango.modules
     fi
-    rm -f $DESTGR/usr/bin/pango-querymodules
+    sleep 10000 #rm -f $DESTGR/usr/bin/pango-querymodules
 fi
 
 echo "Getting gtk2 input method modules"
