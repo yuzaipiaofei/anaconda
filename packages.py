@@ -830,7 +830,6 @@ def doInstall(method, id, intf, instPath):
 
 		prob = "%-15s %d %c\n" % (mount, need, suffix)
 		probs = probs + prob
-
 	if nodeneeded:
 	    if probs:
 		probs = probs + '\n'
