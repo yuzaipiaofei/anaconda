@@ -2543,7 +2543,7 @@ logMessage("found url image %s", url);
 	symlink("mnt/runtime/lib", "/lib");
 
 /* the only modules we need for alpha are on the initrd */
-#if !defined(__alpha__) && !defined(__ia64__)
+#if !defined(__alpha__)
 	unlink("/modules/modules.dep");
 	unlink("/modules/module-info");
 	unlink("/modules/pcitable");
