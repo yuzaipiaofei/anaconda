@@ -937,10 +937,11 @@ class ToDo:
 
         # /etc/hosts
         f = open (self.instPath + "/etc/hosts", "w")
-        localline = "127.0.0.1\t\tlocalhost.localdomain localhost "
+        localline = "127.0.0.1\t\t"
         if self.network.hostname != "localhost.localdomain":
-            localline = localline + self.network.hostname
-        f.write (localline + "\n")
+            localline = localline + self.network.hostname + " "
+	localline = localline + "localhost.localdomain localhost\n"
+        f.write (localline)
         for dev in self.network.netdevices.values ():
             ip = dev.get ("ipaddr")
             if dev.hostname and ip:
