@@ -938,6 +938,7 @@ int main(int argc, char ** argv) {
 
     kdFindIdeList(&kd, 0);
     kdFindScsiList(&kd, 0);
+    kdFindDasdList(&kd, 0);
     kdFindNetList(&kd, 0);
 
     /* explicitly read this to let libkudzu know we want to merge
@@ -1012,6 +1013,7 @@ int main(int argc, char ** argv) {
     /* we might have already loaded these, but trying again doesn't hurt */
     ideSetup(modLoaded, modDeps, modInfo, flags, &kd);
     scsiSetup(modLoaded, modDeps, modInfo, flags, &kd);
+    dasdSetup(modLoaded, modDeps, modInfo, flags, &kd);
     busProbe(modInfo, modLoaded, modDeps, 0, &kd, flags);
 
     checkForHardDrives(&kd, &flags);

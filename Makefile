@@ -3,7 +3,10 @@ include Makefile.inc
 
 SUBDIRSHD = isys loader2 po stubs \
 	    textw utils scripts bootdisk installclasses \
-	    fonts iw pixmaps isomd5sum command-stubs
+	    iw pixmaps isomd5sum command-stubs
+ifeq (,$(findstring s390,$(ARCH)))
+	SUBDIRSHD += fonts
+endif
 SUBDIRS = $(SUBDIRSHD)
 
 # DESTDIR        - destination for install image for install purposes

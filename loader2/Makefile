@@ -45,12 +45,11 @@ ISYSLIB = ../isys/libisys-diet.a
 GUNZIP = ../isys/gzlib/libgunzip-diet.a
 
 OBJS += dietstubs.o ctype.o
+ISYSLIB += -lrpc
+CTYPEDEP = ctype.c
 else
 REALCC=gcc
 CC=$(REALCC)
-OBJS += ctype.o
-ISYSLIB += -lrpc
-CTYPEDEP = ctype.c
 endif
 
 ifeq (i386, $(ARCH))

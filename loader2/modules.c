@@ -43,6 +43,7 @@ static struct extractedModule * extractModules (char * const * modNames,
                                                 struct extractedModule * oldPaths,
                                                 struct moduleBallLocation * location);
 
+
 /* pass in the type of device (eth or tr) that you're looking for */
 static int ethCount(const char * type) {
     int fd;
@@ -224,6 +225,17 @@ int mlModuleInList(const char * modName, moduleList list) {
         if (!strcmp(list->mods[i].name, modName)) return 1;
 
     return 0;
+}
+
+static struct loadedModuleInfo * getLoadedModuleInfo(moduleList modLoaded,
+                                                     const char * modName) {
+    int i = 0;
+
+    for (i = 0; i < modLoaded->numModules; i++)
+        if (!strcmp(modLoaded->mods[i].name, modName))
+            return &modLoaded->mods[i];
+
+    return NULL;
 }
 
 /* load a single module.  this is the real workhorse of loading modules */
@@ -746,3 +758,116 @@ static struct extractedModule * extractModules (char * const * modNames,
     free(ballPath);
     return oldPaths;
 }
+
+
+/* simple removal of a loaded module which is going to be reloaded.
+ * Note that this doesn't remove the module from the modLoaded struct
+ * but we do update the loadedModuleInfo to reflect the fact that its using
+ * no devices anymore.
+ */
+int simpleRemoveLoadedModule(const char * modName, moduleList modLoaded,
+                             int flags) {
+    int status, rc = 0;
+    pid_t child;
+    struct loadedModuleInfo * mod;
+
+    mod = getLoadedModuleInfo(modLoaded, modName);
+    if (!mod)
+        return 0;
+
+    /* since we're unloading, set the devs to 0.  this should hopefully only
+     * ever happen with things at the end */
+    mod->firstDevNum = 0;
+    mod->lastDevNum = 0;
+
+    if (FL_TESTING(flags)) {
+        logMessage("would have rmmod %s", modName);
+        rc = 0;
+    } else {
+        logMessage("going to rmmod %s", modName);
+        if (!(child = fork())) {
+            int fd = open("/dev/tty3", O_RDWR);
+
+            dup2(fd, 0);
+            dup2(fd, 1);
+            dup2(fd, 2);
+            close(fd);
+
+            execl("/sbin/rmmod", "/sbin/rmmod", modName, NULL);
+            _exit(rc);
+        }
+
+        waitpid(child, &status, 0);
+
+        if (!WIFEXITED(status) || WEXITSTATUS(status)) {
+            rc = 1;
+        } else {
+            rc = 0;
+        }
+    }
+    return rc;
+}
+
+/* simple reinsertion of a module; just looks for the module and reloads it
+ * if we think it was already loaded.  we also update firstDevNum and
+ * lastDevNum to be current
+ */
+/* FIXME KH: Add module parameters until Jeremy comes up with another solution
+ */
+int reloadUnloadedModule(char * modName, moduleList modLoaded,
+                         char ** args, int flags) {
+    char fileName[200];
+    int rc, status;
+    pid_t child;
+    struct extractedModule * path = NULL;
+    char * list[2];
+    int i;
+
+    for (i = 0; i < modLoaded->numModules; i++)
+        if (!strcmp(modLoaded->mods[i].name, modName))
+            break;
+
+    if (i >= modLoaded->numModules)
+        return 0;
+
+    modLoaded->mods[i].firstDevNum = scsiDiskCount();
+
+    list[0] = modName;
+    list[1] = NULL;
+
+    path = extractModules(list, path, NULL);
+
+    sprintf(fileName, "%s.o", modName);
+
+    if (FL_TESTING(flags)) {
+        logMessage("would have insmod %s", fileName);
+        rc = 0;
+    } else {
+        logMessage("going to insmod %s", fileName);
+
+        if (!(child = fork())) {
+            int fd = open("/dev/tty3", O_RDWR);
+
+            dup2(fd, 0);
+            dup2(fd, 1);
+            dup2(fd, 2);
+            close(fd);
+
+            rc = insmod(fileName, NULL, args);
+            _exit(rc);
+        }
+
+        waitpid(child, &status, 0);
+
+        if (!WIFEXITED(status) || WEXITSTATUS(status)) {
+            rc = 1;
+        } else {
+            rc = 0;
+        }
+    }
+
+    modLoaded->mods[i].lastDevNum = scsiDiskCount();
+    logMessage("reloadModule returning %d", rc);
+    return rc;
+}
+

@@ -121,7 +121,7 @@ mkdir -p $DESTGR
 
 PACKAGES="glibc glibc-common setup openssl python python2 newt slang
 	 libtermcap zlib ash e2fsprogs util-linux raidtools popt
-	 mount procps rpm XFree86 Xconfigurator anaconda
+	 procps rpm XFree86 Xconfigurator anaconda
 	 anaconda-runtime kudzu-devel kudzu hwdata db3 bzip2
 	 bzip2-libs dosfstools pciutils reiserfs-utils parted sed
 	 busybox-anaconda rpm-python anaconda-help booty hdparm lvm
@@ -139,8 +139,8 @@ fi
 if [ $ARCH = s390 -o $ARCH = s390x ]; then
     PACKAGES="$PACKAGES s390utils binutils s390installer libgcc
 	sed net-tools inetd openssh openssh-server coreutils modutils
-	initscripts mount gawk xauth bash pygtk2 portmap 
-	telnet-server login ssh_keys"
+	initscripts gawk xauth bash pygtk2 portmap 
+	telnet-server login ssh_keys mount"
 fi
 
 # xpm is missing
@@ -504,7 +504,6 @@ bin/rpm
 bin/sed
 bin/sync
 bin/touch
-bin/umount
 boot/*.b
 boot/bootlx
 etc/fb.modes

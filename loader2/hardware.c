@@ -245,8 +245,8 @@ void dasdSetup(moduleList modLoaded, moduleDeps modDeps,
 		simpleRemoveLoadedModule("dasd_fba_mod", modLoaded, flags);
 		simpleRemoveLoadedModule("dasd_diag_mod", modLoaded, flags);
 		simpleRemoveLoadedModule("dasd_mod", modLoaded, flags);
-		reloadUnloadedModule("dasd_mod", NULL, modLoaded, dasd_parms, flags);
-		reloadUnloadedModule("dasd_eckd_mod", NULL, modLoaded, dasd_parms, flags);
+		reloadUnloadedModule("dasd_mod", modLoaded, dasd_parms, flags);
+		reloadUnloadedModule("dasd_eckd_mod", modLoaded, dasd_parms, flags);
 		free(parms);
 		free(dasd_parms);
 	}
