@@ -19,7 +19,6 @@ import whrandom
 import pcmcia
 import _balkan
 import kudzu
-from kbd import Keyboard
 from simpleconfig import SimpleConfigFile
 from mouse import Mouse
 from xf86config import XF86Config
@@ -214,250 +213,6 @@ class Desktop (SimpleConfigFile):
     def set (self, desktop):
         self.info ['DESKTOP'] = desktop
 
-def expandLangs(str):
-    langs = [str]
-    # remove charset ...
-    if '.' in str:
-	langs.append(string.split(str, '.')[0])
-
-    if '@' in str:
-	langs.append(string.split(str, '@')[0])
-
-    # also add 2 character language code ...
-    if len(str) > 2:
-	langs.append(str[:2])
-
-    return langs
-
-class InstallTimeLanguage:
-
-    def __init__ (self):
-	if os.access("lang-table", os.R_OK):
-	    f = open("lang-table", "r")
-	elif os.access("/etc/lang-table", os.R_OK):
-	    f = open("/etc/lang-table", "r")
-	else:
-	    f = open("/usr/lib/anaconda/lang-table", "r")
-
-	lines = f.readlines ()
-	f.close()
-	self.langNicks = {}
-	self.font = {}
-	self.map = {}
-	self.kbd = {}
-	self.tz = {}
-	self.langList = []
-
-        self.tempDefault = ""
-
-	for line in lines:
-	    string.strip(line)
-	    l = string.split(line)
-	    
-	    longName = l[0]
-	    font = l[2]
-	    map = l[3]
-	    shortName = l[4]
-	    keyboard = l[5]
-	    timezone = l[6]
-
-	    self.langList.append(longName)
-	    self.langNicks[longName] = shortName
-	    self.font[longName] = font
-	    self.map[longName] = map
-	    self.kbd[longName] = keyboard
-	    self.tz[longName] = timezone
-
-	self.langList.sort()
-
-    def getFontMap (self, lang):
-	return self.map[lang]
-
-    def getFontFile (self, lang):
-	# Note: in /etc/fonts.cgz fonts are named by the map
-	# name as that's unique, font names are not
-	return self.font[lang]
-
-    def getLangNick (self, lang):
-        # returns the short locale ID
-	return self.langNicks[lang]
-
-    def getLangNameByNick(self, lang):
-	# The nick we get here may be long (fr_FR@euro), when we need
-	# shorter (fr_FR), so be a bit fuzzy
-	for (langName, nick) in self.langNicks.items():
-	    if (nick == lang) or (nick == lang[0:len(nick)]):
-		return langName
-
-	raise KeyError, "language %s not found" % lang
-
-    def getDefaultKeyboard(self):
-	return self.kbd[self.getCurrent()]
-
-    def getDefaultTimeZone(self):
-	return self.tz[self.getCurrent()]
-
-    def available (self):
-        return self.langList
-
-    def getCurrentLangSearchList(self):
-	return expandLangs(self.langNicks[self.getCurrent()]) + ['C']
-
-    def getCurrent(self):
-	if os.environ.has_key('LANG'):
-	    what = os.environ['LANG']
-	else:
-	    what = 'en_US'
-	return self.getLangNameByNick(what)
-
-    def setRuntimeLanguage(self, name):
-	lang = self.langNicks[name]
-
-        os.environ["LC_ALL"] = lang
-        os.environ["LANG"] = lang
-        os.environ["LC_NUMERIC"] = 'C'
-
-        newlangs = [lang]
-	if len(lang) > 2:
-            newlangs.append(lang[:2])
-        cat.setlangs (newlangs)
-
-class Language (SimpleConfigFile):
-
-    def __init__ (self, useInstalledLangs):
-        self.info = {}
-        self.info["SUPPORTED"] = None
-	self.supported = []
-	self.default = None
-
-        self.allSupportedLangs = []
-        self.langInfoByName = {}
-
-        allSupportedLangs = []
-        langInfoByName = {}
-        langFilter = {}
-        allInstalledFlag = 0
-
-        if useInstalledLangs:
-            # load from /etc/sysconfig/i18n
-            supported = None
-            if os.access("/etc/sysconfig/i18n", os.R_OK):
-                f = open("/etc/sysconfig/i18n")
-                lines = f.readlines()
-                f.close()
-                for line in lines:
-                    if line[0:9] == "SUPPORTED":
-                        tmpstr = line[11:]
-                        supported = tmpstr[:string.find(tmpstr,'\"')]
-                        break
-
-            # if no info on current system, with RH 7.1 this means ALL
-            # languages were installed
-            if not supported:
-                allInstalledFlag = 1
-            else:
-                for lang in string.split(supported, ":"):
-                    langFilter[lang] = 1
-
-        langsInstalled = []
-        if os.access("/usr/share/anaconda/locale-list", os.R_OK):
-            f = open("/usr/share/anaconda/locale-list")
-            lines = f.readlines()
-            f.close()
-            for line in lines:
-                line = string.strip(line)
-                (lang, map, font, name) = string.split(line, ' ', 3)
-                langInfoByName[name] = (lang, map, font)
-                allSupportedLangs.append(name)
-
-                if allInstalledFlag or (langFilter and langFilter.has_key(lang)):
-                    langsInstalled.append(name)
-        else:
-            langInfoByName['English (USA)'] = ('en_US', 'iso01', 'default8x16')
-            allSupportedLangs.append('English (USA)')
-            langsInstalled.append('English (USA)')
-
-        self.langInfoByName = langInfoByName
-        self.allSupportedLangs = allSupportedLangs
-
-        # set languages which were selected at install time for reconfig mode
-        if useInstalledLangs:
-            self.setSupported(langsInstalled)
-                                             
-    def getAllSupported(self):
-	return self.allSupportedLangs
-
-    def getLangNameByNick(self, nick):
-	for langName in self.langInfoByName.keys():
-	    (lang, map, font) = self.langInfoByName[langName]
-	    if (nick == lang) or (nick == lang[0:len(nick)]):
-		return langName
-
-	raise KeyError, "language %s not found" % nick
-
-    def getLangNickByName(self, name):
-	(lang, map, font) = self.langInfoByName[name]
-        return lang
-
-    def getSupported (self):
-	return self.supported
-
-    def getDefault (self):
-	if self.default:
-	    return self.default
-	elif os.environ.has_key('LANG'):
-	    lang = os.environ['LANG']
-	    name = self.getLangNameByNick(lang)
-	    if name not in self.getSupported():
-		# the default language needs to be in the supported list!
-		s = self.getSupported()
-		s.append(name)
-		s.sort()
-		self.setSupported(s)
-
-	    return name
-	else:
-	    return 'English (USA)'
-    
-    def setDefault(self, name):
-	if not name:
-	    self.default = None
-	    return
-
-	self.default = name
-	(lang, map, font) = self.langInfoByName[name]
-
-	self.info['LANG'] = lang
-	self.info['SYSFONT'] = font
-	self.info['SYSFONTACM'] = map
-
-    def setSupported (self, langlist):
-	if len(langlist) == len(self.allSupportedLangs):
-            self.info["SUPPORTED"] = None
-	    self.supported = langlist
-            rpm.delMacro ("_install_langs")
-        elif langlist:
-	    rpmNickList = []
-	    for name in langlist:
-		(lang, map, font) = self.langInfoByName[name]
-		rpmNickList = rpmNickList + expandLangs(lang)
-
-            linguas = string.join (rpmNickList, ':')
-            self.info["SUPPORTED"] = linguas
-	    self.supported = langlist
-
-            shortLinguas = string.join (rpmNickList, ':')
-            rpm.addMacro("_install_langs", shortLinguas)
-        else:
-            self.info["SUPPORTED"] = None
-            rpm.delMacro ("_install_langs")
-	    self.supported = None
-	
-	if self.info["SUPPORTED"]:
-	    os.environ ["LINGUAS"] = self.info["SUPPORTED"]
-	else:
-	    os.environ ["LINGUAS"] = ""
-    
 class Firewall:
     def __init__ (self):
 	self.enabled = -1
@@ -515,7 +270,7 @@ class InstSyslog:
         
 class ToDo:
     def __init__(self, intf, method, rootPath, setupFilesystems = 1,
-		 installSystem = 1, mouse = None, instClass = None, x = None,
+		 installSystem = 1, instClass = None, x = None,
 		 expert = 0, serial = 0, reconfigOnly = 0, test = 0,
 		 extraModules = []):
 	self.intf = intf
@@ -525,8 +280,6 @@ class ToDo:
 	self.instPath = rootPath
 	self.setupFilesystems = setupFilesystems
 	self.installSystem = installSystem
-        self.instTimeLanguage = InstallTimeLanguage ()
-        self.language = Language (reconfigOnly)
 	self.serial = serial
         self.reconfigOnly = reconfigOnly
         self.network = Network ()
@@ -534,13 +287,6 @@ class ToDo:
         self.extraModules = extraModules
         self.verifiedState = None
 
-        if mouse:
-            self.mouse = mouse
-        else:
-            self.mouse = Mouse ()
-        
-        self.keyboard = Keyboard ()
-        self.deadkeyState = ""
         self.auth = Authentication ()
 	self.firewall = Firewall()
         self.ddruidReadOnly = 0
@@ -596,11 +342,13 @@ class ToDo:
 
 	if (not instClass):
 	    raise TypeError, "installation class expected"
+
+	# XXX
         if x:
             self.x = x
-            self.x.setMouse (self.mouse)
-        else:
-            self.x = XF86Config (mouse = self.mouse)
+            #self.x.setMouse (self.mouse)
+        #else:
+            #self.x = XF86Config (mouse = self.mouse)
 
 	# This absolutely, positively MUST BE LAST
 	self.setClass(instClass)
@@ -695,17 +443,16 @@ class ToDo:
     def setTimezoneInfo(self, timezone, asUtc = 0, asArc = 0):
 	self.timezone = (timezone, asUtc, asArc)
 
-    def writeLanguage(self):
-	f = open(self.instPath + "/etc/sysconfig/i18n", "w")
-	f.write(str (self.language))
-	f.close()
+    # XXX
+    #def writeLanguage(self):
+	#f = open(self.instPath + "/etc/sysconfig/i18n", "w")
+	#f.write(str (self.language))
+	#f.close()
 
     def writeMouse(self):
 	if self.serial: return
-	f = open(self.instPath + "/etc/sysconfig/mouse", "w")
-	f.write(str (self.mouse))
-	f.close()
-	self.mouse.makeLink(self.instPath)
+	# XXX
+	#self.mouse.writeConfig(self.instPath)
 
     def writeDesktop(self):
         desktop = Desktop ()
@@ -714,11 +461,12 @@ class ToDo:
 	f.write(str (desktop))
 	f.close()
 
-    def writeKeyboard(self):
-	if self.serial: return
-	f = open(self.instPath + "/etc/sysconfig/keyboard", "w")
-	f.write(str (self.keyboard))
-	f.close()
+    # XXX
+    #def writeKeyboard(self):
+	#if self.serial: return
+	#f = open(self.instPath + "/etc/sysconfig/keyboard", "w")
+	#f.write(str (self.keyboard))
+	#f.close()
 
     def needBootdisk (self):
 	if self.bootdisk or self.fstab.rootOnLoop(): return 1
@@ -1381,40 +1129,42 @@ class ToDo:
 	    todo.rootpassword.set(todo.instClass.rootPassword,
 			      isCrypted = todo.instClass.rootPasswordCrypted)
 
-	if todo.instClass.language:
-	    langName = todo.language.getLangNameByNick(todo.instClass.language)
-            if todo.instClass.langsupported != None:
-                todo.language.setSupported([langName])
-            if not todo.instClass.langdefault:
-                todo.language.setDefault(langName)
-	    instLangName = todo.instTimeLanguage.getLangNameByNick(todo.instClass.language)
-	    todo.instTimeLanguage.setRuntimeLanguage(instLangName)
+	# XXX
+	#if todo.instClass.language:
+	    #langName = todo.language.getLangNameByNick(todo.instClass.language)
+            #if todo.instClass.langsupported != None:
+                #todo.language.setSupported([langName])
+            #if not todo.instClass.langdefault:
+                #todo.language.setDefault(langName)
+	    #instLangName = todo.instTimeLanguage.getLangNameByNick(todo.instClass.language)
+	    #todo.instTimeLanguage.setRuntimeLanguage(instLangName)
 
-	if todo.instClass.langsupported != None:
-            if len (todo.instClass.langsupported) == 0:
-                all = todo.language.getAllSupported()
-                todo.language.setSupported(all)
-            else:
-                newlist = []
-                for lang in todo.instClass.langsupported:
-                    newlist.append(todo.language.getLangNameByNick(lang))
-                todo.language.setSupported(newlist)
+	#if todo.instClass.langsupported != None:
+            #if len (todo.instClass.langsupported) == 0:
+                #all = todo.language.getAllSupported()
+                #todo.language.setSupported(all)
+            #else:
+                #newlist = []
+                #for lang in todo.instClass.langsupported:
+                    #newlist.append(todo.language.getLangNameByNick(lang))
+                #todo.language.setSupported(newlist)
 
-        if todo.instClass.langdefault:
-            todo.language.setDefault(todo.language.getLangNameByNick(
-                todo.instClass.langdefault))
+        #if todo.instClass.langdefault:
+            #todo.language.setDefault(todo.language.getLangNameByNick(
+                #todo.instClass.langdefault))
             
-	if todo.instClass.keyboard:
-	    todo.keyboard.set(todo.instClass.keyboard)
-            if todo.instClass.keyboard != "us":
-                xkb = todo.keyboard.getXKB ()
+	# XXX
+	#if todo.instClass.keyboard:
+	    #todo.keyboard.set(todo.instClass.keyboard)
+            #if todo.instClass.keyboard != "us":
+                #xkb = todo.keyboard.getXKB ()
 
-                if xkb:
-                    apply (todo.x.setKeyboard, xkb)
+                #if xkb:
+                    #apply (todo.x.setKeyboard, xkb)
 
-                    # hack - apply to instclass preset if present as well
-                    if (todo.instClass.x):
-                        apply (todo.instClass.x.setKeyboard, xkb)
+                    ## hack - apply to instclass preset if present as well
+                    #if (todo.instClass.x):
+                        #apply (todo.instClass.x.setKeyboard, xkb)
 
 	(bootProto, ip, netmask, gateway, nameserver, netDevice) = \
 		todo.instClass.getNetwork()
@@ -1440,10 +1190,11 @@ class ToDo:
 	if (todo.instClass.x):
 	    todo.x = todo.instClass.x
 
-	if (todo.instClass.mouse):
-	    (type, device, emulateThreeButtons) = todo.instClass.mouse
-	    todo.mouse.set(type, emulateThreeButtons, thedev = device)
-            todo.x.setMouse(todo.mouse)
+	# XXX
+	#if (todo.instClass.mouse):
+	    #(type, device, emulateThreeButtons) = todo.instClass.mouse
+	    #todo.mouse.set(type, emulateThreeButtons, thedev = device)
+            #todo.x.setMouse(todo.mouse)
             
         # this is messy, needed for upgradeonly install class
         if todo.instClass.installType == "upgrade":
