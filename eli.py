@@ -95,7 +95,7 @@ class EliConfiguration:
 	    initrd = self.makeInitrd (kernelTag, instRoot)
 
 	    sl.addEntry("label", label)
-	    if os.access (instRoot + initrd, os.R_OLK):
+	    if os.access (instRoot + initrd, os.R_OK):
 		sl.addEntry("initrd", initrd)
 		
 	    sl.addEntry("read-only")
@@ -109,7 +109,7 @@ class EliConfiguration:
 	eli.write(instRoot + "/boot/efi/eli.cfg", perms = perms)
 	
     def makeInitrd (self, kernelTag, instRoot):
-	initrd = "/boot/initrd%s.img" % (kernelTag, )
+	initrd = "/boot/efi/initrd%s.img" % (kernelTag, )
 	if not self.initrdsMade.has_key(initrd):
 	    iutil.execWithRedirect("/sbin/mkinitrd",
 	    			[ "/sbin/mkinitrd",
