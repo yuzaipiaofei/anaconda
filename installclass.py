@@ -97,7 +97,7 @@ class BaseInstallClass:
 	dispatch.setStepList(
 		 "language",
 		 "keyboard",
-#                 "defaults",
+                 "defaults",
 		 "mouse",
 #		 "welcome",
                  "findrootparts",
