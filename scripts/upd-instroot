@@ -139,9 +139,9 @@ if [ $ARCH = ia64 ]; then
 fi
 
 if [ $ARCH = s390 -o $ARCH = s390x ]; then
-    PACKAGES="$PACKAGES s390utils binutils s390installer wget 
+    PACKAGES="$PACKAGES s390utils binutils 
 	sed net-tools inetd openssh openssh-server fileutils modutils
-	initscripts mount gawk xauth bash gettext
+	initscripts mount gawk xauth bash gettext pygtk2
 	portmap textutils sh-utils telnet-server login ssh_keys"
 fi
 
@@ -203,7 +203,7 @@ if [ $ARCH = ia64 ]; then
 fi
 
 if [ $ARCH = s390 -o $ARCH = s390x ]; then
-    PACKAGESGR="$PACKAGESGR s390utils binutils s390installer
+    PACKAGESGR="$PACKAGESGR s390utils binutils 
 	sed net-tools inetd openssh openssh-server fileutils login 
 	wget initscripts xauth bash gettext
 	modutils portmap textutils openssl telnet-server strace ssh_keys"
