@@ -22,5 +22,8 @@ void ideSetup(moduleList modLoaded, moduleDeps modDeps,
 void dasdSetup(moduleList modLoaded, moduleDeps modDeps,
                moduleInfoSet modInfo, int flags,
                struct knownDevices * kd);
+void dasdSetup(moduleList modLoaded, moduleDeps modDeps,
+               moduleInfoSet modInfo, int flags,
+               struct knownDevices * kd);
 
 #endif
