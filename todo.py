@@ -2047,7 +2047,7 @@ class ToDo:
 		if arch == 'ia64':
 		    bootdev = self.fstab.getBootDevice()
 		    if not bootdev:
-			bootdev = "/dev/sda1"
+			bootdev = "sda1"
 		    ind = len(bootdev)
 		    try:
 			while (bootdev[ind-1] in string.digits):
@@ -2058,7 +2058,7 @@ class ToDo:
 		    bootpart = bootdev[ind:]
 		    
 		    argv = [ "/usr/sbin/efibootmgr", "-c" , "-L",
-		    	     "Red Hat Linux", "-d", bootdisk, "-p", bootpart ]
+		    	     "Red Hat Linux", "-d", "/dev/%s" % bootdisk, "-p", bootpart ]
 		    devnull = os.open("/dev/null", os.O_RDWR)
 		    iutil.execWithRedirect(argv[0], argv, root = self.instPath,
 		    			   stdout = devnull)
