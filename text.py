@@ -77,10 +77,11 @@ class LanguageWindow:
         if lang[:2] == "ja":
             if not isys.isPsudoTTY(0):
                 # we're not running KON yet, lets fire it up
-                global savedargs
-                savedargs.append ("--lang ja_JP")
-                sys.environ["ANACONDAARGS"] = string.join(savedargs)
+                os.environ["ANACONDAARGS"] = os.environ["ANACONDAARGS"] + " --lang ja_JP"
                 args = [ "kon", "-e", "/usr/bin/anaconda" ]
+		screen.finish()
+		print args
+		print os.environ["ANACONDAARGS"]
                 os.execv ("/sbin/loader", args)
                 
 	if not todo.serial:

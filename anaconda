@@ -68,6 +68,8 @@ for arg in sys.argv[1:]:
     sys.argv.remove (arg)
 sys.argc = 1
 
+os.environ["ANACONDAARGS"] = string.join(savedargs)
+
 #
 # default root to install into if doing a normal install
 #
