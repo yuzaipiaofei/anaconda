@@ -36,6 +36,9 @@ import traceback
 import string
 
 import isys
+if isys.isPsudoTTY(0):
+    os.environ["TERM"] = "kon"
+
 import iutil
 from translate import _
 from exception import handleException
