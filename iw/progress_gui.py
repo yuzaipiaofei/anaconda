@@ -224,16 +224,12 @@ class InstallProgressWindow (InstallWindow):
         label = gtk.Label (_("Package Progress: "))
         label.set_alignment (0, 0)
         progressTable.attach (label, 0, 1, 0, 1, gtk.SHRINK)
-        progressTable.attach (self.progress, 1, 2, 0, 1,
-                              gtk.FILL | gtk.EXPAND,
-                              gtk.FILL | gtk.EXPAND)
+        progressTable.attach (self.progress, 1, 2, 0, 1)
 
         label = gtk.Label (_("Total Progress:   "))
         label.set_alignment (0, 0)
         progressTable.attach (label, 0, 1, 1, 2, gtk.SHRINK)
-        progressTable.attach (self.totalProgress, 1, 2, 1, 2,
-                              gtk.FILL | gtk.EXPAND,
-                              gtk.FILL | gtk.EXPAND)
+        progressTable.attach (self.totalProgress, 1, 2, 1, 2)
 
         self.status =  {
             "total" :     { "packages" : (0, 1),

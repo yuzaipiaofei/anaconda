@@ -340,11 +340,12 @@ class BootloaderWindow (InstallWindow):
         
         box = gtk.VBox (gtk.FALSE, 0)
 
-        label = gtk.Label(_("Please select the boot loader that the computer will use.  GRUB is the default boot loader. "
-                           "However, if you do not wish to overwrite your current boot loader, "
-                           "select \"Do not install a boot loader.\"  "))
-        label.set_usize(400, -1)
-        label.set_line_wrap(gtk.TRUE)
+        label = gui.WrappingLabel(_("Please select the boot loader that "
+                                    "the computer will use.  GRUB is the "
+                                    "default boot loader. However, if you "
+                                    "do not wish to overwrite your current "
+                                    "boot loader, select \"Do not install "
+                                    "a boot loader.\"  "))
         label.set_alignment(0.0, 0.0)
         self.editBox = gtk.VBox ()
         self.imageList = gtk.CList (4, ( _("Default"), _("Device"),

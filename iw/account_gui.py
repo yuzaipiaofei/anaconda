@@ -12,10 +12,11 @@
 #
 
 import gtk
-from iw_gui import *
-from translate import _, N_
 import re
 import string
+from gui import WrappingLabel
+from iw_gui import *
+from translate import _, N_
 from flags import flags
 
 class AccountWindow (InstallWindow):
@@ -79,9 +80,11 @@ class AccountWindow (InstallWindow):
 	    if not accountName:
 		self.userPwLabel.set_text("")
 	    elif accountName == "root":
-		self.userPwLabel.set_text (_("Root account can not be added here."))
+		self.userPwLabel.set_text (
+                    _("Root account can not be added here."))
             elif accountName in systemUsers:
-                self.userPwLabel.set_text (_("System accounts can not be added here."))
+                self.userPwLabel.set_text (
+                    _("System accounts can not be added here."))
 	    elif not password1 and not password2:
 		self.userPwLabel.set_text (_("Please enter user password."))
 	    elif len (password1) < 6:
@@ -98,7 +101,8 @@ class AccountWindow (InstallWindow):
 	password = self.passwords[accountName]
         self.edit.set_sensitive(gtk.TRUE)
         self.delete.set_sensitive(gtk.TRUE)
-        #Keep track of the data in the CList so we can edit the entry when Edit button is clicked
+        # Keep track of the data in the CList so we can edit the entry
+        # when Edit button is clicked
         self.data = [index, accountName, password, password, fullName]
 
     def addUser_cb(self, widget, *args):
@@ -135,12 +139,15 @@ class AccountWindow (InstallWindow):
 	accountName = self.accountName.get_text()
 	password1 = self.userPass1.get_text()
 	fullName = self.fullName.get_text()
-        index = index[0]        #Get first item in the list
+        # Get first item in the list
+        index = index[0]
 
-        #if the username has not changed, reset the password
+        # if the username has not changed, reset the password
         if accountName in self.passwords.keys():
             self.passwords[accountName] = password1
-        else:  #the username has changed, we need to remove that username from password dictionary
+        else:
+            # the username has changed, we need to remove that
+            # username from password dictionary
             currAccount = self.userList.get_text(index, 0)
             del self.passwords[currAccount]
             self.passwords[accountName] = password1
@@ -165,7 +172,8 @@ class AccountWindow (InstallWindow):
 
     def editUser (self, widget):
         title = _("Edit User")
-        if self.data:   #if there is data there to edit
+        if self.data:
+            # if there is data there to edit
             self.win = self.userWindow(title, self.data)
             self.win.append_button_with_pixmap(_("OK"), STOCK_BUTTON_OK)
             self.win.append_button_with_pixmap(_("Cancel"), STOCK_BUTTON_CANCEL)
@@ -188,7 +196,7 @@ class AccountWindow (InstallWindow):
         userAddFrame.add(vbox)
         userWin.vbox.pack_start(userAddFrame)
 
-        #Labels
+        # Labels
         label = gtk.Label (_("User Name:"))
         userTable.attach(label, 0, 1, 0, 1)
         label = gtk.Label (_("Full Name:"))
@@ -197,11 +205,11 @@ class AccountWindow (InstallWindow):
         userTable.attach(label, 0, 1, 2, 3)
         label = gtk.Label (_("Confirm:"))
         userTable.attach(label, 0, 1, 3, 4)
-        #user password label
+        # user password label
         self.userPwLabel = gtk.Label(_("Please enter user name"))
         vbox.pack_start(self.userPwLabel)
 
-        #entry boxes
+        # entry boxes
         self.accountName = gtk.Entry (8)
         userTable.attach(self.accountName, 1, 2, 0, 1, gtk.SHRINK, gtk.SHRINK)
         self.fullName = gtk.Entry ()
@@ -279,7 +287,8 @@ class AccountWindow (InstallWindow):
             a.set (0.0, 0.0, 0.0, 0.0)
             hbox.pack_start (a, gtk.FALSE)
 
-        label = gtk.Label (_("Enter the password for the root user (administrator) of this system."))
+        label = gtk.Label (_("Enter the password for the root user "
+                             "(administrator) of this system."))
         label.set_line_wrap(gtk.TRUE)
         label.set_usize(350, -1)
 
@@ -365,14 +374,14 @@ class AccountWindow (InstallWindow):
             hbox.pack_start (a, gtk.FALSE, padding=7)
 
         a = gtk.Alignment (0.0, 0.5)
-        label = gtk.Label (_("Additional accounts can be created for other "
-                            "users of this system. Such accounts could be for "
-                            "a personal login account, or for other "
-                            "non-administrative users who need to use this "
-                            "system. Use the <Add> button to enter additional "
-                            "user accounts."))
+        label = WrappingLabel(
+            _("Additional accounts can be created for other "
+              "users of this system. Such accounts could be for "
+              "a personal login account, or for other "
+              "non-administrative users who need to use this "
+              "system. Use the <Add> button to enter additional "
+              "user accounts."))
         label.set_line_wrap(gtk.TRUE)
-        label.set_usize(350, -1)
         a.add(label)
         hbox.pack_start(a, gtk.FALSE)
 

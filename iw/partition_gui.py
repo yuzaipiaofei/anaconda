@@ -16,6 +16,7 @@
 import gtk
 import gnome.canvas
 import pango
+from gui import WrappingLabel, widgetExpander
 from iw_gui import *
 from translate import _, N_
 from partitioning import *
@@ -110,11 +111,10 @@ class DiskStripeSlice:
                              * disk.dev.cylinders)
 
         # XXX hack but will work for now
-        width = CANVAS_WIDTH_800        
-#        if screen_width() > 640:
-#            width = CANVAS_WIDTH_800
-#        else:
-#            width = CANVAS_WIDTH_640
+        if gtk.gdk.screen_width() > 640:
+            width = CANVAS_WIDTH_800
+        else:
+            width = CANVAS_WIDTH_640
 
         xoffset = self.partition.geom.start / totalSectors * width
         xlength = self.partition.geom.length / totalSectors * width
@@ -164,11 +164,10 @@ class DiskStripe:
         self.selected = None
 
         # XXX hack but will work for now
-        width = CANVAS_WIDTH_640
-#        if screen_width() > 640:
-#            width = CANVAS_WIDTH_800
-#        else:
-#            width = CANVAS_WIDTH_640
+        if gtk.gdk.screen_width() > 640:
+            width = CANVAS_WIDTH_800
+        else:
+            width = CANVAS_WIDTH_640
         
         group.add(gnome.canvas.CanvasRect, x1=0.0, y1=10.0, x2=width,
                   y2=STRIPE_HEIGHT, fill_color='green',
@@ -523,11 +522,11 @@ class PartitionWindow(InstallWindow):
 
         info1 = gtk.Label(labelstr1)
         info1.set_line_wrap(gtk.TRUE)
-        info1.set_usize(300, -1)
+#        info1.set_usize(300, -1)
 
         info2 = gtk.Label(labelstr2)
         info2.set_line_wrap(gtk.TRUE)
-        info2.set_usize(300, -1)
+#        info2.set_usize(300, -1)
         
         vbox = gtk.VBox(gtk.FALSE)
         vbox.pack_start(info1, gtk.FALSE)
@@ -536,7 +535,7 @@ class PartitionWindow(InstallWindow):
         hbox.pack_start(vbox, gtk.FALSE)
 
         win.vbox.pack_start(hbox)
-        win.set_usize(400,300)
+#        win.set_usize(400,300)
         win.set_position(gtk.WIN_POS_CENTER)
         win.show_all()
         rc = win.run()
@@ -1015,7 +1014,7 @@ class PartitionWindow(InstallWindow):
                                "on this partition?"))
             label.set_line_wrap(1)
             label.set_alignment(0.0, 0.0)
-            label.set_usize(400, -1)
+#            label.set_usize(400, -1)
 
             maintable.attach(label, 0, 2, row, row + 1)
             row = row + 1
@@ -1658,16 +1657,13 @@ class AutoPartitionWindow(InstallWindow):
         box = gtk.VBox(gtk.FALSE)
         box.set_border_width(5)
 
-        label = gtk.Label(_(AUTOPART_DISK_CHOICE_DESCR_TEXT))
-
-        label.set_line_wrap(1)
+        label = WrappingLabel(_(AUTOPART_DISK_CHOICE_DESCR_TEXT))
         label.set_alignment(0.0, 0.0)
-        label.set_usize(400, -1)
         box.pack_start(label, gtk.FALSE, gtk.FALSE)
 
         # what partition types to remove
         clearbox = gtk.VBox(gtk.FALSE)
-        label = gtk.Label(_("I want to have automatic partitioning:"))
+        label = WrappingLabel(_("I want to have automatic partitioning:"))
         label.set_alignment(0.0, 0.0)
         clearbox.pack_start(label, gtk.FALSE, gtk.FALSE, 10)
         
@@ -1698,8 +1694,8 @@ class AutoPartitionWindow(InstallWindow):
 
         # which drives to use?
         drivesbox = gtk.VBox(gtk.FALSE)
-        label = gtk.Label(_("Which drive(s) do you want to use for this "
-                           "installation?"))
+        label = WrappingLabel(_("Which drive(s) do you want to use for this "
+                                "installation?"))
         label.set_alignment(0.0, 0.0)
         drivesbox.pack_start(label, gtk.FALSE, gtk.FALSE, 10)
         self.driveclist = createAllowedDrivesClist(diskset.disks,
@@ -1720,17 +1716,17 @@ class AutoPartitionWindow(InstallWindow):
         box.pack_start(drivesbox, gtk.FALSE, gtk.FALSE)
 
         self.inspect = gtk.CheckButton()
-        label = gtk.Label(_("Review (allows you to see and "
-                  "change the automatic partitioning results)"))
-        label.set_alignment(0.0, 1.0)
+        widgetExpander(self.inspect)
+        label = gtk.Label(_("Review (allows you to see and change the "
+                            "automatic partitioning results)"))
         label.set_line_wrap(gtk.TRUE)
-        label.set_usize(400, -1)
-        
+        widgetExpander(label, self.inspect)
+        label.set_alignment(0.0, 1.0)
         self.inspect.add(label)
 
         self.inspect.set_active(not dispatch.stepInSkipList("partition"))
-        
-	box.pack_start(self.inspect, gtk.FALSE, gtk.FALSE, 10)
+
+	box.pack_start(self.inspect, gtk.TRUE, gtk.TRUE, 10)
 
         self.ics.setNextEnabled(gtk.TRUE)
 

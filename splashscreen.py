@@ -19,7 +19,6 @@ os.environ["PYGTK_FATAL_EXCEPTIONS"] = "1"
 os.environ["GNOME_DISABLE_CRASH_DIALOG"] = "1"
 
 import gtk
-#from gtk import _root_window
 from flags import flags
 
 splashwindow = None
@@ -30,17 +29,17 @@ def splashScreenShow(configFileData):
         path = ("/usr/X11R6/bin/xsetroot",)
         args = ("-solid", "gray45")
 
-        child = os.fork ()
+        child = os.fork()
         if (child == 0):
-            os.execv (path[0], path + args)
+            os.execv(path[0], path + args)
         try:
             pid, status = os.waitpid(child, 0)
         except OSError, (errno, msg):
             print __name__, "waitpid:", msg
 
-#    root = _root_window ()
-    cursor = gtk.gdk.Cursor (gtk.gdk.LEFT_PTR)
-#    root.set_cursor (cursor)
+    root = gtk.gdk.get_default_root_window()
+    cursor = gtk.gdk.Cursor(gtk.gdk.LEFT_PTR)
+    root.set_cursor(cursor)
 
     def load_image(file):
         p = gtk.Image()
@@ -53,8 +52,7 @@ def splashScreenShow(configFileData):
 
     global splashwindow
     
-#    width = screen_width()
-    width = 800
+    width = gtk.gdk.screen_width()
     p = None
 
     # If the xserver is running at 800x600 res or higher, use the
@@ -67,19 +65,19 @@ def splashScreenShow(configFileData):
         p = load_image('pixmaps/first-lowres.png')
                         
     if p:
-        splashwindow = gtk.Window ()
-        splashwindow.set_position (gtk.WIN_POS_CENTER)
-        box = gtk.EventBox ()
-        box.modify_bg(gtk.STATE_NORMAL, box.get_style ().white)
-        box.add (p)
-        splashwindow.add (box)
+        splashwindow = gtk.Window()
+        splashwindow.set_position(gtk.WIN_POS_CENTER)
+        box = gtk.EventBox()
+        box.modify_bg(gtk.STATE_NORMAL, box.get_style().white)
+        box.add(p)
+        splashwindow.add(box)
         box.show_all()
         splashwindow.show_now()
-#        gdk_flush ()
-        while gtk.events_pending ():
-            gtk.mainiteration (gtk.FALSE)
+        gtk.gdk.flush()
+        while gtk.events_pending():
+            gtk.main_iteration(gtk.FALSE)
 
 def splashScreenPop():
     global splashwindow
     if splashwindow:
-        splashwindow.destroy ()
+        splashwindow.destroy()

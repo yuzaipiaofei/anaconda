@@ -14,6 +14,7 @@
 #
 
 import gtk
+from gui import WrappingLabel
 from iw_gui import *
 from translate import _
 from autopart import PARTMETHOD_TYPE_DESCR_TEXT
@@ -46,8 +47,7 @@ class PartitionMethodWindow(InstallWindow):
         box = gtk.VBox (gtk.FALSE)
         box.set_border_width (5)
 
-        label=gtk.Label(_(PARTMETHOD_TYPE_DESCR_TEXT))
-        label.set_line_wrap(1)
+        label=WrappingLabel(_(PARTMETHOD_TYPE_DESCR_TEXT))
         label.set_alignment(0.0, 0.0)
 
         box.pack_start(label, gtk.TRUE, gtk.TRUE)

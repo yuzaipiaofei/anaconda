@@ -75,8 +75,9 @@ else:
 # setup globals
 
 def processEvents():
-    while gtk.events_pending ():
-        gtk.mainiteration (gtk.FALSE)
+    gtk.gdk.flush()
+    while gtk.events_pending():
+        gtk.main_iteration(gtk.FALSE)
 
 def partedExceptionWindow(exc):
     # if our only option is to cancel, let us handle the exception
@@ -88,8 +89,7 @@ def partedExceptionWindow(exc):
     print exc.options
     win = gtk.Dialog (exc.type_string)
     win.set_position (gtk.WIN_POS_CENTER)
-    label = gtk.Label(exc.message)
-    label.set_line_wrap (gtk.TRUE)
+    label = WrappingLabel(exc.message)
     win.vbox.pack_start (label)
     numButtons = 0
     buttonToAction = {}
@@ -110,27 +110,51 @@ def partedExceptionWindow(exc):
     rc = win.run()
     return buttonToAction[rc]
 
+def widgetExpander(widget, growTo=None):
+    widget.connect("size-allocate", growToParent, growTo)
+
+def growToParent(widget, rect, growTo=None):
+    if not widget.parent:
+        return
+    ignore = widget.__dict__.get("ignoreEvents")
+    if not ignore:
+        if growTo:
+            x, y, width, height = growTo.get_allocation()
+            widget.set_usize(width, -1)
+        else:
+            widget.set_usize(rect.width, -1)
+        widget.ignoreEvents = 1
+    else:
+        widget.ignoreEvents = 0
+
+class WrappingLabel(gtk.Label):
+    def __init__(self, label=""):
+        gtk.Label.__init__(self, label)
+        self.set_line_wrap(gtk.TRUE)
+        self.ignoreEvents = 0
+        self.set_usize(-1, 1)
+        widgetExpander(self)
+
 class WaitWindow:
     def __init__(self, title, text):
-        self.window = gtk.Window (gtk.WINDOW_POPUP)
-        self.window.set_title (_(title))
-        self.window.set_position (gtk.WIN_POS_CENTER)
-        self.window.set_modal (gtk.TRUE)
-        label = gtk.Label (_(text))
-        label.set_line_wrap (gtk.TRUE)
-        box = gtk.Frame ()
-        box.set_border_width (10)
-        box.add (label)
-        box.set_shadow_type (gtk.SHADOW_NONE)
+        self.window = gtk.Window(gtk.WINDOW_POPUP)
+        self.window.set_title(_(title))
+        self.window.set_position(gtk.WIN_POS_CENTER)
+        self.window.set_modal(gtk.TRUE)
+        label = WrappingLabel(_(text))
+        box = gtk.Frame()
+        box.set_border_width(10)
+        box.add(label)
+        box.set_shadow_type(gtk.SHADOW_NONE)
         frame = gtk.Frame ()
-        frame.set_shadow_type (gtk.SHADOW_OUT)
+        frame.set_shadow_type(gtk.SHADOW_OUT)
         frame.add (box)
-	self.window.add (frame)
-	self.window.show_all ()
-        processEvents ()
+	self.window.add(frame)
+	self.window.show_all()
+        processEvents()
             
     def pop(self):
-        self.window.destroy ()
+        self.window.destroy()
 
 class ProgressWindow:
     def __init__(self, title, text, total):
@@ -141,8 +165,7 @@ class ProgressWindow:
         box = gtk.VBox (gtk.FALSE, 5)
         box.set_border_width (10)
 
-        label = gtk.Label (_(text))
-        label.set_line_wrap (gtk.TRUE)
+        label = WrappingLabel (_(text))
         label.set_alignment (0.0, 0.5)
         box.pack_start (label, gtk.FALSE)
         
@@ -171,7 +194,7 @@ class ExceptionWindow:
         win.add_button("Save to floppy", 1)
         win.add_button('gtk-ok', 2)
         buffer = gtk.TextBuffer(None)
-        buffer.set_text(text, len(text))
+        buffer.set_text(text)
         textbox = gtk.TextView()
         textbox.set_buffer(buffer)
         textbox.set_property("editable", gtk.FALSE)
@@ -185,13 +208,12 @@ class ExceptionWindow:
 ##         if file:
 ##             hbox.pack_start (GnomePixmap (file), gtk.FALSE)
 
-        info = gtk.Label(_("An unhandled exception has occured.  This "
-                          "is most likely a bug.  Please copy the "
-                          "full text of this exception or save the crash "
-                          "dump to a floppy then file a detailed bug "
-                          "report against anaconda at "
-                          "http://bugzilla.redhat.com/bugzilla/"))
-        info.set_line_wrap (gtk.TRUE)
+        info = WrappingLabel(_("An unhandled exception has occured.  This "
+                               "is most likely a bug.  Please copy the "
+                               "full text of this exception or save the crash "
+                               "dump to a floppy then file a detailed bug "
+                               "report against anaconda at "
+                               "http://bugzilla.redhat.com/bugzilla/"))
         info.set_usize (400, -1)
 
         hbox.pack_start (sw, gtk.TRUE)
@@ -230,33 +252,37 @@ class MessageWindow:
             self.rc = 1
             return
         self.rc = None
-        self.window = gtk.Dialog()
-        self.window.vbox.pack_start(gtk.Label(_(text)), gtk.FALSE)
+#        window = gtk.Dialog(flags=gtk.DIALOG_MODAL)
+        window = gtk.Dialog("Foo", None, gtk.DIALOG_MODAL)
+        window = gtk.Dialog()
+        window.vbox.pack_start(WrappingLabel(_(text)), gtk.FALSE)
         if type == "ok":
-            self.window.add_button('gtk-ok', 1)
+            window.add_button('gtk-ok', 1)
         if type == "okcancel":
-            self.window.add_button('gtk-ok', 1)
-            self.window.add_button('gtk-cancel', 2)
+            window.add_button('gtk-ok', 1)
+            window.add_button('gtk-cancel', 0)
         if type == "yesno":
-            self.window.add_button('gtk-yes', 1)
-            self.window.add_button('gtk-no', 2)
-        # this is the pixmap + the label
-        self.window.set_position (gtk.WIN_POS_CENTER)
-#        win = self.window.get_window()
-#        win.keyboard_grab(0)
-        self.window.show_all ()
-        self.rc = self.window.run ()
-        self.window.destroy()
-        
-#        win.keyboard_ungrab()
+            window.add_button('gtk-yes', 1)
+            window.add_button('gtk-no', 0)
+        if default == "no":
+            window.set_default_response(0)
+        elif default == "yes" or default == "ok":
+            window.set_default_response(1)
+        else:
+            raise RuntimeError, "unhandled default"
+        window.set_position (gtk.WIN_POS_CENTER)
+        window.show_all ()
+        self.rc = window.run ()
+        window.destroy()
     
 class InstallInterface:
     def __init__ (self):
         # figure out if we want to run interface at 800x600 or 640x480
-#        if screen_width() >= 800:
-        self.runres = "800x600"
-#        else:
-#            self.runres = "640x480"            
+        if gtk.gdk.screen_width() >= 800:
+            self.runres = "800x600"
+        else:
+            self.runres = "640x480"
+        self.runres = "640x480"
 
     def __del__ (self):
         pass
@@ -386,6 +412,7 @@ class InstallControlWindow:
             self.showHelpButton.set_state (gtk.STATE_NORMAL)
             self.hbox.pack_start (self.showHelpButton, gtk.FALSE)
             self.hbox.reorder_child (self.showHelpButton, 0)
+            self.showHelpButton.grab_focus()            
             self.displayHelp = gtk.FALSE
         else:
             self.bin.remove (self.installFrame)
@@ -400,6 +427,7 @@ class InstallControlWindow:
             self.showHelpButton.set_state (gtk.STATE_NORMAL)
             self.hbox.pack_start (self.hideHelpButton, gtk.FALSE)
             self.hbox.reorder_child (self.hideHelpButton, 0)
+            self.hideHelpButton.grab_focus()
             self.displayHelp = gtk.TRUE
 
     def close (self, *args):
@@ -425,7 +453,7 @@ class InstallControlWindow:
 
         if self.buff != "":
             buffer = gtk.TextBuffer(None)
-            buffer.set_text(self.buff, len(self.buff))
+            buffer.set_text(self.buff)
             text = gtk.TextView()
             text.set_buffer(buffer)
             text.set_property("editable", gtk.FALSE)
@@ -487,7 +515,7 @@ class InstallControlWindow:
     def setScreen (self):
 	(step, args) = self.dispatch.currentStep()
 	if not step:
-	    mainquit()
+	    gtk.mainquit()
 	    return
 
 	if not stepToClass[step]:
@@ -498,7 +526,8 @@ class InstallControlWindow:
 		
 	(file, className) = stepToClass[step]
         newScreenClass = None
-	s = "from %s import %s; newScreenClass = %s" % (file, className, className)
+	s = "from %s import %s; newScreenClass = %s" % (file, className,
+                                                        className)
 	exec s
 
 	ics = InstallControlState (self)
@@ -601,8 +630,8 @@ class InstallControlWindow:
         if ((event.keyval == gtk.keysyms.KP_Delete
              or event.keyval == gtk.keysyms.Delete)
             and (event.state & (gtk.gdk.CONTROL_MASK | gtk.gdk.MOD1_MASK))):
-            gtk.mainquit ()
-            os._exit (0)
+            gtk.mainquit()
+            os._exit(0)
 
     def buildStockButtons(self):
 	for (icon, item, text, action) in self.stockButtons:
@@ -611,7 +640,8 @@ class InstallControlWindow:
             image = gtk.Image()
             image.set_from_stock(icon, gtk.ICON_SIZE_BUTTON)
             box.pack_start(image, gtk.FALSE, gtk.FALSE)
-            label = gtk.gtk_label_new_with_mnemonic(_(text))
+            label = gtk.Label(_(text))
+            label.set_property("use-underline", gtk.TRUE)
             box.pack_start(label, gtk.TRUE, gtk.TRUE)
             button.add(box)
 	    button.connect("clicked", action)
@@ -769,8 +799,8 @@ class InstallControlWindow:
 
     def run (self, runres, configFileData):
         self.configFileData = configFileData
-        self.setup_window (runres)
-        gtk.mainloop ()
+        self.setup_window(runres)
+        gtk.main()
             
 class InstallControlState:
     def __init__ (self, cw):
