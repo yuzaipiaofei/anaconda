@@ -2038,22 +2038,6 @@ int kickstartFromFloppy(char * location, moduleList modLoaded,
     return 0;
 }
 
-void readExtraModInfo(moduleInfoSet modInfo) {
-    int num = 0;
-    char fileName[80];
-    char * dirName;
-
-    sprintf(fileName, "/tmp/DD-%d/modinfo", num);
-    while (!access(fileName, R_OK)) {
-	dirName = malloc(50);
-	sprintf(dirName, "/tmp/DD-%d", num);
-
-	isysReadModuleInfo(fileName, modInfo, dirName);
-
-	sprintf(fileName, "/tmp/DD-%d/modinfo", ++num);
-    }
-}
-
 /* Recursive */
 int copyDirectory(char * from, char * to) {
     DIR * dir;
@@ -2581,7 +2565,12 @@ logMessage("found url image %s", url);
     /* merge in any new pci ids */
     pciReadDrivers("/modules/pcitable");
 
-    /*modInfo = isysNewModuleInfoSet();*/
+    /* We reinit this from the beginning because we could have lost drivers
+       when we switched media, and we don't want to list ones that don't
+       exist. This is a bit unfortunate in that we lose information on
+       drivers we've loaded as well, which could include ISA drivers which
+       kudzu won't reprobe! */
+    modInfo = isysNewModuleInfoSet();
 #if !defined(__ia64__)
     if (isysReadModuleInfo(arg, modInfo, NULL)) {
         fprintf(stderr, "failed to read %s\n", arg);
@@ -2590,7 +2579,9 @@ logMessage("found url image %s", url);
     }
 #endif
 
-    readExtraModInfo(modInfo);
+    /* merge in drivers we know about from a driver disk so we probe things
+       properly */
+    ddReadDriverDiskModInfo(modInfo);
 
     if (ksFile)
 	kickstartDevices(&kd, modInfo, modLoaded, &modDeps, flags);
