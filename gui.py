@@ -56,9 +56,9 @@ stepToClass = {
     "bootloader": ("bootloader_main_gui", "MainBootloaderWindow"),
     "bootloaderadvanced": ("bootloader_advanced_gui", "AdvancedBootloaderWindow"),
     "upgbootloader": ("upgrade_bootloader_gui", "UpgradeBootloaderWindow"),
-#    "network" : ("network_gui", "NetworkWindow"),
+    "network" : ("network_gui", "NetworkWindow"),
 #    "firewall" : ("firewall_gui", "FirewallWindow"),
-#    "languagesupport" : ("language_support_gui", "LanguageSupportWindow"),
+    "languagesupport" : ("language_support_gui", "LanguageSupportWindow"),
     "timezone" : ("timezone_gui", "TimezoneWindow"),
     "accounts" : ("account_gui", "AccountWindow"),
     "desktopchoice": ("desktop_choice_gui", "DesktopChoiceWindow"),
@@ -639,10 +639,12 @@ class InstallInterface:
         return None
 
     def run(self, id, dispatch, configFileData):
-##         from xkb import XKB
-##         kb = XKB()
-
 	self.dispatch = dispatch
+        #Skip these steps in GUI mode since we have the defaults screen now
+        self.dispatch.skipStep('keyboard')
+        self.dispatch.skipStep('mouse')
+        self.dispatch.skipStep('network')
+        self.dispatch.skipStep('languagesupport')
 
         # XXX users complain when the keypad doesn't work for input.
 ##         if 0 and flags.setupFilesystems:
