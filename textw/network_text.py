@@ -80,8 +80,6 @@ class NetworkWindow:
             ask_ptp = None
             secondg = Grid (2, 6)
 
-        secondg = Grid (2, 6)
-            
         secondg.setField (Label (_("IP address:")), 0, 0, anchorLeft = 1)
 	secondg.setField (Label (_("Netmask:")), 0, 1, anchorLeft = 1)
 	secondg.setField (Label (_("Default gateway (IP):")), 0, 2,
