@@ -14,6 +14,7 @@ SUBDIRSHD = balkan isys collage $(MINISLANG) loader po text-help \
 	    keymaps fonts gnome-map iw help pixmaps $(STUBS)
 SUBDIRS = $(SUBDIRSHD)
 
+
 ifeq (i386, $(ARCH))
 SUBDIRS := ddcprobe edd $(SUBDIRS)
 endif
@@ -24,6 +25,11 @@ DESTDIR = ../../../RedHat/instimage
 CATALOGS = po/anaconda.pot
 
 PYFILES = $(wildcard *.py)
+
+SUBDEP = $(patsubst %,dep-%, $(SUBDIRS))
+SUBCLEAN = $(patsubst %,clean-%, $(SUBDIRS))
+
+.PHONY: subdirs $(SUBDIRS) $(CATALOGS) $(SUBDEP) $(SUBCLEAN)
 
 all: subdirs _xkb.so xmouse.so $(CATALOGS) lang-table
 
@@ -38,16 +44,22 @@ xmouse.so: xmouse.c
 $(CATALOGS):
 	make -C po anaconda.pot
 
-depend:
+depend: $(SUBDEP)
 	rm -f *.o *.so *.pyc
-	for d in $(SUBDIRS); do make -C $$d depend; done
 
-clean:
+$(SUBDEP):
+	make -C $(subst dep-,,$@) depend
+
+clean: $(SUBCLEAN)
 	rm -f *.o *.so *.pyc
-	for d in $(SUBDIRS); do make -C $$d clean; done
 
-subdirs:
-	for d in $(SUBDIRS); do make -C $$d; [ $$? = 0 ] || exit 1; done
+$(SUBCLEAN):
+	make -C $(subst clean-,,$@) clean
+
+subdirs: $(SUBDIRS)
+
+$(SUBDIRS):
+	make -C $@
 
 # this rule is a hack
 install-python:
