@@ -690,16 +690,6 @@ usr/share/fonts/ISO8859-2/100dpi/fonts*
 EOF
 fi
 
-if [ $ARCH = s390 -o $ARCH = s390x ]; then
-    for i in $DEST $DESTGR; do
-       (cd $i/etc/ssh; chmod og-r ssh_host*key sshd_config)
-       mv $i/bin/sed $i/bin/sed_save
-       mv $i/bin/mount $i/bin/mount_save
-       mv $i/bin/sort $i/bin/sort_save
-       mv $i/bin/mknod $i/bin/mknod_save
-    done
-fi
-
 echo "Assembling package list..."
 RPMS=$(prunePackageList $PACKAGEDIR "$PACKAGES")
 RPMSGR=$(prunePackageList $PACKAGEDIR "$PACKAGESGR")
