@@ -114,7 +114,7 @@ class EliConfiguration:
 	    iutil.execWithRedirect("/sbin/mkinitrd",
 	    			[ "/sbin/mkinitrd",
 				"--ifneeded",
-				initrd,
+				"/boot/efi/%s" % initrd,
 				kernelTag[1:] ],
 				stdout = None, stderr = None, searchPath = 1,
 				root = instRoot)
