@@ -1,4 +1,4 @@
-Name: anaconda
+Name: anaconda-ia64
 Version: @@VERSION@@
 Release: @@RELEASE@@
 Copyright: GPL
@@ -7,9 +7,7 @@ Group: Applications/System
 Source: anaconda-%{PACKAGE_VERSION}.tar.bz2
 Obsoletes: anaconda-reconfig
 BuildPreReq: pump-devel, kudzu-devel, pciutils-devel, bzip2-devel, e2fsprogs-devel, python-devel db3-devel gtk+-devel gnome-libs-devel
-Prereq: chkconfig /etc/init.d
-Requires: rpm-python
-Excludearch: sparc sparc64
+ExclusiveArch: ia64
 
 BuildRoot: /var/tmp/anaconda-%{PACKAGE_VERSION}
 
@@ -18,13 +16,24 @@ The anaconda package contains portions of the Red Hat Linux
 installation program which can then be run by the user for
 reconfiguration and advanced installation options.
 
-%package runtime
+%package -n anaconda
+Summary: The Red Hat Linux installation program.
+Group: Applications/System
+Prereq: chkconfig /etc/init.d
+Requires: rpm-python
+
+%description -n anaconda
+The anaconda package contains portions of the Red Hat Linux
+installation program which can then be run by the user for
+reconfiguration and advanced installation options.
+
+%package -n anaconda-runtime
 Summary: Red Hat Linux installer portions needed only for fresh installs.
 Group: Applications/System
 AutoReqProv: false
 Requires: anaconda = %{version}-%{release}
 
-%description runtime
+%description -n anaconda-runtime
 The anaconda-runtime package contains parts of the Red Hat Linux
 installer which are needed for installing new systems. These files are
 used to build Red Hat Linux media sets, but are not meant for use on
@@ -56,7 +65,7 @@ if [ $1 = 0 ]; then
 	chkconfig --del reconfig
 fi
 
-%files
+%files -n anaconda
 %defattr(-,root,root)
 %doc COPYING
 /usr/sbin/anaconda
@@ -69,7 +78,7 @@ fi
 
 %config /etc/rc.d/init.d/reconfig
 
-%files runtime
+%files -n anaconda-runtime
 %defattr(-,root,root)
 /usr/lib/anaconda-runtime
 
