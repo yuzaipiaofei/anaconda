@@ -677,7 +677,6 @@ int main(int argc, char **argv) {
     dup2(fd, 1);
     dup2(fd, 2);
     close(fd);
-#endif
 
     setsid();
     if (ioctl(0, TIOCSCTTY, NULL)) {
