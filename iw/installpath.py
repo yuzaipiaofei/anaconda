@@ -35,12 +35,12 @@ SERVER = 5
 
 class InstallPathWindow (InstallWindow):		
 
-    installTypes = ((WORKSTATION_GNOME, _("GNOME Workstation"),
+    installTypes = ((WORKSTATION_GNOME, _("Server and GNOME Administration Environment"),
                      "gnome-workstation.png"),
-                    (WORKSTATION_KDE, _("KDE Workstation"),
+                    (WORKSTATION_KDE, _("Server and KDE Administration Environment"),
                      "kde-workstation.png"),
-                    (SERVER, _("Server"), "server.png"),
-                    (CUSTOM, _("Custom"), "custom.png"))
+#                    (SERVER, _("Server"), "server.png"),
+                    (CUSTOM, _("Add Individual Packages"), "custom.png"))
 
     installSteps = [ ( AutoPartitionWindow, "partition" ),
                      FDiskWindow,
@@ -202,7 +202,7 @@ class InstallPathWindow (InstallWindow):
         table.attach(installButton, 0, 2, 0, 1)
         table.attach(spacer, 0, 1, 1, 2, xoptions = FALSE)
         table.attach(self.installBox, 1, 2, 1, 2, xoptions = FILL | EXPAND)
-        table.attach(self.upgradeButton, 0, 2, 2, 3)
+#        table.attach(self.upgradeButton, 0, 2, 2, 3)
 
 	box.pack_start(table, FALSE)
 
