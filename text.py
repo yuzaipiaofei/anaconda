@@ -10,6 +10,7 @@ import gettext_rh
 import glob
 import signal
 import installclass
+import dbcs
 from translate import _, cat, N_
 from log import log
 
@@ -612,9 +613,11 @@ class InstallProgressWindow:
 	self.size.setText("%dk" % (header[rpm.RPMTAG_SIZE] / 1024))
 	summary = header[rpm.RPMTAG_SUMMARY]
 	if (summary != None):
-	    self.summ.setText(summary)
+            wcs = dbcs.String(summary, "euc-jp")
+            ww = wcs.wordwrap([39, sys.maxint], strip=1)
+	    self.summ.setText(str(ww))
 	else:
-            self.summ.setText("(none)")
+            self.summ.setText(_("(none)"))
 
 	self.g.draw()
 	self.screen.refresh()

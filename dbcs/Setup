@@ -1,0 +1,3 @@
+*shared*
+
+dbcs pydbcs.c widestr.o
