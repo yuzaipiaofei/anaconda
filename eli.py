@@ -109,7 +109,7 @@ class EliConfiguration:
 	eli.write(instRoot + "/boot/efi/eli.cfg", perms = perms)
 	
     def makeInitrd (self, kernelTag, instRoot):
-	initrd = "/boot/efi/initrd%s.img" % (kernelTag, )
+	initrd = "initrd%s.img" % (kernelTag, )
 	if not self.initrdsMade.has_key(initrd):
 	    iutil.execWithRedirect("/sbin/mkinitrd",
 	    			[ "/sbin/mkinitrd",
