@@ -858,7 +858,7 @@ class ComponentSet:
                 ts = rpm.TransactionSet()
                 how = 'i'
 
-            ts.setVSFlags(rpm.RPMVSF_NODSA|rpm.RPMVSF_NORSA)
+            ts.setVSFlags(~(rpm.RPMVSF_NODSA|rpm.RPMVSF_NORSA))
 
             for p in self.packages.values():
                 if p.selected:
@@ -915,13 +915,14 @@ class ComponentSet:
 			    conflicts = 0
 
 		    if conflicts:
-			log ("%s-%s-%s conflicts with to-be-installed "
+			log ("%s-%s-%s conflicts with older "
                              "package %s-%s, removing %s from set",
                              name, version, release, reqname, reqversion, reqname)
 			if self.packages.packages.has_key (reqname):
 			    self.packages.packages[reqname].selected = 0
 			    log ("... removed")
-            
+
+        ts.closeDB()
         del ts
 
         if not rc: 

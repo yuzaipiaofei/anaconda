@@ -340,7 +340,29 @@ def getRedHatReleaseString(mountpoint):
         lines = f.readlines()
         f.close()
         # return the first line with the newline at the end stripped
-        return lines[0][:-1]
+	relstr = string.strip(lines[0][:-1])
+
+	# clean it up some
+	#
+	# see if it fits expected form:
+	#
+	#   'Red Hat Linux release 6.2 (Zoot)'
+	#
+	#
+
+	if relstr[:13] == 'Red Hat Linux':
+	    try:
+		# look for version string
+		vers = string.split(relstr[14:])[1]
+		for a in string.split(vers, '.'):
+		    anum = string.atof(a)
+
+		relstr = "Red Hat Linux " + vers
+	    except:
+		# didnt pass test dont change relstr
+		pass
+
+        return relstr
     return ""
 
 class DiskSet:
@@ -419,8 +441,8 @@ class DiskSet:
                 isys.umount(mountpoint)
 
         # now, look for candidate lvm roots
-        lvm.vgscan()
-        lvm.vgactivate()
+	lvm.vgscan()
+	lvm.vgactivate()
 
         vgs = []
         if os.path.isdir("/proc/lvm/VGs"):
@@ -447,7 +469,7 @@ class DiskSet:
                                            getRedHatReleaseString(mountpoint)))
                     isys.umount(mountpoint)
 
-        lvm.vgdeactivate()
+	lvm.vgdeactivate()
 
         # don't stop raid until after we've looked for lvm on top of it
         self.stopAllRaid()
@@ -672,7 +694,11 @@ class DiskSet:
                              _("The partition table on device %s was unreadable. "
                                "To create new partitions it must be initialized, "
                                "causing the loss of ALL DATA on this drive.\n\n"
-                               "Would you like to initialize this drive?")
+			       "This operation will override any previous "
+			       "installation choices about which drives to "
+			       "ignore.\n\n"
+                               "Would you like to initialize this drive, "
+			       "erasing ALL DATA?")
                                            % (drive,), type = "yesno")
                     if rc == 0:
                         DiskSet.skippedDisks.append(drive)

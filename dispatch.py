@@ -26,6 +26,7 @@ from autopart import doAutoPartition
 from packages import firstbootConfiguration
 from packages import betaNagScreen
 from packages import selectLanguageSupportGroups
+from packages import setupTimezone
 from partitioning import partitionMethodSetup, partitionObjectsInitialize
 from partitioning import partitioningComplete
 from floppy import makeBootdisk
@@ -35,6 +36,7 @@ from upgrade import upgradeFindPackages, upgradeMountFilesystems
 from upgrade import upgradeSwapSuggestion, upgradeMigrateFind
 from upgrade import findRootParts
 from network import networkDeviceCheck
+from installmethod import doMethodComplete
 
 # These are all of the install steps, in order. Note that upgrade and
 # install steps are the same thing! Upgrades skip install steps, while
@@ -117,6 +119,8 @@ installSteps = [
     ("migratefilesystems", doMigrateFilesystems, ("dir", "id.fsset",
                                               "id.diskset", "id.upgrade",
                                               "instPath")),
+    ("setuptime", setupTimezone, ("id.timezone", "id.upgrade", "instPath",
+                                  "dir")),
     ("preinstallconfig", doPreInstall, ("method", "id", "intf", "instPath",
                                         "dir")),
     ("installpackages", doInstall, ("method", "id", "intf", "instPath")),
@@ -136,6 +140,7 @@ installSteps = [
     ("writexconfig", writeXConfiguration, ("id", "instPath")),
     ("writeksconfig", writeKSConfiguration, ("id", "instPath")),
     ("dopostaction", doPostAction, ("id", "instPath")),
+    ("methodcomplete", doMethodComplete, ("method",)),
     ("complete", ()),
     ]
 

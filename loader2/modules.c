@@ -38,7 +38,6 @@
 
 #include "../isys/cpio.h"
 
-static int mlModuleInList(const char * modName, moduleList list);
 static int writeModulesConf(moduleList list, int fd);
 static struct extractedModule * extractModules (char * const * modNames,
                                                 struct extractedModule * oldPaths,
@@ -67,7 +66,7 @@ static int ethCount(const char * type) {
         chptr = strchr(chptr, '\n');
         if (chptr) chptr++;
     }
-    
+
     return count;
 }
 
@@ -89,12 +88,14 @@ static int scsiCount(void) {
 
 
 static int scsiDiskCount(void) {
-    struct device ** devices, ** device;
+    struct device ** devices;
     int i = 0;
 
     devices = probeDevices(CLASS_HD, BUS_SCSI, PROBE_ALL);
+    if (!devices)
+        return 0;
 
-    for (device = devices; *device; device++) i++;
+    for (i = 0; devices[i]; i++);
 
     return i;
 }
@@ -214,7 +215,7 @@ char ** tsortModules(moduleList modLoaded, moduleDeps ml, char ** args,
     return list;
 }
 
-static int mlModuleInList(const char * modName, moduleList list) {
+int mlModuleInList(const char * modName, moduleList list) {
     int i;
 
     if (!list) return 0;
@@ -248,6 +249,7 @@ static int loadModule(const char * modName, struct extractedModule * path,
         }
 
         if (mi->major == DRIVER_SCSI) {
+            deviceCount = scsiCount();
             startNewt(flags);
             scsiWindow(modName);
             popWindow = 1;
@@ -318,7 +320,6 @@ static int loadModule(const char * modName, struct extractedModule * path,
 	    modLoaded->mods[num].major = DRIVER_NONE;
 	    modLoaded->mods[num].minor = DRIVER_MINOR_NONE;
 	}
-
         if (args) {
             for (i=0, arg = args; *arg; arg++, i++);
             newArgs = malloc(sizeof(*newArgs) * (i + 1));
@@ -505,8 +506,15 @@ static int doLoadModules(const char * origModNames, moduleList modLoaded,
     return i;
 }
 
-/* loads a : separated list of modules. the arg only applies to the
-   first module in the list */
+/* load a module with a given list of arguments */
+int mlLoadModule(const char * module, moduleList modLoaded, 
+                 moduleDeps modDeps, moduleInfoSet modInfo, 
+                 char ** args, int flags) {
+    return doLoadModules(module, modLoaded, modDeps, modInfo, flags, module,
+                         args, NULL);
+}
+
+/* loads a : separated list of modules */
 int mlLoadModuleSet(const char * modNames, 
                     moduleList modLoaded, moduleDeps modDeps, 
                     moduleInfoSet modInfo, int flags) {
@@ -538,6 +546,14 @@ static int writeModulesConf(moduleList list, int fd) {
         if (!lm->weLoaded) continue;
         if (lm->written) continue;
         lm->written = 1;
+
+        /* JKFIXME: this is a hack for the fact that these are now
+         * DRIVER_SCSI so we can get /tmp/scsidisks, but we don't
+         * want them in modules.conf  :/ */
+        if (!strcmp(lm->name, "usb-storage") ||
+            !strcmp(lm->name, "sbp2")) {
+            continue;
+        }
 
         if (lm->major != DRIVER_NONE) {
             strcpy(buf, "alias ");
@@ -573,9 +589,9 @@ static int writeModulesConf(moduleList list, int fd) {
                         strcat(buf2, lm->name);
                         strcat(buf2, "\nalias ");
                     }
+                    strcat(buf, buf2);
                 }
 
-                strcat(buf, buf2);
                 break;
 
             default:
@@ -602,6 +618,44 @@ static int writeModulesConf(moduleList list, int fd) {
     /* JKFIXME: used to have special casing for iucv stuff on s390 */
 
     return 0;
+}
+
+/* writes out /tmp/scsidisks with a scsi disk / module correspondence.
+ * format is sd%c  adapter
+ */
+void writeScsiDisks(moduleList list) {
+    int i, fd, num;
+    struct loadedModuleInfo * lm;
+    char buf[512];
+
+    if (!list) return;
+
+    if ((fd = open("/tmp/scsidisks", O_WRONLY | O_CREAT, 0666)) == -1) {
+        logMessage("error opening /tmp/scsidisks: %s", strerror(errno));
+        return;
+    }
+
+    for (i = 0, lm = list->mods; i < list->numModules; i++, lm++) {
+        if (!lm->weLoaded) continue;
+        if (lm->major != DRIVER_SCSI) continue;
+
+        for (num = lm->firstDevNum; num <= lm->lastDevNum; num++) {
+            if (num < 26)
+                sprintf(buf, "sd%c\t%s\n", 'a' + num, lm->name);
+            else {
+                unsigned int one, two;
+                one = num / 26;
+                two = num % 26;
+
+                sprintf(buf, "sd%c%c\t%s\n", 'a' + one - 1, 
+                        'a' + two, lm->name);
+            }
+            write(fd, buf, strlen(buf));
+        }
+    }
+     
+    close(fd);
+    return;
 }
 
 /* JKFIXME: needs a way to know about module locations.  also, we should

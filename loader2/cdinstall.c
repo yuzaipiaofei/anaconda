@@ -31,6 +31,7 @@
 #include <linux/cdrom.h>
 #endif
 
+#include "kickstart.h"
 #include "loader.h"
 #include "loadermisc.h"
 #include "log.h"
@@ -292,6 +293,17 @@ char * setupCdrom(char * location,
     int foundinvalid = 0;
     char * buf;
 
+#if 0
+    if (FL_TESTING(flags) && interactive) {
+        for (i = 0; i < kd->numKnown; i++) {
+            if (kd->known[i].class != CLASS_CDROM) continue;
+	    buf = malloc(200);
+	    sprintf(buf, "cdrom://%s/mnt/source", kd->known[i].name);
+	    return buf;
+	}
+    }
+#endif
+    
     /* JKFIXME: ASSERT -- we have a cdrom device when we get here */
     do {
         for (i = 0; i < kd->numKnown; i++) {
@@ -369,7 +381,7 @@ char * mountCdromImage(struct installMethod * method,
                        moduleInfoSet modInfo, moduleList modLoaded,
                        moduleDeps * modDepsPtr, int flags) {
 
-    setupCdrom(location, kd, loaderData, modInfo, modLoaded, *modDepsPtr, flags, 1);
+    return setupCdrom(location, kd, loaderData, modInfo, modLoaded, *modDepsPtr, flags, 1);
 }
 
 void setKickstartCD(struct loaderData_s * loaderData, int argc,
@@ -378,4 +390,41 @@ void setKickstartCD(struct loaderData_s * loaderData, int argc,
     logMessage("kickstartFromCD");
 
     loaderData->method = strdup("cdrom");
+}
+
+int kickstartFromCD(char *kssrc, struct knownDevices * kd, int flags) {
+    int rc;
+    int i;
+    char *p, *kspath;
+
+    logMessage("getting kickstart file from first CDROM");
+
+    for (i = 0; i < kd->numKnown; i++)
+	if (kd->known[i].class == CLASS_CDROM)
+	    break;
+
+    if (i >= kd->numKnown) {
+	logMessage("No CDROM devices found!");
+	return 1;
+    }
+
+    /* format is ks=cdrom:[/path/to/ks.cfg] */
+    kspath = "";
+    p = strchr(kssrc, ':');
+    if (p)
+	kspath = p + 1;
+
+    if (!p || strlen(kspath) < 1)
+	kspath = "/ks.cfg";
+
+    if ((rc=getKickstartFromBlockDevice(kd->known[i].name, kspath))) {
+	if (rc == 3) {
+	    startNewt(flags);
+	    newtWinMessage(_("Error"), _("OK"),
+			   _("Cannot find kickstart file on CDROM."));
+	}
+	return 1;
+    }
+
+    return 0;
 }

@@ -57,6 +57,7 @@
 #include "driverdisk.h"
 
 /* hardware stuff */
+#include "hardware.h"
 #include "firewire.h"
 #include "pcmcia.h"
 #include "usb.h"
@@ -64,11 +65,17 @@
 /* install method stuff */
 #include "method.h"
 #include "cdinstall.h"
+#include "nfsinstall.h"
+#include "hdinstall.h"
+#include "urlinstall.h"
+
+#include "telnetd.h"
 
 #include "../isys/imount.h"
 #include "../isys/isys.h"
 #include "../isys/probe.h"
 #include "../isys/stubs.h"
+#include "../isys/lang.h"
 
 /* maximum number of extra arguments that can be passed to the second stage */
 #define MAX_EXTRA_ARGS 128
@@ -102,6 +109,14 @@ static int numMethods = sizeof(installMethods) / sizeof(struct installMethod);
 struct moduleBallLocation * secondStageModuleLocation;
     
 
+#if 0
+#if !defined(__s390__) && !defined(__s390x__)
+#define RAMDISK_DEVICE "/dev/ram"
+#else
+#define RAMDISK_DEVICE "/dev/ram2"
+#endif
+
+
 int setupRamdisk(void) {
     gzFile f;
     static int done = 0;
@@ -133,6 +148,7 @@ int setupRamdisk(void) {
     
     return 0;
 }
+#endif
 
 void setupRamfs(void) {
     mkdirChain("/tmp/ramfs");
@@ -166,6 +182,18 @@ void stopNewt(void) {
     newtRunning = 0;
 }
 
+void initializeConsole(moduleList modLoaded, moduleDeps modDeps,
+                       moduleInfoSet modInfo, int flags) {
+    if (!FL_NOFB(flags))
+	mlLoadModuleSet("vga16fb", modLoaded, modDeps, modInfo, flags);
+    /* enable UTF-8 console */
+    printf("\033%%G");
+    fflush(stdout);
+    isysLoadFont();
+    if (!FL_TESTING(flags))
+        isysSetUnicodeKeymap();
+}
+
 static void spawnShell(int flags) {
     pid_t pid;
     int fd;
@@ -191,6 +219,12 @@ static void spawnShell(int flags) {
         
         close(fd);
         setsid();
+
+	/* enable UTF-8 console */
+	printf("\033%%G");
+	fflush(stdout);
+	isysLoadFont();
+	
         if (ioctl(0, TIOCSCTTY, NULL)) {
             logMessage("could not set new controlling tty");
         }
@@ -215,43 +249,62 @@ static void spawnShell(int flags) {
 void loadUpdates(struct knownDevices *kd, int flags) {
     int done = 0;
     int rc;
+    char * device = NULL, ** devNames = NULL;
+    char * buf;
+    int num = 0;
 
     startNewt(flags);
 
     do { 
-        rc = newtWinChoice(_("Updates Disk"), _("OK"), _("Cancel"),
-                           _("Insert your updates disk and press "
-                             "\"OK\" to continue."));
+        rc = getRemovableDevices(&devNames);
+        if (rc == 0) 
+            return;
+        startNewt(flags);
+        rc = newtWinMenu(_("Update Disk Source"),
+                         _("You have multiple devices which could serve "
+                           "as sources for an update disk.  Which would "
+                           "you like to use?"), 40, 10, 10,
+                         rc < 6 ? rc : 6, devNames,
+                         &num, _("OK"), _("Back"), NULL);
 
-        if (rc == 2) return;
+        if (rc == 2) {
+            free(devNames);
+            return;
+        }
+        device = strdup(devNames[num]);
+        free(devNames);
 
-        /* JKFIXME: handle updates from floppy or cd */
-        return;
-#if 0
-        logMessage("UPDATES floppy device is %s", floppyDevice);
 
-        devMakeInode(floppyDevice, "/tmp/floppy");
-        if (doPwMount("/tmp/floppy", "/tmp/update-disk", "ext2", 1, 0, NULL, 
-                      NULL)) {
+        buf = sdupprintf(_("Insert your updates disk into /dev/%s and press "
+                           "\"OK\" to continue."), device);
+        rc = newtWinChoice(_("Updates Disk"), _("OK"), _("Cancel"), buf);
+        if (rc == 2)
+            return;
+
+        logMessage("UPDATES device is %s", device);
+
+        devMakeInode(device, "/tmp/upd.disk");
+        if (doPwMount("/tmp/upd.disk", "/tmp/update-disk", "ext2", 1, 0, 
+                      NULL, NULL) && 
+            doPwMount("/tmp/upd.disk", "/tmp/update-disk", "iso9660", 1, 0,
+                      NULL, NULL)) {
             newtWinMessage(_("Error"), _("OK"), 
-                           _("Failed to mount floppy disk."));
+                           _("Failed to mount updates disk"));
         } else {
-            /* Copy everything to /tmp/updates so .so files don't get run
-               from /dev/floppy. We could (and probably should) get smarter 
-               about this at some point. */
+            /* Copy everything to /tmp/updates so we can unmount the disk  */
             winStatus(40, 3, _("Updates"), _("Reading anaconda updates..."));
             if (!copyDirectory("/tmp/update-disk", "/tmp/updates")) done = 1;
             newtPopWindow();
             umount("/tmp/update-disk");
         }
-#endif
     } while (!done);
     
     return;
 }
 
-static void checkForHardDrives(struct knownDevices * kd, int flags) {
+static void checkForHardDrives(struct knownDevices * kd, int * flagsPtr) {
     int i;
+    int flags = (*flagsPtr);
 
     for (i = 0; i < kd->numKnown; i++)
         if (kd->known[i].class == CLASS_HD) break;
@@ -265,183 +318,10 @@ static void checkForHardDrives(struct knownDevices * kd, int flags) {
                         "to manually choose device drivers for the "
                         "installation to succeed.  Would you like to "
                         "select drivers now?"));
-    if (i != 2) flags |= LOADER_FLAGS_ISA;
+    if (i != 2) (*flagsPtr) = (*flagsPtr) | LOADER_FLAGS_ISA;
 
-    if (((access("/proc/bus/devices", R_OK) &&
-          access("/proc/openprom", R_OK) &&
-          access("/proc/iSeries", R_OK)) ||
-         FL_ISA(flags) || FL_NOPROBE(flags)) && !FL_KICKSTART(flags)) {
-        /* JKFIXME: do a manual device load */
-    }
-    
     return;
 }
-
-static int detectHardware(moduleInfoSet modInfo, 
-              char *** modules, int flags) {
-    struct device ** devices, ** device;
-    char ** modList;
-    int numMods;
-    char *driver;
-    
-    logMessage("probing buses");
-    
-    devices = probeDevices(CLASS_UNSPEC,
-                           BUS_PCI | BUS_SBUS,
-                           PROBE_ALL);
-
-    logMessage("finished bus probing");
-
-    if (devices == NULL) {
-        *modules = NULL;
-        return LOADER_OK;
-    }
-
-    numMods = 0;
-    for (device = devices; *device; device++) numMods++;
-
-    if (!numMods) {
-        *modules = NULL;
-        return LOADER_OK;
-    }
-    
-    modList = malloc(sizeof(*modList) * (numMods + 1));
-    numMods = 0;
-    
-    for (device = devices; *device; device++) {
-        driver = (*device)->driver;
-        if (strcmp (driver, "ignore") && strcmp (driver, "unknown")
-            && strcmp (driver, "disabled")) {
-            modList[numMods++] = strdup(driver);
-        }
-        
-        freeDevice (*device);
-    }
-    
-    modList[numMods] = NULL;
-    *modules = modList;
-    
-    free(devices);
-    
-    return LOADER_OK;
-}
-
-static int agpgartInitialize(moduleList modLoaded, moduleDeps modDeps,
-			     moduleInfoSet modInfo, int flags) {
-    struct device ** devices, *p;
-    int i;
-
-    if (FL_TESTING(flags)) return 0;
-
-    logMessage("looking for video cards requiring agpgart module");
-    
-    devices = probeDevices(CLASS_VIDEO, BUS_UNSPEC, PROBE_ALL);
-    
-    if (!devices) {
-        logMessage("no video cards found");
-        return 0;
-    }
-
-    /* loop thru cards, see if we need agpgart */
-    for (i=0; devices[i]; i++) {
-        p = devices[i];
-        logMessage("found video card controller %s", p->driver);
-        
-        /* HACK - need to have list of cards which match!! */
-        if (!strcmp(p->driver, "Card:Intel 810") ||
-            !strcmp(p->driver, "Card:Intel 815")) {
-            logMessage("found %s card requiring agpgart, loading module",
-                       p->driver+5);
-            
-            if (mlLoadModuleSetLocation("agpgart", modLoaded, modDeps, 
-					modInfo, flags, 
-					secondStageModuleLocation)) {
-                logMessage("failed to insert agpgart module");
-                return 1;
-            } else {
-                /* only load it once! */
-                return 0;
-            }
-        }
-    }
-    
-    return 0;
-}
-
-/* This loads the necessary parallel port drivers for printers so that
-   kudzu can autodetect and setup printers in post install*/
-static void initializeParallelPort(moduleList modLoaded, moduleDeps modDeps,
-				   moduleInfoSet modInfo, int flags) {
-    /* JKFIXME: this can be used on other arches too... */
-#if !defined (__i386__)
-    return;
-#endif
-    if (FL_NOPARPORT(flags)) return;
-
-    logMessage("loading parallel port drivers...");
-    if (mlLoadModuleSetLocation("parport_pc", modLoaded, modDeps, 
-				modInfo, flags,
-				secondStageModuleLocation)) {
-        logMessage("failed to load parport_pc module");
-        return;
-    }
-}
-
-int busProbe(moduleInfoSet modInfo, moduleList modLoaded, moduleDeps modDeps,
-             int justProbe, struct knownDevices * kd, int flags) {
-    int i;
-    char ** modList;
-    char modules[1024];
-    
-    if (FL_NOPROBE(flags)) return 0;
-    
-    if (!access("/proc/bus/pci/devices", R_OK) ||
-        !access("/proc/openprom", R_OK)) {
-        /* autodetect whatever we can */
-        if (detectHardware(modInfo, &modList, flags)) {
-            logMessage("failed to scan pci bus!");
-            return 0;
-        } else if (modList && justProbe) {
-            for (i = 0; modList[i]; i++)
-                printf("%s\n", modList[i]);
-        } else if (modList) {
-            *modules = '\0';
-            
-            for (i = 0; modList[i]; i++) {
-                if (i) strcat(modules, ":");
-                strcat(modules, modList[i]);
-            }
-            
-            mlLoadModuleSet(modules, modLoaded, modDeps, modInfo, flags);
-            
-            kdFindScsiList(kd, 0);
-            kdFindNetList(kd, 0);
-        } else 
-            logMessage("found nothing");
-    }
-    
-    return 0;
-}
-
-
-
-/* JKFIXME: move all of this hardware setup stuff to a new file */
-static void scsiSetup(moduleList modLoaded, moduleDeps modDeps,
-                      moduleInfoSet modInfo, int flags,
-                      struct knownDevices * kd) {
-    mlLoadModuleSet("sd_mod:sr_mod", modLoaded, modDeps, modInfo, flags);
-}
-
-static void ideSetup(moduleList modLoaded, moduleDeps modDeps,
-                     moduleInfoSet modInfo, int flags,
-                     struct knownDevices * kd) {
-    
-    /* This is fast enough that we don't need a screen to pop up */
-    mlLoadModuleSet("ide-cd", modLoaded, modDeps, modInfo, flags);
-    
-    /* JKFIXME: I removed a kdFindIde() call here...  it seems bogus */
-}
-
 
 
 /* parses /proc/cmdline for any arguments which are important to us.  
@@ -486,6 +366,8 @@ static int parseCmdLineFlags(int flags, struct loaderData_s * loaderData,
             flags |= LOADER_FLAGS_NOUSBSTORAGE;
         else if (!strcasecmp(argv[i], "nousb"))
             flags |= LOADER_FLAGS_NOUSB;
+        else if (!strcasecmp(argv[i], "telnet"))
+            flags |= LOADER_FLAGS_TELNETD;
         else if (!strcasecmp(argv[i], "nofirewire"))
             flags |= LOADER_FLAGS_NOIEEE1394;
         else if (!strcasecmp(argv[i], "noprobe"))
@@ -508,6 +390,8 @@ static int parseCmdLineFlags(int flags, struct loaderData_s * loaderData,
             flags |= LOADER_FLAGS_NOPASS;
         else if (!strcasecmp(argv[i], "serial")) 
             flags |= LOADER_FLAGS_SERIAL;
+        else if (!strcasecmp(argv[i], "nofb"))
+            flags |= LOADER_FLAGS_NOFB;
         else if (!strncasecmp(argv[i], "debug=", 6))
             setLogLevel(strtol(argv[i] + 6, (char **)NULL, 10));
         else if (!strncasecmp(argv[i], "ksdevice=", 9)) {
@@ -583,6 +467,7 @@ static int parseCmdLineFlags(int flags, struct loaderData_s * loaderData,
 }
 
 
+#if 0
 /* determine if we are using a framebuffer console.  return 1 if so */
 static int checkFrameBuffer() {
     int fd;
@@ -599,6 +484,7 @@ static int checkFrameBuffer() {
     close(fd);
     return rc;
 }
+#endif
 
 /* look for available memory.  note: won't ever report more than the 
  * 900 megs or so supported by the -BOOT kernel due to not using e820 */
@@ -678,7 +564,7 @@ static char *doLoaderMain(char * location,
                           moduleDeps * modDepsPtr,
                           int flags) {
     enum { STEP_LANG, STEP_KBD, STEP_METHOD, STEP_DRIVER, 
-           STEP_URL, STEP_DONE } step;
+           STEP_DRIVERDISK, STEP_URL, STEP_DONE } step;
     char * url = NULL;
     int dir = 1;
     int rc, i;
@@ -706,10 +592,9 @@ static char *doLoaderMain(char * location,
     /* check to see if we have a Red Hat Linux CD.  If we have one, then
      * we can fast-path the CD and not make people answer questions in 
      * text mode.  */
-    /* JKFIXME: what should we do about rescue mode here? */
     if (!FL_ASKMETHOD(flags) && !FL_KICKSTART(flags)) {
         url = findRedHatCD(location, kd, modInfo, modLoaded, * modDepsPtr, flags);
-        if (url) return url;
+        if (url && !FL_RESCUE(flags)) return url;
     }
 
     startNewt(flags);
@@ -762,6 +647,12 @@ static char *doLoaderMain(char * location,
             break;
 
         case STEP_METHOD:
+            /* this is kind of crappy, but we want the first few questions
+             * to be asked when using rescue mode even if we're going
+             * to short-circuit to the CD */
+            if (FL_RESCUE(flags) && url)
+                return url;
+
             if (loaderData->method && (methodNum != -1)) {
                 rc = 1;
             } else {
@@ -798,19 +689,47 @@ static char *doLoaderMain(char * location,
                 dir = 1;
                 break;
             }
-            
-            rc = loadDriverFromMedia(installMethods[validMethods[methodNum]].deviceType,
-                                     modLoaded, modDepsPtr, modInfo, kd, flags);
-            if (rc == LOADER_BACK) {
+
+
+            rc = newtWinTernary(_("No driver found"), _("Select driver"),
+                                _("Use a driver disk"), _("Back"),
+                                _("Unable to find any devices of the type "
+                                  "needed for this installation type.  "
+                                  "Would you like to manually select your "
+                                  "driver or use a driver disk?"));
+            if (rc == 2) {
+                step = STEP_DRIVERDISK;
+                dir = 1;
+                break;
+            } else if (rc == 3) {
                 step = STEP_METHOD;
                 dir = -1;
                 break;
             }
 
-            step = STEP_URL;
-            dir = 1;
+            chooseManualDriver(installMethods[validMethods[methodNum]].deviceType,
+                                    modLoaded, *modDepsPtr, modInfo, kd, flags);
+            /* it doesn't really matter what we return here; we just want
+             * to reprobe and make sure we have the driver */
+            step = STEP_DRIVER;
             break;
         }
+
+        case STEP_DRIVERDISK:
+
+            rc = loadDriverFromMedia(installMethods[validMethods[methodNum]].deviceType,
+                                     modLoaded, modDepsPtr, modInfo, kd, 
+                                     flags, 0);
+            if (rc == LOADER_BACK) {
+                step = STEP_DRIVER;
+                dir = -1;
+                break;
+            }
+
+            /* need to come back to driver so that we can ensure that we found
+             * the right kind of driver after loading the driver disk */
+            step = STEP_DRIVER;
+            break;
             
         case STEP_URL:
             logMessage("starting to STEP_URL");
@@ -818,11 +737,11 @@ static char *doLoaderMain(char * location,
                                       installMethods + validMethods[methodNum],
                                       location, kd, loaderData, modInfo, modLoaded, 
                                       modDepsPtr, flags);
-            logMessage("got url %s", url);
             if (!url) {
                 step = STEP_METHOD;
                 dir = -1;
             } else {
+                logMessage("got url %s", url);
                 step = STEP_DONE;
                 dir = 1;
             }
@@ -836,6 +755,56 @@ static char *doLoaderMain(char * location,
 
     return url;
 }
+
+static int manualDeviceCheck(moduleInfoSet modInfo, moduleList modLoaded,
+                             moduleDeps * modDepsPtr, struct knownDevices * kd,
+                             int flags) {
+    char ** devices;
+    int i, j, rc, num = 0;
+    struct moduleInfo * mi;
+    int width = 40;
+    char * buf;
+
+    devices = malloc((modLoaded->numModules + 1) * sizeof(*devices));
+    for (i = 0, j = 0; i < modLoaded->numModules; i++) {
+        if (!modLoaded->mods[i].weLoaded) continue;
+        
+        if (!(mi = findModuleInfo(modInfo, modLoaded->mods[i].name)) ||
+            (!mi->description))
+            continue;
+
+        devices[j] = sdupprintf("%s (%s)", mi->description, 
+                                modLoaded->mods[i].name);
+        if (strlen(devices[j]) > width)
+            width = strlen(devices[j]);
+        j++;
+    }
+
+    devices[j] = NULL;
+
+    if (width > 70)
+        width = 70;
+
+    if (j > 0) {
+        buf = _("The following devices have been found on your system.");
+    } else {
+        buf = _("No device drivers have been loaded for your system.  Would "
+                "you like to load any now?");
+    }
+
+    do { 
+        rc = newtWinMenu(_("Devices"), buf, width, 10, 20, 
+                         (j > 6) ? 6 : j, devices, &num, _("Done"), 
+                         _("Add Device"), NULL);
+        if (rc != 2)
+            break;
+
+        chooseManualDriver(CLASS_UNSPEC, modLoaded, *modDepsPtr, modInfo, 
+                           kd, flags);
+    } while (1);
+    return 0;
+}
+
 
 int main(int argc, char ** argv) {
     int flags = 0;
@@ -862,13 +831,11 @@ int main(int argc, char ** argv) {
     char * cmdLine = NULL;
     char * ksFile = NULL;
     int testing = 0;
-    int probeOnly; /* JKFIXME: this option can probably die */
     int mediacheck = 0;
     poptContext optCon;
     struct poptOption optionTable[] = {
             { "cmdline", '\0', POPT_ARG_STRING, &cmdLine, 0 },
         { "ksfile", '\0', POPT_ARG_STRING, &ksFile, 0 },
-        { "probe", '\0', POPT_ARG_NONE, &probeOnly, 0 },
         { "test", '\0', POPT_ARG_NONE, &testing, 0 },
         { "mediacheck", '\0', POPT_ARG_NONE, &mediacheck, 0},
         { 0, 0, 0, 0, 0 }
@@ -912,8 +879,6 @@ int main(int argc, char ** argv) {
     if (testing) flags |= LOADER_FLAGS_TESTING;
     if (mediacheck) flags |= LOADER_FLAGS_MEDIACHECK;
 
-    if (checkFrameBuffer() == 1) haveKon = 0;
-
     /* JKFIXME: I do NOT like this... it also looks kind of bogus */
 #if defined(__s390__) && !defined(__s390x__)
     flags |= LOADER_FLAGS_NOSHELL | LOADER_FLAGS_NOUSB;
@@ -931,7 +896,6 @@ int main(int argc, char ** argv) {
     if (FL_SERIAL(flags) && !getenv("DISPLAY"))
         flags |= LOADER_FLAGS_TEXT;
 
-    checkForRam(flags);
     setupRamfs();
 
     arg = FL_TESTING(flags) ? "./module-info" : "/modules/module-info";
@@ -947,6 +911,9 @@ int main(int argc, char ** argv) {
     mlReadLoadedList(&modLoaded);
     modDeps = mlNewDeps();
     mlLoadDeps(&modDeps, "/modules/modules.dep");
+
+    initializeConsole(modLoaded, modDeps, modInfo, flags);
+    checkForRam(flags);
 
     mlLoadModuleSet("cramfs:vfat:nfs:loop", modLoaded, modDeps, 
                     modInfo, flags);
@@ -965,7 +932,7 @@ int main(int argc, char ** argv) {
     /* JKFIXME: this is kind of a different way to handle pcmcia... I think
      * it's more correct, although it will require a little bit of kudzu
      * hacking */
-    pcmciaInitialize(modLoaded, modDeps, modInfo, flags);
+    /*pcmciaInitialize(modLoaded, modDeps, modInfo, flags);*/
 
     kdFindIdeList(&kd, 0);
     kdFindScsiList(&kd, 0);
@@ -979,10 +946,12 @@ int main(int argc, char ** argv) {
          access("/proc/openprom", R_OK) &&
          access("/proc/iSeries", R_OK)) || FL_MODDISK(flags)) {
         startNewt(flags);
-        /* JKFIXME: do the driver disk thing here for an isa machine.  bah. */
+
+        loadDriverDisks(CLASS_UNSPEC, modLoaded, &modDeps, 
+                        modInfo, &kd, flags);
     }
 
-    busProbe(modInfo, modLoaded, modDeps, probeOnly, &kd, flags);
+    busProbe(modInfo, modLoaded, modDeps, 0, &kd, flags);
 
     /* JKFIXME: loaderData->ksFile is set to the arg from the command line,
      * and then getKickstartFile() changes it and sets FL_KICKSTART.  
@@ -996,7 +965,8 @@ int main(int argc, char ** argv) {
         }
     }
 
-    /* JKFIXME: telnetd */
+    if (FL_TELNETD(flags))
+        startTelnetd(&kd, &loaderData, modInfo, modLoaded, modDeps, flags);
 
     url = doLoaderMain("/mnt/source", &loaderData, &kd, modInfo, modLoaded, &modDeps, flags);
 
@@ -1033,7 +1003,16 @@ int main(int argc, char ** argv) {
     scsiSetup(modLoaded, modDeps, modInfo, flags, &kd);
     busProbe(modInfo, modLoaded, modDeps, 0, &kd, flags);
 
-    checkForHardDrives(&kd, flags);
+    checkForHardDrives(&kd, &flags);
+
+    if (((access("/proc/bus/pci/devices", R_OK) &&
+          access("/proc/openprom", R_OK) &&
+          access("/proc/iSeries", R_OK)) ||
+         FL_ISA(flags) || FL_NOPROBE(flags)) && !loaderData.ksFile) {
+        startNewt(flags);
+        manualDeviceCheck(modInfo, modLoaded, &modDeps, &kd, flags);
+    }
+    
 
     if (FL_UPDATES(flags)) 
         loadUpdates(&kd, flags);
@@ -1049,6 +1028,10 @@ int main(int argc, char ** argv) {
 
     usbInitializeMouse(modLoaded, modDeps, modInfo, flags);
 
+    /* we've loaded all the modules we're going to.  write out a file
+     * describing which scsi disks go with which scsi adapters */
+    writeScsiDisks(modLoaded);
+
     /* we only want to use RHupdates on nfs installs.  otherwise, we'll 
      * use files on the first iso image and not be able to umount it */
     if (!strncmp(url, "nfs:", 4)) {
@@ -1062,6 +1045,9 @@ int main(int argc, char ** argv) {
         setenv("PYTHONPATH", "/tmp/updates:/mnt/source/RHupdates", 1);
     else
         setenv("PYTHONPATH", "/tmp/updates", 1);
+
+    if (!access("/mnt/runtime/usr/lib/libunicode-lite.so.1", R_OK))
+        setenv("LD_PRELOAD", "/mnt/runtime/usr/lib/libunicode-lite.so.1", 1);
 
     argptr = anacondaArgs;
 
@@ -1165,6 +1151,16 @@ int main(int argc, char ** argv) {
     	execv(anacondaArgs[0], anacondaArgs);
         perror("exec");
     }
-    
+#if 0
+    else {
+	char **args = anacondaArgs;
+	printf("would have run ");
+	while (*args)
+	    printf("%s ", *args++);
+	printf("\n");
+	printf("LANGKEY=%s\n", getenv("LANGKEY"));
+	printf("LANG=%s\n", getenv("LANG"));
+    }
+#endif
     return 1;
 }

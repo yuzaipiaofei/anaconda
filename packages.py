@@ -26,6 +26,7 @@ import language
 import fsset
 import kudzu
 from flags import flags
+from product import *
 from constants import *
 from syslogd import syslog
 from comps import PKGTYPE_MANDATORY, PKGTYPE_DEFAULT
@@ -341,23 +342,12 @@ class InstallCallback:
 	    fn = self.method.unlinkFilename(fn)
 	    return self.rpmFD
 	elif (what == rpm.RPMCALLBACK_INST_PROGRESS):
-	    # just lets make sure its defined to something
-	    cur_amount = amount
-
-	    # RPM returns strange values sometimes (dev package usually)
-            if total == 100:
-		cur_amount = self.size
-
-	    # seems some packages (dev) make rpm return bogus values
-	    if cur_amount > self.size:
-		cur_amount = self.size
-	    elif cur_amount < 0:
-		cur_amount = 0
-
-	    if self.size <= 0:
-		log("Bogus size %s!", self.size)
-	    else:
-		self.progress.setPackageScale(cur_amount, self.size)
+	    # RPM returns strange values sometimes
+            if amount > total:
+                amount = total
+            if not total:
+                total = amount
+            self.progress.setPackageScale(amount, total)
 	elif (what == rpm.RPMCALLBACK_INST_CLOSE_FILE):
 	    os.close (self.rpmFD)
 	    self.progress.completePackage(h, self.pkgTimer)
@@ -467,6 +457,36 @@ def turnOnFilesystems(dir, thefsset, diskset, partitions, upgrade, instPath):
 	    thefsset.makeFilesystems (instPath)
             thefsset.mountFilesystems (instPath)
 
+def setupTimezone(timezone, upgrade, instPath, dir):
+    # we don't need this on an upgrade or going backwards
+    if upgrade.get() or (dir == DISPATCH_BACK):
+        return
+    
+    tzfile = "/usr/share/zoneinfo/" + timezone.tz
+    if not os.access(tzfile, os.R_OK):
+        log("unable to set timezone")
+    else:
+        try:
+            iutil.copyFile(tzfile, "/etc/localtime")
+        except OSError, (errno, msg):
+            log("Error copying timezone (from %s): %s" %(tzfile, msg))
+
+    args = [ "/usr/sbin/hwclock", "--hctosys" ]
+    if timezone.utc:
+        args.append("-u")
+    elif timezone.arc:
+        args.append("-a")
+    else:
+        flags = None
+
+    try:
+        iutil.execWithRedirect(args[0], args, stdin = None,
+                               stdout = "/dev/tty5", stderr = "/dev/tty5")
+    except RuntimeError:
+        log("Failed to set clock")
+    
+            
+
 def doPreInstall(method, id, intf, instPath, dir):
     if flags.test:
 	return
@@ -475,6 +495,15 @@ def doPreInstall(method, id, intf, instPath, dir):
         return
 
     arch = iutil.getArch ()
+
+    # this is a crappy hack, but I don't want bug reports from these people
+    if (arch == "i386") and (not id.hdList.has_key("kernel")):
+        intf.messageWindow(_("Error"),
+                           _("You are trying to install on a machine "
+                             "which isn't supported by this release of "
+                             "%s.") %(productName,),
+                           type = "error")
+        sys.exit(0)
 
     # shorthand
     upgrade = id.upgrade.get()
@@ -643,8 +672,8 @@ def doInstall(method, id, intf, instPath):
     upgrade = id.upgrade.get()
     ts = rpm.TransactionSet(instPath)
 
-    ts.setVSFlags(~rpm.RPMVSF_NORSA|~rpm.RPMVSF_NODSA)
-    ts.setFlags(rpm.RPMTRANS_FLAG_NOMD5|rpm.RPMTRANS_FLAG_CHAINSAW)
+    ts.setVSFlags(~(rpm.RPMVSF_NORSA|rpm.RPMVSF_NODSA))
+    ts.setFlags(rpm.RPMTRANS_FLAG_CHAINSAW)
 
     total = 0
     totalSize = 0
@@ -737,7 +766,7 @@ def doInstall(method, id, intf, instPath):
     cb.initWindow = intf.waitWindow(_("Install Starting"),
 				    _("Starting install process, this may take several minutes..."))
 
-    ts.setProbFilter(rpm.RPMPROB_FILTER_DISKSPACE)
+    ts.setProbFilter(~rpm.RPMPROB_FILTER_DISKSPACE)
     problems = ts.run(cb.cb, 0)
 
     if problems:
@@ -771,9 +800,11 @@ def doInstall(method, id, intf, instPath):
 		else:
 		    nodeneeded[mount] = need
 	    else:
+                if descr is None:
+                    descr = "no description"
 		log ("WARNING: unhandled problem returned from "
-                     "transaction set type %d",
-		     type)
+                     "transaction set type %d (%s)",
+		     type, descr)
 
 	probs = ""
 	if spaceneeded:
@@ -810,6 +841,7 @@ def doInstall(method, id, intf, instPath):
 
 	intf.messageWindow (_("Disk Space"), probs)
 
+        ts.closeDB()
 	del ts
 	instLog.close()
 	syslog.stop()
@@ -821,6 +853,7 @@ def doInstall(method, id, intf, instPath):
 
     # This should close the RPM database so that you can
     # do RPM ops in the chroot in a %post ks script
+    ts.closeDB()
     del ts
 #    rpm.errorSetCallback (oldError)
     

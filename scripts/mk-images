@@ -60,7 +60,7 @@ TOPDIR=$(cd $TOPDIR; pwd)
     TRIMPCITABLE=$IMGPATH/usr/lib/anaconda-runtime/trimpcitable
     GETKEYMAPS=$IMGPATH/usr/lib/anaconda-runtime/getkeymaps
     KEYMAPS=/tmp/keymaps-$BUILDARCH.$$
-    FONTS=$IMGPATH/usr/lib/anaconda-runtime/fonts-${BASEARCH}
+    SCREENFONT=$IMGPATH/usr/lib/anaconda-runtime/screenfont-${BASEARCH}.gz
     GETMODDEPS=$IMGPATH/usr/lib/anaconda-runtime/moddeps
     MODLIST=$IMGPATH/usr/lib/anaconda-runtime/modlist
     MODINFO=$IMGPATH/usr/lib/anaconda-runtime/loader/module-info
@@ -111,7 +111,7 @@ findPackage() {
     for n in $dir/$name*{${BUILDARCH},noarch}.rpm; do
 	thisName=$(rpm --qf '%{NAME}' -qp $n)
 	if [ -z "$thisName" ]; then
-	    return
+	    continue
 	fi
 	if [ $thisName = $name ]; then
 	    echo $n
@@ -422,7 +422,7 @@ EOF
     if [ "$BUILDARCH" != "s390" -a "$BUILDARCH" != "s390x" ]; then
        install -m 644 $KEYMAPS $MBD_DIR/etc/keymaps.gz
     fi
-    install -m 644 $FONTS $MBD_DIR/etc/fonts.cgz
+    install -m 644 $SCREENFONT $MBD_DIR/etc/screenfont.gz
     install -m 644 $MYLANGTABLE $MBD_DIR/etc/lang-table
     
     install -m 644 $LOADERBINDIR/$MYLOADERTR $MBD_DIR/etc/loader.tr
@@ -433,13 +433,9 @@ EOF
     rm -f $MBD_DIR/.buildstamp
     echo $IMAGEUUID > $MBD_DIR/.buildstamp
 
-    if [ -f $LOADERBINDIR/kon.cfg ]; then
-        mkdir -p $MBD_DIR/etc/terminfo/k
-        install -m 644 $IMGPATH/usr/share/terminfo/k/kon $MBD_DIR/etc/terminfo/k/kon
-	install -m 644 $LOADERBINDIR/kon.cfg $MBD_DIR/etc
-	install -m 644 $LOADERBINDIR/minikon.fnt $MBD_DIR/etc
-	ln -s loader $MBD_DIR/sbin/continue
-    fi
+    mkdir -p $MBD_DIR/etc/terminfo/b
+    install -m 644 $IMGPATH/usr/share/terminfo/b/bterm $MBD_DIR/etc/terminfo/b/bterm
+    install -m 644 $LOADERBINDIR/font.bgf.gz $MBD_DIR/etc
 
     if [ -n "$PCMCIA" ]; then
 	mkdir -p $MBD_BOOTTREE/etc
@@ -666,10 +662,10 @@ makeinstimage () {
     rm -f $tmpdir/.buildstamp
     echo $IMAGEUUID > $tmpdir/.buildstamp
 
-    mkcramfs $tmpdir $INSTIMGPATH/${imagename}1.img
-    size=$(ls -l $INSTIMGPATH/${imagename}1.img | awk '{print $5}')
+    mkcramfs $tmpdir $INSTIMGPATH/${imagename}2.img
+    size=$(ls -l $INSTIMGPATH/${imagename}2.img | awk '{print $5}')
     size=$(expr $size / 1024)
-    echo "Wrote $INSTIMGPATH/${imagename}1.img (${size}k)..."
+    echo "Wrote $INSTIMGPATH/${imagename}2.img (${size}k)..."
     rm -rf $tmpdir
 }
 
@@ -806,7 +802,7 @@ for kernelvers in $vertag; do
 	kernelvers=""
     fi
 
-    ppackage=$($LATEST $KERNELPATH kernel-pcmcia-cs)
+    ppackage=$($LATEST $KERNELPATH hwdata)
     if [ ! -f "$ppackage" ]; then
 	ppackage=""
     fi
@@ -829,12 +825,10 @@ for kernelvers in $vertag; do
 	usage
     fi
 
-    if [ -d $KERNELROOT/lib/modules/$version/pcmcia -a -f $KERNELROOT/etc/pcmcia/config ]; then
-	# This gets all of the modules in the pcmcia directory, as well as
-	# everything mentioned in /etc/pcmcia/config
-	PCMCIAMODULES=$((perl -e 'while (<>) { s/^.*class.*module +"// || next; s/[" ]//g; s/,/\n/g; print }' $KERNELROOT/etc/pcmcia/config;
-	 cd $KERNELROOT/lib/modules/$version/pcmcia; ls *.o | sed 's/\.o//g') |
-	    sort -u)
+    if [ -f $KERNELROOT/etc/pcmcia/config ]; then
+	# This gets everything mentioned in /etc/pcmcia/config.  We probably
+	# want to do some module-info stuff here too
+	PCMCIAMODULES=$((perl -e 'while (<>) { s/^.*class.*(network|scsi).*module +"// || next; s/[" ]//g; s/,/\n/g; print }' $KERNELROOT/etc/pcmcia/config | sed 's/\.o//g') | sort -u)
     fi
 
     allmods=$(find $KERNELROOT/lib/modules/$version -name *.o)

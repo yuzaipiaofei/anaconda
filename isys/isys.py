@@ -275,6 +275,9 @@ def makeDevInode(name, fn=None):
         _isys.mkdevinode(name, path)
     return path
 
+def makedev(major, minor):
+    return _isys.makedev(major, minor)
+
 def mknod(pathname, mode, dev):
     return _isys.mknod(pathname, mode, dev)
 
@@ -413,9 +416,12 @@ def ext2HasJournal(device, makeDevNode = 1):
         hasjournal = _isys.e2hasjournal(device);
     return hasjournal
 
-def ejectCdrom(device):
-    makeDevInode(device, "/tmp/cdrom")
-    fd = os.open("/tmp/cdrom", os.O_RDONLY)
+def ejectCdrom(device, makeDevice = 1):
+    if makeDevice:
+        makeDevInode(device, "/tmp/cdrom")
+        fd = os.open("/tmp/cdrom", os.O_RDONLY)
+    else:
+        fd = os.open(device, os.O_RDONLY)
 
     # this is a best effort
     try:
@@ -424,7 +430,9 @@ def ejectCdrom(device):
 	pass
 
     os.close(fd)
-    os.unlink("/tmp/cdrom")
+
+    if makeDevice:
+        os.unlink("/tmp/cdrom")
 
 def driveIsRemovable(device):
     # assume ide if starts with 'hd', and we don't have to create
@@ -434,6 +442,27 @@ def driveIsRemovable(device):
     else:
         makeDevInode(device, "/tmp/disk")
         rc = (_isys.isScsiRemovable("/tmp/disk") == 1)
+
+        # need to test if its USB or IEEE1394 even if it doesnt look removable
+        if not rc:
+            if os.access("/tmp/scsidisks", os.R_OK):
+                sdlist=open("/tmp/scsidisks", "r")
+                sdlines = sdlist.readlines()
+                sdlist.close()
+                for l in sdlines:
+                    try:
+                        # each line has format of:  <device>  <module>
+                        (sddev, sdmod) = string.split(l)
+
+                        if sddev == device:
+                            if sdmod in ['sbp2', 'usb-storage']:
+                                rc = 1
+                            else:
+                                rc = 0
+                            break
+                    except:
+                        pass
+                  
         os.unlink("/tmp/disk")
 
     return rc

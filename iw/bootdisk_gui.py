@@ -20,7 +20,7 @@ from constants import *
 class BootdiskWindow (InstallWindow):
 
     htmlTag = "bootdisk"
-    windowTitle =  N_("Boot Disk Creation")
+    windowTitle =  N_("Boot Diskette Creation")
 
     def __init__ (self, ics):
 	InstallWindow.__init__ (self, ics)
@@ -52,12 +52,12 @@ class BootdiskWindow (InstallWindow):
         label = None
 
         text = _("The boot diskette allows you to boot your %s "
-                 "system from a floppy diskette.  A boot disk "
-		 "allows you to boot your system if your "
+                 "system from a floppy diskette.  A boot diskette "
+		 "allows you to boot your system in the event your "
 		 "bootloader configuration stops working, if you "
 		 "chose not to install a boot loader, or if your "
 		 "third-party boot loader does not support Linux.\n\nIt is "
-		 "highly recommended you create a boot disk.\n") % (productName,)
+		 "highly recommended you create a boot diskette.\n") % (productName,)
 
         label = gtk.Label (text)
 
@@ -67,10 +67,10 @@ class BootdiskWindow (InstallWindow):
         radioBox = gtk.VBox (gtk.FALSE)
 
         self.createDisk = gtk.RadioButton(
-            None, _("_Yes, I would like to create a boot disk"))
+            None, _("_Yes, I would like to create a boot diskette"))
 	radioBox.pack_start(self.createDisk, gtk.FALSE, gtk.FALSE, padding=10)
         self.skipDisk = gtk.RadioButton(
-            self.createDisk, _("No, I _do not want to create a boot disk"))
+            self.createDisk, _("No, I _do not want to create a boot diskette"))
 	radioBox.pack_start(self.skipDisk, gtk.FALSE, gtk.FALSE)
 
 	self.createDisk.set_active(1)

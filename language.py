@@ -46,7 +46,7 @@ class InstallTimeLanguage:
         if os.environ.has_key("LANG"):
             self.current = os.environ["LANG"]
         else:
-            self.current = "en_US"
+            self.current = "en_US.UTF-8"
         self.nativeLangNames = {}
 
         search = ('lang-names', '/usr/lib/anaconda/lang-names')
@@ -117,11 +117,11 @@ class InstallTimeLanguage:
 	# The nick we get here may be long (fr_FR@euro), when we need
 	# shorter (fr_FR), so be a bit fuzzy
 	for (langName, nick) in self.langNicks.items():
-	    if (nick == lang) or (nick == lang[0:len(nick)]):
+            if (nick == lang) or (nick == lang[0:len(nick)]) or (lang == nick[0:len(lang)]):
 		return langName
 
         #raise KeyError, "language %s not found" % lang
-        return self.getLangNameByNick("en_US")
+        return self.getLangNameByNick("en_US.UTF-8")
 
     def getDefaultKeyboard(self):
 	return self.kbd[self.getCurrent()]
@@ -199,7 +199,7 @@ class Language (SimpleConfigFile):
                 if allInstalledFlag or (langFilter and langFilter.has_key(lang)):
                     langsInstalled.append(name)
         else:
-            langInfoByName['English (USA)'] = ('en_US', 'iso01', 'default8x16')
+            langInfoByName['English (USA)'] = ('en_US.UTF-8', 'iso01', 'default8x16')
             allSupportedLangs.append('English (USA)')
             langsInstalled.append('English (USA)')
 
@@ -212,11 +212,11 @@ class Language (SimpleConfigFile):
     def getLangNameByNick(self, nick):
 	for langName in self.langInfoByName.keys():
 	    (lang, map, font) = self.langInfoByName[langName]
-	    if (nick == lang) or (nick == lang[0:len(nick)]):
+            if (nick == lang) or (nick == lang[0:len(nick)]) or (lang == nick[0:len(lang)]):            
 		return langName
 
 #	raise KeyError, "language %s not found" % nick
-        return self.getLangNameByNick("en_US")
+        return self.getLangNameByNick("en_US.UTF-8")
 
     def getLangNickByName(self, name):
 	(lang, map, font) = self.langInfoByName[name]

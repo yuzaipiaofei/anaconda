@@ -43,8 +43,10 @@ def findRootParts(intf, id, dispatch, dir, chroot):
 
     if id.rootParts is not None and len(id.rootParts) > 0:
         dispatch.skipStep("findinstall", skip = 0)
+        dispatch.skipStep("installtype", skip = 1)
     else:
         dispatch.skipStep("findinstall", skip = 1)
+        dispatch.skipStep("installtype", skip = 0)
 
 def findExistingRoots(intf, id, chroot):
     if not flags.setupFilesystems: return [(chroot, 'ext2', "")]
@@ -316,7 +318,7 @@ def upgradeFindPackages(intf, method, id, instPath, dir):
         rpm.addMacro("_dbapi", "-1")
         # have to make sure this isn't set, otherwise rpm won't even
         # *try* to use old-format dbs
-        rpm.addMacro("__dbi_cdb", "")
+        #rpm.addMacro("__dbi_cdb", "")
 
         rebuildpath = instPath + id.dbpath
 
@@ -379,8 +381,7 @@ def upgradeFindPackages(intf, method, id, instPath, dir):
     # open up the database to check dependencies and currently
     # installed packages
     ts = rpm.TransactionSet(instPath)
-    ts.setVSFlags(rpm.RPMVSF_NORSA|rpm.RPMVSF_NODSA)
-    ts.setFlags(rpm.RPMTRANS_FLAG_NOMD5)
+    ts.setVSFlags(~(rpm.RPMVSF_NORSA|rpm.RPMVSF_NODSA))
 
     mi = ts.dbMatch()
     found = 0

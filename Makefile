@@ -1,15 +1,9 @@
 # Copyright (C) 1998-2002  Red Hat, Inc.
 include Makefile.inc
 
-MINISLANG=minislang
-MININEWT=mininewt
-ifneq (ia64, $(ARCH))
-STUBS=stubs
-endif
-
-SUBDIRSHD = isys collage $(MINISLANG) $(MININEWT) loader2 po \
+SUBDIRSHD = isys loader2 po stubs \
 	    textw utils scripts bootdisk installclasses \
-	    fonts iw pixmaps $(STUBS) isomd5sum command-stubs
+	    fonts iw pixmaps isomd5sum command-stubs
 SUBDIRS = $(SUBDIRSHD)
 
 # DESTDIR        - destination for install image for install purposes
@@ -19,13 +13,16 @@ CATALOGS = po/anaconda.pot
 
 PYFILES = $(wildcard *.py)
 
-all:  subdirs mini-wm _xkb.so xmouse.so xutils.so $(CATALOGS) lang-table lang-names product.py
+all:  subdirs mini-wm _xkb.so xmouse.so xutils.so $(CATALOGS) lang-table lang-names product.py locale-list
 
 product.py: product.py.in Makefile.inc
 	sed -e 's/@@PRODUCTNAME@@/$(PRODUCTNAME)/g' < product.py.in > product.py
 
 lang-names: lang-table
 	PYTHONPATH="." $(PYTHON) scripts/getlangnames.py > lang-names
+
+locale-list:
+	PYTHONPATH="." $(PYTHON) scripts/genlocalelist.py > locale-list
 
 mini-wm: mini-wm.c
 	gcc -o mini-wm mini-wm.c `pkg-config gtk+-x11-2.0 --cflags --libs`
@@ -82,6 +79,7 @@ install:
 	cp -var $(PYFILES) $(DESTDIR)/$(PYTHONLIBDIR)
 	cp -a lang-table $(DESTDIR)/$(PYTHONLIBDIR)
 	cp -a lang-names $(DESTDIR)/$(PYTHONLIBDIR)
+	cp -a locale-list $(DESTDIR)/$(ANACONDADATADIR)/locale-list
 	cp -a lang-table-kon $(DESTDIR)/$(PYTHONLIBDIR)
 	./py-compile --basedir $(DESTDIR)/$(PYTHONLIBDIR) $(PYFILES)
 	cp -a *.so $(DESTDIR)/$(PYTHONLIBDIR)

@@ -35,7 +35,8 @@
 
 #include "../isys/stubs.h"
 #include "../isys/cpio.h"
-#include "../isys/lang.h"
+
+static int startBterm(int flags);
 
 struct aString {
     unsigned int hash;
@@ -75,7 +76,6 @@ char * translateString(char * str) {
     }
 
     key.hash = (sum << 16) | ((xor & 0xFF) << 8) | (len & 0xFF);
-
     match = bsearch(&key, strings, numStrings, sizeof(*strings), aStringCmp);
     if (!match)
         return str;
@@ -118,6 +118,7 @@ static void loadLanguageList(int flags) {
             numLanguages++;
         }
     }
+    fclose(f);
 }
 
 int getLangInfo(struct langInfo ** langs, int flags) {
@@ -134,13 +135,14 @@ void loadLanguage (char * file, int flags) {
     int fd, hash, rc;
     char * key = getenv("LANGKEY");
 
-    if (!key || !strcmp(key, "en_US")) {
-        if (strings) {
-            free(strings), strings = NULL;
-            numStrings = allocedStrings = 0;
-        }
-        return;
+    if (strings) {
+	free(strings), strings = NULL;
+	numStrings = allocedStrings = 0;
     }
+    
+    /* english requires no files */
+    if (!strcmp(key, "en"))
+        return;
 
     if (!file) {
         file = filename;
@@ -198,25 +200,150 @@ void loadLanguage (char * file, int flags) {
 }
 
 
-void setLanguage (char * key, int flags) {
+/* give the index of the language to set to -- sets the appropriate
+ * lang variables if we have a font.
+ *
+ * ASSUMPTION: languages exists
+ */
+static void setLangEnv (int i, int flags) {
+    if (i > numLanguages)
+        return;
+
+    logMessage("setting language to %s", languages[i].lc_all);
+    if (!strcmp(languages[i].font, "None"))
+        return;
+
+    setenv("LANG", languages[i].lc_all, 1);
+    setenv("LANGKEY", languages[i].key, 1);
+    setenv("LC_ALL", languages[i].lc_all, 1);
+    setenv("LINGUAS", languages[i].lc_all, 1);
+    loadLanguage (NULL, flags);
+}
+
+/* choice is the index of the chosen language in languages */
+static int setupLanguage(int choice, int flags) {
+    char * buf;
+    int i;
+
+    logMessage("going to set language to %s", languages[choice].lc_all);
+    /* load the language only if it is displayable */
+    if (!strcmp(languages[choice].font, "bterm") && startBterm(flags)) {
+        if (FL_KICKSTART(flags)) return 0;
+
+	newtWinMessage("Language Unavailable", "OK", 
+		       "%s display is unavailable in text mode.  The "
+		       "installation will continue in English until the "
+		       "display of %s is possible.", languages[choice].lang,
+		       languages[choice].lang);
+	return 0;
+    }
+    
+    setLangEnv (choice, flags);
+
+    /* clear out top line */
+    buf = alloca(80);
+    for (i=0; i < 80; i++)
+	buf[i] = ' ';
+    newtDrawRootText(0, 0, buf);
+
+    buf = sdupprintf(_(topLineWelcome), PRODUCTNAME);
+    newtDrawRootText(0, 0, buf);
+    free(buf);
+    newtPopHelpLine();
+    newtPushHelpLine(_(bottomHelpLine));
+
+    return 0;
+
+}
+
+/* this is pretty simple.  we want to break down the language specifier
+ * into its short form (eg, en_US)
+ */
+static char * getLangShortForm(char * oldLang) {
+    char * lang;
+    char * c;
+    
+    lang = strdup(oldLang);
+
+    c = strchr(lang, '@');
+    if (c) {
+        *c = '\0';
+    }
+
+    c = strchr(lang, '.');
+    if (c) {
+        *c = '\0';
+    }
+
+    return lang;
+}
+
+/* return the nick of a language -- eg en_US -> en */
+static char * getLangNick(char * oldLang) {
+    char * lang;
+    char * c;
+    
+    lang = strdup(oldLang);
+
+    c = strchr(lang, '_');
+    if (c) {
+        *c = '\0';
+    }
+
+    return lang;
+}
+
+int setLanguage (char * key, int flags) {
     int i;
 
     if (!languages) loadLanguageList(flags);
 
     for (i = 0; i < numLanguages; i++) {
-        if (!strcmp(languages[i].key, key)) {
-            if (!strcmp(languages[i].font, "None"))
-                break;
-            setenv("LANG", languages[i].lc_all, 1);
-            setenv("LANGKEY", languages[i].key, 1);
-            setenv("LC_ALL", languages[i].lc_all, 1);
-            setenv("LINGUAS", languages[i].lc_all, 1);
-            loadLanguage (NULL, flags);
-            if (languages[i].map)
-                isysLoadFont(languages[i].map);
-            break;
+        if (!strcmp(languages[i].lc_all, key)) {
+            return setupLanguage(i, flags);
         }
     }
+
+    /* we didn't specify anything that's exactly in the lang-table.  check
+     * against short forms and nicks */
+    for (i = 0; i < numLanguages; i++) {
+        if (!strcmp(getLangShortForm(languages[i].lc_all), key)) {
+            return setupLanguage(i, flags);
+        }
+    }
+
+    for (i = 0; i < numLanguages; i++) {
+        if (!strcmp(getLangNick(languages[i].lc_all), key)) {
+            return setupLanguage(i, flags);
+        }
+    }
+
+    logMessage("unable to set to requested language %s", key);
+    return -1;
+}
+
+/* returns 0 on success, 1 on failure */
+extern int bterm_main(int argc, char **argv);
+
+static int startBterm(int flags) {
+    char *args[4] = { "bterm", "-s", "-f", NULL };
+    int rc;
+    struct stat sb;
+
+    /* assume that if we're already on a pty we can handle unicode */
+    fstat(0, &sb);
+    if (major(sb.st_rdev) == 3 || major(sb.st_rdev) == 136)
+	return 0;
+
+    if (FL_TESTING(flags))
+	args[3] = "font.bgf.gz";	
+    else
+	args[3] = "/etc/font.bgf.gz";
+    
+    stopNewt();
+    rc = bterm_main(4, args);
+    startNewt(flags);
+    return rc;
 }
 
 int chooseLanguage(char ** lang, int flags) {
@@ -228,10 +355,7 @@ int chooseLanguage(char ** lang, int flags) {
     char * currentLangName = getenv("LANG");
     int numLangs = 0;
     char * langPicked;
-    char * buf;
 
-    /* JKFIXME: I ripped out some of the wacky Kon stuff.  it might need
-     * to come back for bterm */
     if (!languages) loadLanguageList(flags);
 
     langs = alloca(sizeof(*langs) * (numLanguages + 1)); 
@@ -270,59 +394,17 @@ int chooseLanguage(char ** lang, int flags) {
     /* this can't happen */
     if (i == numLanguages) abort();
 
-    if (!strncmp(languages[choice].key, "en", 2)) {
-        char *buf;
-        /* stick with the default (English) */
-        unsetenv("LANG");
-        unsetenv("LANGKEY");
-        unsetenv("LC_ALL");
-        unsetenv("LINGUAS");
-        if (strings) {
-            free(strings), strings = NULL;
-            numStrings = allocedStrings = 0;
-        }
-        buf = sdupprintf(_(topLineWelcome), PRODUCTNAME);
-        newtDrawRootText(0, 0, buf);
-        free(buf);
-        newtPushHelpLine(_(bottomHelpLine));
-
-        return 0;
-    }
-
-    /* only set the environment variables when we actually have a way
-       to display the language */
-    if (strcmp(languages[choice].font, "None")) {
-        setenv("LANG", languages[choice].lc_all, 1);
-        setenv("LANGKEY", languages[choice].key, 1);
-        setenv("LC_ALL", languages[choice].lc_all, 1);
-        setenv("LINGUAS", languages[choice].lc_all, 1);
-    }
-    
-    if (strings) {
-        free(strings), strings = NULL;
-        numStrings = allocedStrings = 0;
-    }
-
     /* load the language only if it is displayable */
-    if (!strcmp(languages[choice].font, "None")) {
-        newtWinMessage("Language Unavailable", "OK", 
-                       "%s display is unavailable in text mode.  The "
-                       "installation will continue in English until the "
-                       "display of %s is possible.", languages[choice].lang,
-                       languages[choice].lang);
-    } else {
-        loadLanguage (NULL, flags);
+    if (!strcmp(languages[choice].font, "bterm") && startBterm(flags)) {
+	newtWinMessage("Language Unavailable", "OK", 
+		       "%s display is unavailable in text mode.  The "
+		       "installation will continue in English until the "
+		       "display of %s is possible.", languages[choice].lang,
+		       languages[choice].lang);
+	return 0;
     }
 
-    if (languages[choice].map)
-        isysLoadFont(languages[choice].map);
-
-    
-    buf = sdupprintf(_(topLineWelcome), PRODUCTNAME);
-    newtDrawRootText(0, 0, buf);
-    free(buf);
-    newtPushHelpLine(_(bottomHelpLine));
-
+    setupLanguage(choice, flags);
     return 0;
 }
 
@@ -335,5 +417,4 @@ void setKickstartLanguage(struct loaderData_s * loaderData, int argc,
 
     loaderData->lang = argv[1];
     loaderData->lang_set = 1;
-
 }

@@ -807,8 +807,6 @@ int main(int argc, char **argv) {
     printf("unmounting filesystems...\n"); 
     unmountFilesystems();
 
-    ejectCdrom();
-
     if (doReboot) {
 	printf("rebooting system\n");
 	sleep(2);

@@ -91,7 +91,8 @@ SCSIMODS="sd_mod sr_mod"
 FSMODS="msdos vfat ext3 reiserfs"
 SECSTAGE="agpgart raid0 raid1 raid5 lvm-mod $FSMODS $IDEMODS $SCSIMODS $LATEUSBMODS st parport_pc parport"
 
-COMMONMODULES="vfat nfs $USBMODS"
+BTERMMODULES="vga16fb"
+COMMONMODULES="vfat nfs $USBMODS $BTERMMODULES"
 LOCALMODULES="$COMMONMODULES aic7xxx megaraid ncr53c8xx 
 	     sym53c8xx $IDEMODS $SCSIMODS"
 NETWORKMODULES="$COMMONMODULES 3c59x 
@@ -106,6 +107,11 @@ ISOLINUXMODULES="ehci-hcd ieee1394 ohci1394 sbp2"
 # XXX hack hack
 PCMCIAMODULES_EXCLUDED="
 	apa1480_cb
+	airo
+	airo_cs
+	aironet4500_core
+	aironet4500_proc
+	hermes
 	iflash2+_mtd
 	iflash2_mtd
 	memory_cb
@@ -129,6 +135,9 @@ do
    PCMCIAMODULES_EXCLUDED_SED="$PCMCIAMODULES_EXCLUDED_SED -e 's/$m//g'"
 done
 PCMCIAMODULES=`echo $PCMCIAMODULES | eval "$PCMCIAMODULES_EXCLUDED_SED"`
+
+# need to make sure the base modules are included
+PCMCIAMODULES="$PCMCIAMODULES yenta_socket pcmcia_core ds"
 
 echo "Building $TOPDESTPATH/images/pxeboot/initrd.img"
 makeinitrd --initrdto $TOPDESTPATH/images/pxeboot/initrd.img \

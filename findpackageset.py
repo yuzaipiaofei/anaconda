@@ -1,5 +1,11 @@
 import rpm
 
+
+# set DB_PRIVATE to make rpm happy...  do it in here since we include
+# this with all of the useful rpm bits
+#rpm.addMacro("__dbi_cdb", "create private")
+
+
 def dEBUG(str):
     print str
 
@@ -29,8 +35,7 @@ def addNewPackageToUpgSet(pkgDict, pkg):
 
 def findpackageset(hdrlist, dbPath='/'):
     ts = rpm.TransactionSet(dbPath)
-    ts.setVSFlags(rpm.RPMVSF_NORSA|rpm.RPMVSF_NODSA)
-    ts.setFlags(rpm.RPMTRANS_FLAG_NOMD5)
+    ts.setVSFlags(~(rpm.RPMVSF_NORSA|rpm.RPMVSF_NODSA|rpm.RPMVSF_NOMD5))
 
     pkgDict = {}
 

@@ -424,13 +424,6 @@ int readNetConfig(char * device, struct networkDeviceConfig * cfg, int flags) {
      if(inet_aton((t? t : s), &newCfg.dev.dnsServers[0]))
       newCfg.dev.set |= PUMP_NETINFO_HAS_DNS;
    }
-   if (!strncmp(newCfg.dev.device, "ctc", 3)) {
-     env = getenv("REMIP");
-     if (env && *env) {
-       if(inet_aton(env, &newCfg.dev.gateway))
-         newCfg.dev.set |= PUMP_NETINFO_HAS_GATEWAY;
-     }
-   }
    env = getenv("BROADCAST");
    if (env && *env) {
      if(inet_aton(env, &newCfg.dev.broadcast))
@@ -503,9 +496,6 @@ int writeNetInfo(const char * fn, struct networkDeviceConfig * dev,
         fprintf(f, "NETMASK=%s\n", inet_ntoa(dev->dev.netmask));
         if (dev->dev.set & PUMP_NETINFO_HAS_GATEWAY) {
           fprintf(f, "GATEWAY=%s\n", inet_ntoa(dev->dev.gateway));
-          if (!strncmp(dev->dev.device, "ctc", 3) || \
-              !strncmp(dev->dev.device, "iucv", 4)) 
-            fprintf(f, "REMIP=%s\n", inet_ntoa(dev->dev.gateway));
         }
         if (dev->dev.set & PUMP_INTFINFO_HAS_BROADCAST)
           fprintf(f, "BROADCAST=%s\n", inet_ntoa(dev->dev.broadcast));    
