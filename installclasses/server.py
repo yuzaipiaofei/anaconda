@@ -28,8 +28,11 @@ class InstallClass(BaseInstallClass):
                             "SMB (Samba) Server",
                             "DNS Name Server" ]
 
-	if os.uname ()[4] != 'sparc64':
-	    self.addNewPartition('/boot', (48, -1, 0), (None, -1, 0), (0,0))
+        if os.uname ()[4] != 'sparc64' and os.uname()[4] != 'ia64':
+	    self.addNewPartition('/boot', (48, -1, 0), (None,-1,0), (0,0))
+	if os.uname ()[4] == 'ia64':
+	    self.addNewPartition('/boot/efi', (100, -1, 0), (None,-1,1), (6,0))
+	
 	self.addNewPartition('/', (256, -1, 0), (None, -1, 0), (0,0))
 	self.addNewPartition('/usr', (512, -1, 1), (None, -1, 0), (0,0))
 	self.addNewPartition('/var', (256, -1, 0), (None, -1, 0), (0,0))
