@@ -123,7 +123,6 @@ root::0:0:root:/tmp:/bin/bash
 sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin
 EOF
     echo "sshd:x:74:" >> $MBD_DIR/etc/group
-    echo "PermitEmptyPasswords yes" >> $MBD_DIR/etc/ssh/sshd_config
 
     mkdir -p $MBD_DIR/var/empty/sshd
     chmod 111 $MBD_DIR/var/empty/sshd
@@ -195,6 +194,7 @@ EOF
     cp -f $IMGPATH/usr/sbin/portmap $MBD_DIR/sbin/portmap
     cp -f $IMGPATH/etc/inetd.conf $MBD_DIR/etc/inetd.conf
     cp -pf $IMGPATH/etc/ssh/* $MBD_DIR/etc/ssh/
+    echo "PermitEmptyPasswords yes" >> $MBD_DIR/etc/ssh/sshd_config
     for loc in de en ja; do
        cp -pRf $IMGPATH/etc/locale/$loc/* \
          $MBD_DIR/etc/locale/$loc/
