@@ -158,7 +158,10 @@ instantiate (size_t inc, wide_enc enc, int rw) {
   DBCS_type *obj;
   wide_str *wcs;
 
-  if (NULL == (wcs = malloc(sizeof(wide_str)))) return NULL;
+  if (NULL == (wcs = malloc(sizeof(wide_str)))) {
+    PyErr_NoMemory();
+    return NULL;
+  }
   if (NULL == (obj = PyObject_NEW(DBCS_type, rw ? &DBCSrw : &DBCSr))) {
     free(wcs);
     return NULL;
