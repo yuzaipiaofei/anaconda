@@ -4,8 +4,8 @@ VERSION = 7.0.1
 RELEASE = 6j1
 SNAPRELEASE = $(RELEASE)$(shell date "+.%Y%m%d%H%M")
 
-SUBDIRSHD = balkan isys libfdisk collage loader po text-help \
-	    minislang textw utils scripts bootdisk installclasses \
+SUBDIRSHD = balkan isys libfdisk collage minislang loader po text-help \
+	    textw utils scripts bootdisk installclasses \
 	    keymaps fonts gnome-map iw help pixmaps
 SUBDIRS = $(SUBDIRSHD)
 
