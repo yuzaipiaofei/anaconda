@@ -106,7 +106,9 @@ if [ $ARCH = ia64 ]; then
 fi
 
 if [ $ARCH = s390 -o $ARCH = s390x ]; then
-    PACKAGES="$PACKAGES s390utils oco-utils binutils installer pdksh-static"
+    PACKAGES="$PACKAGES s390utils oco-utils binutils installer pdksh-static
+	sed net-tools inetd openssh openssh-server fileutils modutils
+	portmap textutils"
 fi
 
 # xpm is missing
@@ -158,7 +160,9 @@ if [ $ARCH = ia64 ]; then
 fi
 
 if [ $ARCH = s390 -o $ARCH = s390x ]; then
-    PACKAGESGR="$PACKAGESGR s390utils oco-utils"
+    PACKAGESGR="$PACKAGESGR s390utils oco-utils binutils installer pdksh-static
+	sed net-tools inetd openssh openssh-server fileutils modutils
+	portmap textutils"
 fi
 
 KEEPFILE=/tmp/keepfile.$$
@@ -269,6 +273,12 @@ usr/share/terminfo/s/screen
 usr/share/terminfo/v/vt100
 usr/share/terminfo/v/vt102
 bin/ksh
+usr/bin/ssh-keygen
+usr/sbin/sshd
+sbin/insmod
+sbin/portmap
+bin/cat
+bin/sed
 EOF
 fi
       
