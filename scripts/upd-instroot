@@ -139,7 +139,7 @@ if [ $ARCH = ia64 ]; then
 fi
 
 if [ $ARCH = s390 -o $ARCH = s390x ]; then
-    PACKAGES="$PACKAGES s390utils binutils 
+    PACKAGES="$PACKAGES s390utils binutils s390utils
 	sed net-tools inetd openssh openssh-server fileutils modutils
 	initscripts mount gawk xauth bash gettext pygtk2
 	portmap textutils sh-utils telnet-server login ssh_keys"
@@ -203,7 +203,7 @@ if [ $ARCH = ia64 ]; then
 fi
 
 if [ $ARCH = s390 -o $ARCH = s390x ]; then
-    PACKAGESGR="$PACKAGESGR s390utils binutils 
+    PACKAGESGR="$PACKAGESGR s390utils binutils s390installer
 	sed net-tools inetd openssh openssh-server fileutils login 
 	wget initscripts xauth bash gettext
 	modutils portmap textutils openssl telnet-server strace ssh_keys"
@@ -437,6 +437,7 @@ usr/lib/gconv/ISO8859-15.so
 usr/lib/gconv/EUC-JP.so
 usr/lib/gconv/libJIS.so
 usr/lib/gconv/gconv-modules
+usr/$LIBDIR/python2.2/site-packages/gtk*/gtk/*
 usr/X11R6/bin/xauth
 usr/share/anaconda/*
 EOF
