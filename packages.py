@@ -673,7 +673,7 @@ def doInstall(method, id, intf, instPath):
     ts = rpm.TransactionSet(instPath)
 
     ts.setVSFlags(~(rpm.RPMVSF_NORSA|rpm.RPMVSF_NODSA))
-    ts.setFlags(rpm.RPMTRANS_FLAG_CHAINSAW)
+    ts.setFlags(rpm.RPMTRANS_FLAG_ANACONDA)
 
     total = 0
     totalSize = 0
