@@ -65,20 +65,6 @@ class Desktop (SimpleConfigFile):
     def set (self, desktop):
         self.info ['DESKTOP'] = desktop
 
-class Firewall:
-    def __init__ (self):
-	self.enabled = -1
-	self.ssh = 0
-	self.telnet = 0
-	self.smtp = 0
-	self.http = 0
-	self.ftp = 0
-	self.portlist = ""
-	self.ports = []
-	self.policy = 0
-	self.dhcp = 0
-	self.trustdevs = []
-    
 class Authentication:
     def __init__ (self):
         self.useShadow = 1
@@ -139,7 +125,6 @@ class ToDo:
         self.verifiedState = None
 
         self.auth = Authentication ()
-	self.firewall = Firewall()
         self.ddruidReadOnly = 0
         self.bootdisk = 1
         self.bdstate = ""
@@ -184,7 +169,6 @@ class ToDo:
         self.depthState = ""
         self.initState = 0
         self.dhcpState = ""
-        self.firewallState = 0
         self.rebuildTime = None
 
         # If reconfig mode, don't probe floppy
@@ -433,53 +417,6 @@ class ToDo:
 	    self.setPassword("root", self.rootpassword.getCrypted (),
 			     alreadyCrypted = 1)
 	    
-    def setupFirewall (self):
-	args = [ "/usr/sbin/lokkit", "--quiet", "--nostart" ]
-	if self.firewall.policy:
-	    args.append ("--medium")
-	else:
-	    args.append ("--high")
-	if self.firewall.dhcp:
-	    args.append ("--dhcp")
-	if self.firewall.portlist:
-	    ports = string.split(self.firewall.portlist,',')
-	    for port in ports:
-		port = string.strip(port)
-                try:
-                    if not string.index(port,':'):
-                        port = '%s:tcp' % port
-                except:
-                    pass
-		self.firewall.ports.append(port)
-	for port in self.firewall.ports:
-	    args = args + [ "--port", port ]
-	if self.firewall.smtp:
-	    args = args + [ "--port","smtp:tcp" ]
-	if self.firewall.http:
-	    args = args + [ "--port","http:tcp" ]
-	if self.firewall.ftp:
-	    args = args + [ "--port","ftp:tcp" ]
-	if self.firewall.ssh:
-	    args = args + [ "--port","ssh:tcp" ]
-	if self.firewall.telnet:
-	    args = args + [ "--port","telnet:tcp" ]
-	for dev in self.firewall.trustdevs:
-	    args = args + [ "--trust", dev ]
-	if self.firewall.enabled > 0:
-            try:
-                iutil.execWithRedirect(args[0], args, root = self.instPath,
-                                       stdout = None, stderr = None)
-            except RuntimeError, msg:
-                log ("lokkit run failed: %s", msg)
-            except OSError, (errno, msg):
-                log ("lokkit run failed: %s", msg)
-        elif self.reconfigOnly:
-            # remove /etc/sysconfig/ipchains
-            try:
-                os.remove("/etc/sysconfig/ipchains")
-            except:
-                pass
-
     def setupAuthentication (self):
         args = [ "/usr/sbin/authconfig", "--kickstart", "--nostart" ]
         if self.auth.useShadow:
@@ -854,16 +791,6 @@ class ToDo:
 	( enable, policy, trusts, ports, dhcp, ssh,
 	  telnet, smtp, http, ftp ) = todo.instClass.getFirewall()
 	  
-	todo.firewall.enabled = enable
-	todo.firewall.policy = policy
-	todo.firewall.trustdevs = trusts
-	todo.firewall.portlist = ports
-	todo.firewall.dhcp = dhcp
-	todo.firewall.ssh = ssh
-	todo.firewall.telnet = telnet
-	todo.firewall.smtp = smtp
-	todo.firewall.http = http
-	todo.firewall.ftp = ftp
 	
 	( useShadow, useMd5,
           useNIS, nisDomain, nisBroadcast, nisServer,
