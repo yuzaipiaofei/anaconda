@@ -167,22 +167,10 @@ EOF
     ln -sf bash $MBD_DIR/sbin/sh
     cp -f $IMGPATH/usr/bin/login $MBD_DIR/sbin/login
     cp -f $IMGPATH/usr/bin/gawk $MBD_DIR/sbin/awk
-    cp -f $IMGPATH/usr/bin/formatmnt $MBD_DIR/sbin/formatmnt
-    cp -f $IMGPATH/usr/bin/netsetup $MBD_DIR/sbin/netsetup
-    cp -f $IMGPATH/usr/bin/gettext $MBD_DIR/sbin/gettext
-    cp -f $IMGPATH/usr/bin/pkgsrc $MBD_DIR/sbin/pkgsrc
-    cp -f $IMGPATH/usr/bin/pkgselect $MBD_DIR/sbin/pkgselect
     cp -f $IMGPATH/usr/bin/sort_save $MBD_DIR/sbin/sort
-    cp -f $IMGPATH/usr/bin/mknod_save $MBD_DIR/sbin/mknod
-    cp -f $IMGPATH/usr/bin/wget $MBD_DIR/sbin/wget
     cp -f $IMGPATH/usr/bin/printf $MBD_DIR/sbin/printf
     cp -f $IMGPATH/usr/sbin/chroot $MBD_DIR/sbin/chroot
     cp -f $IMGPATH/usr/sbin/consoletype $MBD_DIR/sbin/consoletype
-    cp -f $IMGPATH/usr/sbin/rhsetup $MBD_DIR/sbin/rhsetup
-    cp -f $IMGPATH/usr/sbin/swapon $MBD_DIR/sbin/swapon
-    cp -f $IMGPATH/usr/sbin/swapoff $MBD_DIR/sbin/swapoff
-    cp -f $IMGPATH/usr/sbin/mkswap $MBD_DIR/sbin/mkswap
-    cp -f $IMGPATH/usr/sbin/tune2fs $MBD_DIR/sbin/tune2fs
     cp -f $IMGPATH/usr/sbin/mke2fs $MBD_DIR/sbin/mke2fs
     cp -f $IMGPATH/usr/bin/busybox $MBD_DIR/sbin/busybox
     for i in cp uname tee rm ps mv more mkdir ls ln hostname head \
@@ -212,17 +200,6 @@ EOF
        cp -pRf $IMGPATH/etc/locale/$loc/* \
          $MBD_DIR/etc/locale/$loc/
     done
-    for loc in de ja; do
-       cp -pRf $IMGPATH/usr/share/locale/$loc/LC_MESSAGES/anaconda.mo \
-               $IMGPATH/usr/share/locale/$loc/LC_MESSAGES/s390installer.mo \
-         $MBD_DIR/etc/locale/$loc/LC_MESSAGES/
-    done
-    cp -pRf $IMGPATH/usr/share/locale/de/LC_MESSAGES/anaconda.mo \
-            $IMGPATH/usr/share/locale/de/LC_MESSAGES/s390installer.mo \
-       $MBD_DIR/usr/lib/locale/de_DE/LC_MESSAGES/
-    cp -pRf $IMGPATH/usr/share/locale/ja/LC_MESSAGES/anaconda.mo \
-            $IMGPATH/usr/share/locale/ja/LC_MESSAGES/s390installer.mo \
-       $MBD_DIR/usr/lib/locale/ja_JP.eucjp/LC_MESSAGES/
     for loc in de_DE en_US ja_JP.eucjp; do
        cp -pRf $IMGPATH/usr/lib/locale/$loc/* \
              $MBD_DIR/usr/lib/locale/$loc/
