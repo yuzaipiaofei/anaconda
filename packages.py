@@ -145,7 +145,7 @@ def readPackages(intf, method, id):
                                  "due to a missing file or bad media.  "
                                  "Press <return> to try again."))
             continue
-	id.instClass.setGroupSelection(id.comps, intf)
+        id.instClass.setGroupSelection(id.comps, intf)
 
     else:
 	# re-evaluate all the expressions for packages with qualifiers.
@@ -830,6 +830,12 @@ def doInstall(method, id, intf, instPath):
 
 		prob = "%-15s %d %c\n" % (mount, need, suffix)
 		probs = probs + prob
+
+        if len(probs) == 0:
+            probs = ("ERROR: NO!  An unexpected problem has occurred with "
+                     "your transaction set.  Please see tty3 for more "
+                     "information")
+
 	if nodeneeded:
 	    if probs:
 		probs = probs + '\n'
