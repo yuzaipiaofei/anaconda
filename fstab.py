@@ -1044,16 +1044,16 @@ def readFstab (path, fstab):
 	    fstab.addMount(device, fields[1], fsystem)
 
 def createLabel(labels, newLabel):
-    if len(newLabel) > 16:
-	newLabel = newLabel[0:16]
+    if len(newLabel) > 15:
+	newLabel = newLabel[0:15]
     count = 0
     while labels.has_key(newLabel):
 	count = count + 1
 	s = "%s" % count
-	if (len(newLabel) + len(s)) <= 16:
+	if (len(newLabel) + len(s)) <= 15:
 	    newLabel = newLabel + s
 	else:
-	    strip = len(newLabel) + len(s) - 16
+	    strip = len(newLabel) + len(s) - 15
 	    newLabel = newLabel[0:len(newLabel) - strip] + s
     labels[newLabel] = 1
 
