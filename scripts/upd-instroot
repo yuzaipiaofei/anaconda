@@ -139,7 +139,7 @@ if [ $ARCH = ia64 ]; then
 fi
 
 if [ $ARCH = s390 -o $ARCH = s390x ]; then
-    PACKAGES="$PACKAGES s390utils binutils s390installer libgcc
+    PACKAGES="$PACKAGES s390utils binutils s390installer libgcc coreutils
 	sed net-tools inetd openssh openssh-server fileutils modutils
 	initscripts mount gawk xauth bash gettext pygtk2 libstdc++
 	portmap textutils sh-utils telnet-server login ssh_keys"
