@@ -27,9 +27,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-#if !defined(__s390__) && !defined(__s390x__)
 #include <linux/cdrom.h>
-#endif
 
 #include "kickstart.h"
 #include "loader.h"
