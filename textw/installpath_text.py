@@ -53,5 +53,8 @@ class InstallPathWindow:
 	    c.setSteps(dispatch)
 	    c.setInstallData(id)
 
+        #Skip this step for text mode
+        dispatch.skipStep("defaults")
+
         return INSTALL_OK
 
