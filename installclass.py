@@ -306,14 +306,10 @@ echo "* Security script for HA started" >&2
 # but leave it in such a manner that the inetd.conf entries can
 # be easily reenabled
 #
-/bin/mv /etc/inetd.conf /etc/inetd.conf.orig
-/bin/cat /etc/inetd.conf.orig | /bin/sed -e 's,^[a-z],#\\0,' > /etc/inetd.conf
-/bin/sed -e 's/#shell/shell/' < /etc/inetd.conf > /etc/inetd.conf.orig
-/bin/sed -e 's/#login/login/' < /etc/inetd.conf.orig > /etc/inetd.conf
-
-# inetd needs a kick to reread the config file
-#
-/usr/bin/killall -HUP inetd
+#/bin/mv /etc/inetd.conf /etc/inetd.conf.orig
+#/bin/cat /etc/inetd.conf.orig | /bin/sed -e 's,^[a-z],#\\0,' > /etc/inetd.conf
+#/bin/sed -e 's/#shell/shell/' < /etc/inetd.conf > /etc/inetd.conf.orig
+#/bin/sed -e 's/#login/login/' < /etc/inetd.conf.orig > /etc/inetd.conf
 
 # TCP Wrappers
 # Even if services are turned on, we should deny EVERYTHING by default
@@ -324,8 +320,11 @@ echo "# you could extend this file beyond the basic ALL:ALL" >> /etc/hosts.deny
 echo "# See man hosts.deny for more details" >> /etc/hosts.deny
 echo "ALL: ALL" >> /etc/hosts.deny
 
-echo "# Please edit these example to suit" >> /etc/hosts.allow 
-echo "# your local setup requirements" >> /etc/hosts.allow
+echo "# Please replace 'myhost.mydomain.org' and IP address with your" >> /etc/hosts.allow 
+echo "# other participating cluster node." >> /etc/hosts.allow
+echo "# Don't forget to remove the leading # to enable!" >> /etc/hosts.allow
+echo "# See man hosts.allow for more details" >> /etc/hosts.allow
+
 echo "# in.telnetd: myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
 echo "# in.ftp:     myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
 echo "# in.rshd:    myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
@@ -333,7 +332,8 @@ echo "# in.rlogind: myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
 
 # Example rhost file for root
 #
-echo "# user host" > /root/.rhosts
+echo "# Replace the <hostname> with your other participating cluster node name" > /root/.rhosts
+echo "# <hostname> root" > /root/.rhosts
 
 # Passwords by default should rotate on a regular basis
 # /etc/login.defs offers a mechanism to tweek the defaults
@@ -353,7 +353,7 @@ echo "# user host" > /root/.rhosts
 
 echo "* Security script for HA completed, Altering the MOTD" >&2
 echo "" > /etc/motd
-echo "Red Hat Highly Available Server 1.0" >> /etc/issue
+echo "Red Hat Highly Available Server 1.0" >> /etc/motd
 echo "" >> /etc/motd 
 echo "" >> /etc/motd
 
