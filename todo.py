@@ -278,12 +278,6 @@ class ToDo:
     def setTimezoneInfo(self, timezone, asUtc = 0, asArc = 0):
 	self.timezone = (timezone, asUtc, asArc)
 
-    # XXX
-    #def writeLanguage(self):
-	#f = open(self.instPath + "/etc/sysconfig/i18n", "w")
-	#f.write(str (self.language))
-	#f.close()
-
     def writeMouse(self):
 	if self.serial: return
 	# XXX
@@ -835,21 +829,6 @@ class ToDo:
 	    todo.rootpassword.set(todo.instClass.rootPassword,
 			      isCrypted = todo.instClass.rootPasswordCrypted)
 
-	# XXX
-	#if todo.instClass.langsupported != None:
-            #if len (todo.instClass.langsupported) == 0:
-                #all = todo.language.getAllSupported()
-                #todo.language.setSupported(all)
-            #else:
-                #newlist = []
-                #for lang in todo.instClass.langsupported:
-                    #newlist.append(todo.language.getLangNameByNick(lang))
-                #todo.language.setSupported(newlist)
-
-        #if todo.instClass.langdefault:
-            #todo.language.setDefault(todo.language.getLangNameByNick(
-                #todo.instClass.langdefault))
-            
 	if (todo.instClass.x):
 	    todo.x = todo.instClass.x
 
