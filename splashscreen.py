@@ -19,10 +19,10 @@ os.environ["PYGTK_FATAL_EXCEPTIONS"] = "1"
 os.environ["GNOME_DISABLE_CRASH_DIALOG"] = "1"
 
 from gtk import *
-from gtk import _root_window
+#from gtk import _root_window
 from flags import flags
-import GDK
-import gdkpixbuf
+import gtk.GDK
+#import gdkpixbuf
 
 splashwindow = None
 
@@ -40,25 +40,23 @@ def splashScreenShow(configFileData):
         except OSError, (errno, msg):
             print __name__, "waitpid:", msg
 
-    root = _root_window ()
-    cursor = cursor_new (GDK.LEFT_PTR)
-    root.set_cursor (cursor)
+#    root = _root_window ()
+    cursor = gtk.gdk.Cursor (gtk.GDK.LEFT_PTR)
+#    root.set_cursor (cursor)
 
     def load_image(file):
-        try:
-            p = gdkpixbuf.new_from_file("/usr/share/anaconda/" + file)
-        except:
-            try:
-                p = gdkpixbuf.new_from_file("" + file)
-            except:
-                p = None
-                print "Unable to load", file
-
+        p = gtk.Image()
+        pixbuf = gtk.gdk.pixbuf_new_from_file("/usr/share/anaconda/" + file)
+        if pixbuf is None:
+            pixbuf = gtk.gdk.pixbuf_new_from_file(file)
+        if pixbuf:
+            p.set_from_pixbuf(pixbuf)
         return p
 
     global splashwindow
     
-    width = screen_width()
+#    width = screen_width()
+    width = 800
     p = None
 
     # If the xserver is running at 800x600 res or higher, use the
@@ -71,20 +69,19 @@ def splashScreenShow(configFileData):
         p = load_image('pixmaps/first-lowres.png')
                         
     if p:
-        pix = apply (GtkPixmap, p.render_pixmap_and_mask())
-        splashwindow = GtkWindow ()
+        splashwindow = gtk.Window ()
         splashwindow.set_position (WIN_POS_CENTER)
-        box = GtkEventBox ()
+        box = gtk.EventBox ()
         style = box.get_style ().copy ()
-        style.bg[STATE_NORMAL] = style.white
-        box.set_style (style)
-        box.add (pix)
+##         style.bg[STATE_NORMAL] = style.white
+##         box.set_style (style)
+        box.add (p)
         splashwindow.add (box)
         box.show_all()
         splashwindow.show_now()
-        gdk_flush ()
-        while events_pending ():
-            mainiteration (FALSE)
+#        gdk_flush ()
+        while gtk.events_pending ():
+            gtk.mainiteration (FALSE)
 
 def splashScreenPop():
     global splashwindow

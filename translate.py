@@ -13,23 +13,28 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 
-import gettext_rh
+#import gettext_rh
+import gettext
 
 class i18n:
     def __init__(self):
-	self.langs = []
-        self.cat = gettext_rh.Catalog ("anaconda", "/usr/share/locale")
+        try:
+            self.cat = gettext.translation("anaconda")
+            print self.cat.charset()
+        except IOError:
+            self.cat = None
 
     def getlangs(self):
 	return self.langs
         
     def setlangs(self, langs):
+        self.__init__()
 	self.langs = langs
-        gettext_rh.setlangs (langs)
-        self.cat = gettext_rh.Catalog ("anaconda", "/usr/share/locale")
 
     def gettext(self, string):
-        return self.cat.gettext(string)
+        if not self.cat:
+            return string
+        return self.cat.ugettext(string)
 
 def N_(str):
     return str

@@ -62,14 +62,17 @@ class AccountWindow (InstallWindow):
 	password1 = self.userPass1.get_text()
 	password2 = self.userPass2.get_text()
 
-        systemUsers = ['root', 'bin', 'daemon', 'adm', 'lp', 'sync', 'shutdown', 'halt', 'mail',
-                       'news', 'uucp', 'operator', 'games', 'gopher', 'ftp', 'nobody', 'nscd',
-                       'mailnull', 'rpm', 'ident', 'rpc', 'rpcuser', 'radvd', 'xfs', 'gdm', 'apache',
-                       'squid']
+        systemUsers = ('root', 'bin', 'daemon', 'adm', 'lp', 'sync',
+                       'shutdown', 'halt', 'mail', 'news', 'uucp',
+                       'operator', 'games', 'gopher', 'ftp', 'nobody',
+                       'nscd', 'mailnull', 'rpm', 'ident', 'rpc',
+                       'rpcuser', 'radvd', 'xfs', 'gdm', 'apache',
+                       'squid')
 
-	if (password1 and password1 == password2 and
-	    self.userAccountMatch.search(accountName) and
-	    len(accountName) <= 8 and len(password1) > 5) and accountName != "root" and accountName not in systemUsers:
+	if ((password1 and password1 == password2 and
+             self.userAccountMatch.search(accountName) and
+             len(accountName) <= 8 and len(password1) > 5) and
+            accountName != "root" and accountName not in systemUsers):
 	    self.userPwLabel.set_text(_("User password accepted."))
             self.win.set_sensitive(0, TRUE)
 	else:

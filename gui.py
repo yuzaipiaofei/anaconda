@@ -14,20 +14,14 @@
 #
 
 import os
-import GDK
-import gdkpixbuf
+from gtk import GDK
 import iutil
 import string
 import isys
 import sys
 import parted
+import gtk
 from translate import _, N_
-from gnome.ui import *
-from gnome.util import *
-from gnome.xmhtml import *
-from gtk import *
-from _gtk import gtk_set_locale, gtk_rc_init, gtk_rc_reparse_all
-from _gtk import _gtk_nuke_rc_files, _gtk_nuke_rc_mtimes
 from language import expandLangs
 from splashscreen import splashScreenPop
 from log import log
@@ -84,7 +78,7 @@ else:
 def processEvents():
     gdk_flush()
     while events_pending ():
-        mainiteration (FALSE)
+        mainiteration (gtk.FALSE)
 
 def partedExceptionWindow(exc):
     # if our only option is to cancel, let us handle the exception
@@ -94,10 +88,10 @@ def partedExceptionWindow(exc):
     print exc.type_string
     print exc.message
     print exc.options
-    win = GnomeDialog (exc.type_string)
-    win.set_position (WIN_POS_CENTER)
-    label = GtkLabel(exc.message)
-    label.set_line_wrap (TRUE)
+    win = gtk.Dialog (exc.type_string)
+    win.set_position (gtk.WIN_POS_CENTER)
+    label = gtk.Label(exc.message)
+    label.set_line_wrap (gtk.TRUE)
     win.vbox.pack_start (label)
     numButtons = 0
     buttonToAction = {}
@@ -115,23 +109,23 @@ def partedExceptionWindow(exc):
             buttonToAction[numButtons] = flag
             numButtons = numButtons + 1
     win.show_all()
-    rc = win.run_and_close()
+    rc = win.run()
     return buttonToAction[rc]
 
 class WaitWindow:
     def __init__(self, title, text):
-        self.window = GtkWindow (WINDOW_POPUP)
+        self.window = gtk.Window (gtk.WINDOW_POPUP)
         self.window.set_title (_(title))
-        self.window.set_position (WIN_POS_CENTER)
-        self.window.set_modal (TRUE)
-        label = GtkLabel (_(text))
-        label.set_line_wrap (TRUE)
-        box = GtkFrame ()
+        self.window.set_position (gtk.WIN_POS_CENTER)
+        self.window.set_modal (gtk.TRUE)
+        label = gtk.Label (_(text))
+        label.set_line_wrap (gtk.TRUE)
+        box = gtk.Frame ()
         box.set_border_width (10)
         box.add (label)
-        box.set_shadow_type (SHADOW_NONE)
-        frame = GtkFrame ()
-        frame.set_shadow_type (SHADOW_OUT)
+        box.set_shadow_type (gtk.SHADOW_NONE)
+        frame = gtk.Frame ()
+        frame.set_shadow_type (gtk.SHADOW_OUT)
         frame.add (box)
 	self.window.add (frame)
 	self.window.show_all ()
@@ -142,24 +136,24 @@ class WaitWindow:
 
 class ProgressWindow:
     def __init__(self, title, text, total):
-        self.window = GtkWindow (WINDOW_POPUP)
+        self.window = gtk.Window (gtk.WINDOW_POPUP)
         self.window.set_title (_(title))
-        self.window.set_position (WIN_POS_CENTER)
-        self.window.set_modal (TRUE)
-        box = GtkVBox (FALSE, 5)
+        self.window.set_position (gtk.WIN_POS_CENTER)
+        self.window.set_modal (gtk.TRUE)
+        box = gtk.VBox (gtk.FALSE, 5)
         box.set_border_width (10)
 
-        label = GtkLabel (_(text))
-        label.set_line_wrap (TRUE)
+        label = gtk.Label (_(text))
+        label.set_line_wrap (gtk.TRUE)
         label.set_alignment (0.0, 0.5)
-        box.pack_start (label, FALSE)
+        box.pack_start (label, gtk.FALSE)
         
         self.total = total
-	self.progress = GtkProgressBar ()
-        box.pack_start (self.progress, TRUE)
+	self.progress = gtk.ProgressBar ()
+        box.pack_start (self.progress, gtk.TRUE)
         
-        frame = GtkFrame ()
-        frame.set_shadow_type (SHADOW_OUT)
+        frame = gtk.Frame ()
+        frame.set_shadow_type (gtk.SHADOW_OUT)
         frame.add (box)
 	self.window.add (frame)
 	self.window.show_all ()
@@ -174,36 +168,36 @@ class ProgressWindow:
 
 class ExceptionWindow:
     def __init__ (self, text):
-        win = GnomeDialog ("Exception Occured")
+        win = gtk.Dialog ("Exception Occured")
         win.connect ("clicked", self.quit)
         win.append_button ("Debug")
         win.append_button ("Save to floppy")
-        win.append_button_with_pixmap ("OK", STOCK_BUTTON_OK)
-        textbox = GtkText()
+        win.append_button_with_pixmap ("OK", 'gtk-ok')
+        textbox = gtk.Text()
         textbox.insert_defaults (text)
-        sw = GtkScrolledWindow ()
+        sw = gtk.ScrolledWindow ()
         sw.add (textbox)
         sw.set_policy (POLICY_AUTOMATIC, POLICY_AUTOMATIC)
 
-        hbox = GtkHBox (FALSE)
+        hbox = gtk.HBox (gtk.FALSE)
         file = pixmap_file('gnome-warning.png')
         if file:
-            hbox.pack_start (GnomePixmap (file), FALSE)
+            hbox.pack_start (GnomePixmap (file), gtk.FALSE)
 
-        info = GtkLabel(_("An unhandled exception has occured.  This "
+        info = gtk.Label(_("An unhandled exception has occured.  This "
                           "is most likely a bug.  Please copy the "
                           "full text of this exception or save the crash "
                           "dump to a floppy then file a detailed bug "
                           "report against anaconda at "
                           "http://bugzilla.redhat.com/bugzilla/"))
-        info.set_line_wrap (TRUE)
+        info.set_line_wrap (gtk.TRUE)
         info.set_usize (400, -1)
 
-        hbox.pack_start (sw, TRUE)
-        win.vbox.pack_start (info, FALSE)            
-        win.vbox.pack_start (hbox, TRUE)
+        hbox.pack_start (sw, gtk.TRUE)
+        win.vbox.pack_start (info, gtk.FALSE)            
+        win.vbox.pack_start (hbox, gtk.TRUE)
         win.set_usize (500, 300)
-        win.set_position (WIN_POS_CENTER)
+        win.set_position (gtk.WIN_POS_CENTER)
         win.show_all ()
         self.window = win
         self.rc = self.window.run ()
@@ -260,8 +254,8 @@ class MessageWindow:
         # this is the pixmap + the label
         hbox = self.window.vbox.children ()[0]
         label = hbox.children ()[1]
-        label.set_line_wrap (TRUE)
-        self.window.set_position (WIN_POS_CENTER)
+        label.set_line_wrap (gtk.TRUE)
+        self.window.set_position (gtk.WIN_POS_CENTER)
         win = self.window.get_window()
         win.keyboard_grab(0)
         self.window.show_all ()
@@ -276,10 +270,10 @@ class MessageWindow:
 class InstallInterface:
     def __init__ (self):
         # figure out if we want to run interface at 800x600 or 640x480
-        if screen_width() >= 800:
-            self.runres = "800x600"
-        else:
-            self.runres = "640x480"            
+#        if screen_width() >= 800:
+        self.runres = "800x600"
+#        else:
+#            self.runres = "640x480"            
 
     def __del__ (self):
         pass
@@ -351,29 +345,28 @@ class InstallInterface:
 
 class InstallControlWindow:
     def setLanguage (self, locale):
-        gtk_set_locale ()
-        _gtk_nuke_rc_files ()
-        gtk_rc_init ()
-        gtk_rc_reparse_all ()
+        #gtk_set_locale ()
+        #gtk_rc_init ()
+        #gtk_rc_reparse_all ()
 
 	self.langSearchPath = expandLangs(locale) + ['C']
         
-        found = 0
-        for l in self.langSearchPath:
-            if os.access ("/etc/gtk/gtkrc." + l, os.R_OK):
-                rc_parse("/etc/gtk/gtkrc." + l)
-                found = 1
-        if not found:
-            rc_parse("/etc/gtk/gtkrc")
+##         found = 0
+##         for l in self.langSearchPath:
+##             if os.access ("/etc/gtk/gtkrc." + l, os.R_OK):
+##                 rc_parse("/etc/gtk/gtkrc." + l)
+##                 found = 1
+##         if not found:
+##             rc_parse("/etc/gtk/gtkrc")
 
-        _gtk_nuke_rc_mtimes ()
-        gtk_rc_reparse_all ()
+##         #_gtk_nuke_rc_mtimes ()
+##         gtk_rc_reparse_all ()
         
 	if not self.__dict__.has_key('window'): return
 
         self.reloadRcQueued = 1
 
-        self.html.set_font_charset (locale)
+##         self.html.set_font_charset (locale)
 	self.updateStockButtons()
         self.helpFrame.set_label (_("Online Help"))
         self.installFrame.set_label (_("Language Selection"))
@@ -407,72 +400,79 @@ class InstallControlWindow:
             self.bin.remove (self.table)
             self.installFrame.reparent (self.bin)
             self.showHelpButton.show ()
-            self.showHelpButton.set_state (STATE_NORMAL)
-            self.hbox.pack_start (self.showHelpButton, FALSE)
+            self.showHelpButton.set_state (gtk.STATE_NORMAL)
+            self.hbox.pack_start (self.showHelpButton, gtk.FALSE)
             self.hbox.reorder_child (self.showHelpButton, 0)
-            self.displayHelp = FALSE
+            self.displayHelp = gtk.FALSE
         else:
             self.bin.remove (self.installFrame)
-            self.table.attach (self.installFrame, 1, 3, 0, 1)
+            self.table.attach (self.installFrame, 1, 3, 0, 1,
+                               gtk.FILL | gtk.EXPAND,
+                               gtk.FILL | gtk.EXPAND)
             self.bin.add (self.table)
             # fix to set the bgcolor to white (xmhtml sucks)
-            self.html.source ("<HTML><BODY BGCOLOR=white></BODY></HTML>")
-            self.html.source (self.currentWindow.getICS().getHTML(self.langSearchPath))        
+##             self.html.source ("<HTML><BODY BGCOLOR=white></BODY></HTML>")
+##             self.html.source (self.currentWindow.getICS().getHTML(self.langSearchPath))        
             self.hideHelpButton.show ()
-            self.showHelpButton.set_state (STATE_NORMAL)
-            self.hbox.pack_start (self.hideHelpButton, FALSE)
+            self.showHelpButton.set_state (gtk.STATE_NORMAL)
+            self.hbox.pack_start (self.hideHelpButton, gtk.FALSE)
             self.hbox.reorder_child (self.hideHelpButton, 0)
-            self.displayHelp = TRUE
+            self.displayHelp = gtk.TRUE
 
     def close (self, args):
         self.textWin.destroy()
-        self.releaseButton.set_sensitive(TRUE)
+        self.releaseButton.set_sensitive(gtk.TRUE)
 
     def releaseClicked (self, widget):
-        self.textWin = GnomeDialog ()
-        self.releaseButton.set_sensitive(FALSE)
+        self.textWin = gtk.Dialog ()
+        self.releaseButton.set_sensitive(gtk.FALSE)
 
-        table = GtkTable(3, 3, FALSE)
+        table = gtk.Table(3, 3, gtk.FALSE)
         self.textWin.vbox.pack_start(table)
-        self.textWin.append_button(_("Close"))
-        self.textWin.button_connect (0, self.close)
+        self.textWin.add_button(gtk.STOCK_CLOSE, 0)
 
-        vbox1 = GtkVBox ()        
+        vbox1 = gtk.VBox ()        
         vbox1.set_border_width (10)
-        frame = GtkFrame (_("Release Notes"))
+        frame = gtk.Frame (_("Release Notes"))
         frame.add(vbox1)
         frame.set_label_align (0.5, 0.5)
-        frame.set_shadow_type (SHADOW_NONE)
+        frame.set_shadow_type (gtk.SHADOW_NONE)
         
-        self.textWin.set_position (WIN_POS_CENTER)
+        self.textWin.set_position (gtk.WIN_POS_CENTER)
 
         if self.buff != "":
-            text = GtkText()
-            text.insert (None, None, None, self.buff)
+            buffer = gtk.TextBuffer(None)
+            buffer.set_text(self.buff, len(self.buff))
+            text = gtk.TextView()
+            text.set_buffer(buffer)
+            text.set_property("editable", gtk.FALSE)
+            text.set_property("cursor_visible", gtk.FALSE)
                 
-            sw = GtkScrolledWindow()
-            sw.set_policy(POLICY_NEVER, POLICY_ALWAYS)
+            sw = gtk.ScrolledWindow()
+            sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_ALWAYS)
             sw.add(text)
             vbox1.pack_start(sw)
 
-            a = GtkAlignment ()
+            a = gtk.Alignment (0, 0, 1.0, 1.0)
             a.add (frame)
-            a.set (0, 0, 1.0, 1.0)
             
             self.textWin.set_default_size (635, 393)
             self.textWin.set_usize (635, 393)
-            self.textWin.set_position (WIN_POS_CENTER)
+            self.textWin.set_position (gtk.WIN_POS_CENTER)
 
-            table.attach (a, 1, 2, 1, 2, FILL|EXPAND, FILL|EXPAND, 5, 5)
+            table.attach (a, 1, 2, 1, 2,
+                          gtk.FILL | gtk.EXPAND,
+                          gtk.FILL | gtk.EXPAND, 5, 5)
 
             self.textWin.set_border_width(0)
             self.textWin.show_all()
 
         else:
-            self.textWin.set_position (WIN_POS_CENTER)
-            label = GtkLabel(_("Unable to load file!"))
+            self.textWin.set_position (gtk.WIN_POS_CENTER)
+            label = gtk.Label(_("Unable to load file!"))
 
-            table.attach (label, 1, 2, 1, 2, FILL|EXPAND, FILL|EXPAND, 5, 5)
+            table.attach (label, 1, 2, 1, 2,
+                          gtk.FILL | gtk.EXPAND, gtk.FILL | gtk.EXPAND, 5, 5)
 
             self.textWin.set_border_width(0)
             self.textWin.show_all()
@@ -481,7 +481,8 @@ class InstallControlWindow:
         self.buff = ""
 	langList = self.langSearchPath + [ "" ]
 	for lang in langList:
-	    fn = "/mnt/source/RELEASE-NOTES"
+#	    fn = "/mnt/source/RELEASE-NOTES"
+            fn = "/mnt/test/enigma-i386/i386/RELEASE-NOTES"
 	    if len(lang):
 		fn = fn + "." + lang
 
@@ -498,7 +499,7 @@ class InstallControlWindow:
         if flags.autostep:
             self.nextClicked()
         else:
-            idle_remove(self.handle)
+            gtk.idle_remove(self.handle)
 
     def setScreen (self):
 	(step, args) = self.dispatch.currentStep()
@@ -533,15 +534,15 @@ class InstallControlWindow:
         self.installFrame.add (new_screen)
         self.installFrame.show_all ()
 
-	self.handle = idle_add(self.handleRenderCallback)
+	self.handle = gtk.idle_add(self.handleRenderCallback)
 
         if self.reloadRcQueued:
             self.window.reset_rc_styles ()
             self.reloadRcQueued = 0
 
-        if self.displayHelp:
-            self.html.source ("<HTML><BODY BGCOLOR=white></BODY></HTML>")
-            self.html.source (ics.getHTML(self.langSearchPath))
+##         if self.displayHelp:
+##             self.html.source ("<HTML><BODY BGCOLOR=white></BODY></HTML>")
+##             self.html.source (ics.getHTML(self.langSearchPath))
 
     def destroyCurrentWindow(self):
         children = self.installFrame.children ()
@@ -559,7 +560,8 @@ class InstallControlWindow:
 
 	if ics.getNextButton():
 	    (icon, text) = ics.getNextButton()
-	    nextButton = GnomePixmapButton (GnomeStock (icon), text)
+	    nextButton = Button(stock=icon)
+#            nextButton.set_property("label", _(text))
 	    nextButton.connect ("clicked", self.nextClicked)
 	    nextButton.show_all()
 
@@ -578,10 +580,10 @@ class InstallControlWindow:
         self.hideHelpButton.set_sensitive (ics.getHelpButtonEnabled ())
         self.showHelpButton.set_sensitive (ics.getHelpButtonEnabled ())
 
-        if ics.getHelpEnabled () == FALSE:
+        if ics.getHelpEnabled () == gtk.FALSE:
             if self.displayHelp:
                 self.helpClicked (self.hideHelpButton, 1)
-        elif ics.getHelpEnabled () == TRUE:
+        elif ics.getHelpEnabled () == gtk.TRUE:
             if not self.displayHelp:
                 self.helpClicked (self.showHelpButton, 1)
  
@@ -596,15 +598,15 @@ class InstallControlWindow:
         self.hideHelpButton = None
 
 	self.stockButtons = [ 
-	    (STOCK_BUTTON_PREV, "prevButtonStock",
+	    ('gtk-go-back', "prevButtonStock",
              N_("Back"), self.prevClicked),
-	    (STOCK_BUTTON_NEXT, "nextButtonStock",
+	    ('gtk-go-forward', "nextButtonStock",
              N_("Next"), self.nextClicked),
-	    (STOCK_BUTTON_HELP, "releaseButton",
+	    ('gtk-help', "releaseButton",
              N_("Release Notes"), self.releaseClicked),
-	    (STOCK_BUTTON_HELP, "showHelpButton",
+	    ('gtk-help', "showHelpButton",
              N_("Show Help"), self.helpClicked),
-	    (STOCK_BUTTON_HELP, "hideHelpButton",
+	    ('gtk-help', "hideHelpButton",
              N_("Hide Help"), self.helpClicked),
 	    ]
 
@@ -622,7 +624,8 @@ class InstallControlWindow:
 
     def buildStockButtons(self):
 	for (icon, item, text, action) in self.stockButtons:
-	    button = GnomePixmapButton(GnomeStock(icon), _(text))
+	    button = gtk.Button(stock=icon)
+#            button.set_property("label", _(text))
 	    button.connect("clicked", action)
 	    button.show_all()
 	    self.__dict__[item] = button
@@ -635,7 +638,7 @@ class InstallControlWindow:
             button.queue_resize()
 
     def setup_window (self, runres):
-        self.window = GtkWindow ()
+        self.window = gtk.Window ()
         self.window.set_events (GDK.KEY_RELEASE_MASK)
 
         if runres == '640x480':
@@ -650,7 +653,7 @@ class InstallControlWindow:
 	title = _("Red Hat Linux Installer")
 	if os.environ["DISPLAY"][:1] != ':':
 	    # from gnome.zvt import *
-	    # zvtwin = GtkWindow ()
+	    # zvtwin = gtk.Window ()
 #	    shtitle = _("Red Hat Linux Install Shell")
 	    try:
 		f = open ("/tmp/netinfo", "r")
@@ -675,9 +678,9 @@ class InstallControlWindow:
 	    # zvtwin.show_all ()
 
 	self.window.set_title (title)
-        self.window.set_position (WIN_POS_CENTER)
+        self.window.set_position (gtk.WIN_POS_CENTER)
         self.window.set_border_width(0)
-        vbox = GtkVBox (FALSE, 10)
+        vbox = gtk.VBox (gtk.FALSE, 10)
 
         image = self.configFileData["TitleBar"]
 
@@ -686,19 +689,17 @@ class InstallControlWindow:
             for dir in ("/usr/share/anaconda/",
                         "",
                         "/tmp/updates"):
-                try:
-                    p = gdkpixbuf.new_from_file(dir + image)
-                except:
-                    p = None
-                else:
+                pixbuf = gtk.gdk.pixbuf_new_from_file(dir + image)
+                if not pixbuf is None:
                     break
                 
-            if p:
-                pix = apply(GtkPixmap, p.render_pixmap_and_mask())
-                a = GtkAlignment ()
-                a.add (pix)
-                a.set (0.5, 0.5, 1.0, 1.0)
-                vbox.pack_start (a, FALSE, TRUE, 0)
+            if pixbuf:
+                p = gtk.Image()
+                p.set_from_pixbuf(pixbuf)
+                a = gtk.Alignment()
+                a.set(0.5, 0.5, 1.0, 1.0)
+                a.add(p)
+                vbox.pack_start(a, gtk.FALSE, gtk.TRUE, 0)
             else:
                 print _("Unable to load title bar")
 
@@ -707,13 +708,13 @@ class InstallControlWindow:
 
         vbox.set_spacing(0)
 
-        self.buttonBox = GtkHButtonBox ()
-        self.buttonBox.set_layout (BUTTONBOX_END)
+        self.buttonBox = gtk.HButtonBox ()
+        self.buttonBox.set_layout (gtk.BUTTONBOX_END)
         self.buttonBox.set_spacing (30)
 
 	self.buildStockButtons()
 
-        group = GtkAccelGroup()
+        group = gtk.AccelGroup()
         self.nextButtonStock.add_accelerator ("clicked", group, GDK.F12,
                                               GDK.RELEASE_MASK, 0);
         self.window.add_accel_group (group)
@@ -722,47 +723,49 @@ class InstallControlWindow:
         self.buttonBox.add (self.prevButtonStock)
         self.buttonBox.add (self.nextButtonStock)
 
-	self.hbox = GtkHBox ()
+	self.hbox = gtk.HBox ()
         self.hbox.set_border_width(5)
-	self.hbox.pack_start (self.hideHelpButton, FALSE)
+	self.hbox.pack_start (self.hideHelpButton, gtk.FALSE)
         self.hbox.set_spacing (25)
-        self.hbox.pack_start (self.releaseButton, FALSE)
+        self.hbox.pack_start (self.releaseButton, gtk.FALSE)
 	self.hbox.pack_start (self.buttonBox)
 
-        vbox.pack_end (self.hbox, FALSE)
+        vbox.pack_end (self.hbox, gtk.FALSE)
 
-        self.html = GtkXmHTML()
-        self.html.set_allow_body_colors(TRUE)
-        self.html.source ("<HTML><BODY BGCOLOR=white></BODY></HTML>")
-        self.displayHelp = TRUE
-        self.helpState = TRUE
+##         self.html = gtk.XmHTML()
+##         self.html.set_allow_body_colors(gtk.TRUE)
+##         self.html.source ("<HTML><BODY BGCOLOR=white></BODY></HTML>")
+        self.displayHelp = gtk.TRUE
+        self.helpState = gtk.TRUE
 
-        self.helpFrame = GtkFrame (_("Online Help"))
-        self.box = GtkVBox (FALSE, 0)
+        self.helpFrame = gtk.Frame (_("Online Help"))
+        self.box = gtk.VBox (gtk.FALSE, 0)
         self.box.set_spacing(0)
 
-        self.box.pack_start (GtkHSeparator (), FALSE)
-        self.box.pack_start (self.html, TRUE)
+        self.box.pack_start (gtk.HSeparator (), gtk.FALSE)
+##         self.box.pack_start (self.html, gtk.TRUE)
         
         self.helpFrame.add (self.box)
 
-        table = GtkTable (1, 3, TRUE)
+        table = gtk.Table (1, 3, gtk.TRUE)
         table.attach (self.helpFrame, 0, 1, 0, 1)
 
-        self.installFrame = GtkFrame ()
+        self.installFrame = gtk.Frame ()
 
         self.windowList = []
 
         #self.setStateList (self.steps, 0)
         self.setScreen ()
                           
-        table.attach (self.installFrame, 1, 3, 0, 1)
+        table.attach (self.installFrame, 1, 3, 0, 1,
+                      gtk.FILL | gtk.EXPAND,
+                      gtk.FILL | gtk.EXPAND)
         table.set_col_spacing (0, 5)
 
-        self.bin = GtkFrame ()
-        self.bin.set_shadow_type (SHADOW_NONE)
+        self.bin = gtk.Frame ()
+        self.bin.set_shadow_type (gtk.SHADOW_NONE)
         self.bin.add (table)
-        vbox.pack_end (self.bin, TRUE, TRUE)
+        vbox.pack_end (self.bin, gtk.TRUE, gtk.TRUE)
         self.table = table
 
         self.window.add (vbox)
@@ -775,7 +778,7 @@ class InstallControlWindow:
     def run (self, runres, configFileData):
         self.configFileData = configFileData
         self.setup_window (runres)
-        mainloop ()
+        gtk.mainloop ()
             
 class InstallControlState:
     def __init__ (self, cw):
@@ -784,15 +787,15 @@ class InstallControlState:
         self.prevEnabled = 1
         self.nextEnabled = 1
 	self.nextButtonInfo = None
-        self.helpButtonEnabled = TRUE
+        self.helpButtonEnabled = gtk.TRUE
         self.title = _("Install Window")
         self.html = ""
         self.htmlFile = None
-        self.nextButton = STOCK_BUTTON_NEXT
-        self.prevButton = STOCK_BUTTON_PREV
+        self.nextButton = 'gtk-next'
+        self.prevButton = 'gtk-prev'
         self.nextButtonLabel = None
         self.prevButtonLabel = None
-        # Values other than TRUE or FALSE don't change the help setting        
+        # Values other than gtk.TRUE or gtk.FALSE don't change the help setting        
         self.helpEnabled = 3 
         self.grabNext = 0
 
@@ -842,17 +845,13 @@ class InstallControlState:
         if not fn:
             log("unable to load %s", file)
             return None
-        try:
-            p = gdkpixbuf.new_from_file (fn)
-        except RuntimeError:
+        pixbuf = gtk.gdk.pixbuf_new_from_file(fn)
+        if pixbuf is None:
             log("unable to read %s", file)
             return None
-        if p:
-            pix = apply (GtkPixmap, p.render_pixmap_and_mask())
-            return pix
-        else:
-            log("unable to read %s", file)
-        return None
+        p = gtk.Image()
+        p.set_from_pixbuf(pixbuf)
+        return p
 
     def readHTML (self, file):
         self.htmlFile = file
