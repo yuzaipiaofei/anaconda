@@ -360,6 +360,7 @@ class IndividualPackageSelectionWindow (InstallWindow):
             else:
                 pix = self.ics.readPixmap("directory-open.png")
                 if pix:
+                    self.open_p, self.open_b = (pix, pix)
                     self.closed_p, self.closed_b = (pix, pix)
 
         groups = {}

@@ -704,7 +704,7 @@ class s390BootloaderInfo(bootloaderInfo):
 
         rootDev = fsset.getEntryByMountPoint("/").device.getDevice()
 	if not rootDev:
-            raise RuntimeError, "Installing zilo, but there is no root device"
+            raise RuntimeError, "Installing zipl, but there is no root device"
 
 	if rootDev == defaultDev:
 	    lilo.addEntry("default", kernelList[0][0])
@@ -784,11 +784,11 @@ class s390BootloaderInfo(bootloaderInfo):
 	cf = "/etc/chandev.conf"
 	self.perms = 0644
 	if os.environ.has_key("CHANDEV"):
-	    fd = os.open(instroot + "/etc/chandev.conf", os.O_WRONLY | os.O_CREAT)
-	    os.write(fd, os.environ["CHANDEV"])
+	    fd = open(instroot + "/etc/chandev.conf", "w+")
+	    fd.write('%s\n' % (os.environ["CHANDEV"]))
 	    if os.environ.has_key("PORTNAME"):
-	       os.write(fd, os.environ["PORTNAME"])
-	    os.close(fd)
+	       fd.write('%s\n' % (os.environ["PORTNAME"]))
+	    fd.close(fd)
 	return ""
 	
     
@@ -829,32 +829,13 @@ class s390BootloaderInfo(bootloaderInfo):
 	if not justConfigFile:
             argv = [ "/sbin/zipl" ]
             iutil.execWithRedirect(argv[0], argv, root = instRoot,
-                                   stdout = "/dev/tty5",
-                                   stderr = "/dev/tty5")
+                                   stdout = "/dev/stdout",
+                                   stderr = "/dev/stderr")
             
 	return ""
 
-    def writeZilo(self, instRoot, fsset, bl, langs, kernelList, 
-                  chainList, defaultDev, justConfig):
-        config = self.getBootloaderConfig(instRoot, fsset, bl, langs,
-                                          kernelList, chainList, defaultDev)
-	config.write(instRoot + self.configfile, perms = self.perms)
-
-        if not justConfig:
-	    # throw away stdout, catch stderr
-	    str = iutil.execWithCapture(instRoot + '/sbin/zilo' ,
-					[ "zilo", "-r", instRoot ],
-					catchfd = 2, closefd = 1)
-	else:
-	    str = ""
-
-	return str
-
     def write(self, instRoot, fsset, bl, langs, kernelList, chainList,
 		  defaultDev, justConfig, intf):
-        str = self.writeZilo(instRoot, fsset, bl, langs, kernelList, 
-                             chainList, defaultDev,
-                             justConfig | (self.useZiplVal))
         str = self.writeZipl(instRoot, fsset, bl, langs, kernelList, 
                              chainList, defaultDev,
                              justConfig | (not self.useZiplVal))
@@ -865,7 +846,7 @@ class s390BootloaderInfo(bootloaderInfo):
         self.useGrubVal = 0      # only used on x86
         self.useZiplVal = 1      # only used on s390
         self.kernelLocation = "/boot/"
-        self.configfile = "/etc/zilo.conf"
+        self.configfile = "/etc/zipl.conf"
 
 
 def availableBootDevices(diskSet, fsset):
