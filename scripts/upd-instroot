@@ -106,9 +106,9 @@ if [ $ARCH = ia64 ]; then
 fi
 
 if [ $ARCH = s390 -o $ARCH = s390x ]; then
-    PACKAGES="$PACKAGES s390utils oco-utils binutils installer pdksh-static
+    PACKAGES="$PACKAGES s390utils oco binutils installer pdksh-static
 	sed net-tools inetd openssh openssh-server fileutils modutils
-	portmap textutils"
+	portmap textutils telnet-server"
 fi
 
 # xpm is missing
@@ -160,9 +160,9 @@ if [ $ARCH = ia64 ]; then
 fi
 
 if [ $ARCH = s390 -o $ARCH = s390x ]; then
-    PACKAGESGR="$PACKAGESGR s390utils oco-utils binutils installer pdksh-static
+    PACKAGESGR="$PACKAGESGR s390utils oco binutils installer pdksh-static
 	sed net-tools inetd openssh openssh-server fileutils modutils
-	portmap textutils openssl"
+	portmap textutils openssl telnet-server"
 fi
 
 KEEPFILE=/tmp/keepfile.$$
@@ -276,6 +276,7 @@ bin/ksh
 usr/bin/ssh-keygen
 usr/sbin/sshd
 usr/sbin/inetd
+usr/sbin/in.telnetd
 sbin/insmod
 sbin/ifconfig
 sbin/route
@@ -301,6 +302,7 @@ lib/ld-*.so*
 lib/libresolv.so*
 lib/libresolv-*.so*
 lib/modules/ibm*
+etc/inetd.conf
 EOF
 fi
       

@@ -442,15 +442,17 @@ EOF
     done
 
     if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
-       cp -vf $LOADERBINDIR/linuxrc.s390 $MBD_DIR/linuxrc
+       mkdir -p $MBD_DIR/lib/modules/misc $MBD_DIR/etc/ssh 
+       cp -f $LOADERBINDIR/linuxrc.s390 $MBD_DIR/linuxrc
        ln -s ../linuxrc $MBD_DIR/sbin/init
-       cp -vf $IMGPATH/usr/bin/ksh $MBD_DIR/sbin/ksh
+       cp -f $IMGPATH/usr/bin/ksh $MBD_DIR/sbin/ksh
        ln -sf ksh $MBD_DIR/sbin/sh
        cp -f $IMGPATH/usr/bin/ssh-keygen $MBD_DIR/sbin/ssh-keygen
        cp -f $IMGPATH/usr/sbin/sshd $MBD_DIR/sbin/sshd
        cp -f $IMGPATH/usr/sbin/insmod $MBD_DIR/sbin/insmod
        cp -f $IMGPATH/usr/sbin/ifconfig $MBD_DIR/sbin/ifconfig
        cp -f $IMGPATH/usr/sbin/inetd $MBD_DIR/sbin/inetd
+       cp -f $IMGPATH/usr/sbin/in.telnetd $MBD_DIR/sbin/in.telnetd
        cp -f $IMGPATH/usr/sbin/route $MBD_DIR/sbin/route
        cp -f $IMGPATH/usr/sbin/portmap $MBD_DIR/sbin/portmap
        cp -f $IMGPATH/usr/bin/cat $MBD_DIR/sbin/cat
@@ -458,7 +460,7 @@ EOF
        cp -f $IMGPATH/usr/bin/sed $MBD_DIR/sbin/sed
        cp -f $IMGPATH/usr/bin/hostname $MBD_DIR/sbin/hostname
        cp -f $IMGPATH/usr/bin/mount $MBD_DIR/sbin/mount
-       mkdir -p $MBD_DIR/lib 
+       cp -f $IMGPATH/usr/etc/inetd.conf $MBD_DIR/etc/inetd.conf
        cp -df $IMGPATH/lib/libpam.so* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libdl.so* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libdl-*.so* $MBD_DIR/lib
@@ -474,6 +476,13 @@ EOF
        cp -df $IMGPATH/lib/libresolv.so* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libresolv-*.so* $MBD_DIR/lib
        cp -df $IMGPATH/usr/lib/libz.so* $MBD_DIR/lib
+       if [ "${version:0:3}" = "2.2" ]; then
+          cp -f $KERNELROOT/lib/modules/*/misc/* $MBD_DIR/lib/modules/misc
+          cp -f $IMGPATH/lib/modules/ibm-2.2*/net/* $MBD_DIR/lib/modules/misc
+       else
+          cp -f $KERNELROOT/lib/modules/*/kernel/drivers/s390/*/* $MBD_DIR/lib/modules/misc
+          cp -f $IMGPATH/lib/modules/ibm-2.4*/kernel/drivers/net/* $MBD_DIR/lib/modules/misc
+       fi
     else
        ln -s /usr/bin/sh $MBD_DIR/sbin/sh
        ln -s /sbin/init $MBD_DIR/linuxrc
@@ -817,8 +826,8 @@ makedriverdisk () {
 
 # Find the kernel, unpack it, and verify it
     if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
-       kpackage=$($LATEST $KERNELPATH kernel-vrdr)
-       vertag=vrdr
+       kpackage=$($LATEST $KERNELPATH kernel-BOOTvrdr)
+       vertag=BOOTvrdr
     else
        kpackage=$($LATEST $KERNELPATH kernel-BOOT)
        vertag=BOOT
@@ -836,20 +845,12 @@ makedriverdisk () {
 	fi
     fi
 
-    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
-       ppackage=$($LATEST $KERNELPATH oco)
-    else
-       ppackage=$($LATEST $KERNELPATH kernel-pcmcia-cs)
-    fi
+    ppackage=$($LATEST $KERNELPATH kernel-pcmcia-cs)
     if [ ! -f "$ppackage" ]; then
 	ppackage=""
     fi
 
     version=$(rpm --qf '%{VERSION}-%{RELEASE}' -qp $kpackage)${vertag}
-echo "KERNELROOT: $KERNELROOT"
-echo "   Version: $version"
-echo "    VERTAG: $vertag"
-echo "   PACKAGE: $kpackage"
     echo "unpacking $kpackage"
 
     rpm2cpio $kpackage | (cd $KERNELROOT; cpio --quiet -iumd)
