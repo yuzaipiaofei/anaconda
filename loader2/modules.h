@@ -45,7 +45,7 @@ int mlModuleInList(const char * modName, moduleList list);
 int simpleRemoveLoadedModule(const char * modName, moduleList modLoaded,
                              int flags);
 int reloadUnloadedModule(char * modName, moduleList modLoaded,
-                         int flags);
+                         char **, int flags);
 void writeScsiDisks(moduleList list);
 
 
