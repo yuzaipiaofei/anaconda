@@ -58,12 +58,12 @@ makeinstimage --size1 3800 --size2 4096 "netstg" "$SECSTAGE $SCSIMODULES"
 makeinstimage --size1 3800 --size2 4096 "hdstg" "$SECSTAGE $NETMODULES"
 makemainimage "stage2"
 
-if [ -f $TOPDIR/preview/kernel-2.4.0-*.alpha.rpm ]; then
-    K24_PKG=$TOPDIR/preview/kernel-2.4.0-*.alpha.rpm
+if [ -f $TOPDESTPATH/preview/kernel-2.4.0-*.alpha.rpm ]; then
+    K24_PKG=$TOPDESTPATH/preview/kernel-2.4.0-*.alpha.rpm
     K24_DIR=/tmp/kernel24.dir.$$
     mkdir -p $K24_DIR
     rpm2cpio $K24_PKG | (cd $K24_DIR; cpio --quiet -iumd ./boot/vmlinuz-*)
-    cp $K24_DIR/boot/vmlinuz-* $TOPDIR/kernels/vmlinuz.24
+    cp $K24_DIR/boot/vmlinuz-* $TOPDESTPATH/kernels/vmlinuz.24
     rm -rf $K24_DIR
 fi
 
@@ -73,7 +73,7 @@ if [ -f $KERNELPATH/kernel-jensen-*.rpm ]; then
     KJ_DIR=/tmp/kernelj.dir.$$
     mkdir -p $KJ_DIR
     rpm2cpio $KJ_PKG | (cd $KJ_DIR; cpio --quiet -iumd ./boot/vmlinuz-*)
-    cp $KJ_DIR/boot/vmlinuz-* $TOPDIR/kernels/vmlinuz.j
+    cp $KJ_DIR/boot/vmlinuz-* $TOPDESTPATH/kernels/vmlinuz.j
     rm -rf $KJ_DIR
 fi
 
