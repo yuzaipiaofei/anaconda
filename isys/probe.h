@@ -31,5 +31,6 @@ int kdFindScsiList(struct knownDevices * devices, int code);
 void kdFree(struct knownDevices * devices);
 void kdAddDevice(struct knownDevices * devices, enum deviceClass devClass, 
 		 char * devName, char * devModel);
+char *getDasdPorts();
 
 #endif
