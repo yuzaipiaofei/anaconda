@@ -16,6 +16,8 @@ CATALOGS = po/anaconda.pot
 
 PYFILES = $(wildcard *.py)
 
+CVSROOT = $(shell cat CVS/Root)
+
 all:  subdirs mini-wm _xkb.so xmouse.so xutils.so $(CATALOGS) lang-table lang-names locale-list
 
 lang-names: lang-table
