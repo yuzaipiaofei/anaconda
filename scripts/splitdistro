@@ -120,7 +120,7 @@ disc1Dir = distDir + "-disc1"
 disc2Dir = distDir + "-disc2"
 disc3Dir = distDir + "-disc3"
 disc1SrcDir = distDir + "-disc4"
-disc2SrcDir = distDir + "-disc3"
+disc2SrcDir = distDir + "-disc5"
 
 id = 0
 
@@ -157,7 +157,7 @@ for dir in disc2dirs:
 
 disc1used = totalsize - rpmsize - dirsize
 
-os.system("rm -rf %s %s %s %s" % ( disc1Dir, disc2Dir, disc1SrcDir,
+os.system("rm -rf %s %s %s %s %s" % ( disc1Dir, disc2Dir, disc3Dir, disc1SrcDir,
 				   disc2SrcDir))
 os.system("mkdir -p %s %s %s/SRPMS %s/RedHat/RPMS %s/RedHat/RPMS" % 
 	    (disc1Dir, disc1SrcDir, disc2SrcDir, disc2Dir, 
@@ -210,8 +210,7 @@ os.system("cp -al %s/. %s" % (srcDir, disc1SrcDir))
 stamp(disc1SrcDir, releasestr, "disc4", arch, startedAt)
 
 print "Creating second source disc..."
-# don't stamp since right now this disc already has binary stuff
-#stamp(disc2SrcDir, "disc4", arch, startedAt)
+stamp(disc2SrcDir, releasestr, "disc5", arch, startedAt)
 
 srcPkgList = os.listdir("%s/SRPMS" % disc1SrcDir)
 srcPkgList.sort()
@@ -225,5 +224,5 @@ moveFiles("%s/SRPMS" % disc1SrcDir,
 
 sys.stdout.flush()
 
-os.system("du -sh %s %s %s %s" % (disc1Dir, disc2Dir, disc3Dir,
-                                     disc1SrcDir))
+os.system("du -sh %s %s %s %s %s" % (disc1Dir, disc2Dir, disc3Dir,
+                                     disc1SrcDir, disc2SrcDir))

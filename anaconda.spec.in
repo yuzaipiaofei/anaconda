@@ -125,6 +125,10 @@ fi
 %define date    %(echo `LC_ALL="C" date +"%a %b %d %Y"`)
 
 %changelog
+* Thu Jun 17 2004 Jeremy Katz <katzj@redhat.com> - 7.3-15
+- add another CD -- now have 3 binary and 2 source instead of 
+  2 binary, 1 source and one mixed
+
 * Thu Dec 11 2003 Jeremy Katz <katzj@redhat.com> 7.3-14
 - fix installclasses (#111823)
 
