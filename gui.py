@@ -1421,6 +1421,8 @@ class InstallControlState:
                     break
 
             if text:
+                text = text.replace("@RHL@", productName)
+                text = text.replace("@RHLVER@", productVersion)
                 return text
 
             print "Unable to read %s help text" % (file,)
