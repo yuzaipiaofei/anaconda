@@ -40,21 +40,10 @@ class DefaultsWindow(InstallWindow):
         self.ics = ics
 
     def getNext(self):
-##         self.mouse.set(self.currentMouse, self.emulate3.get_active())
-
-##         mouse = self.availableMice[self.currentMouse]
-##         gpm, xdev, device, emulate, shortname = mouse
-
-##         if device == "ttyS":
-##             self.mouse.setDevice(self.serialDevice)
-##         else:
-##             self.mouse.setDevice(device)
-
-## 	if self.flags.setupFilesystems:
-## 	    self.mouse.setXProtocol()
-
         self.dispatch.skipStep("keyboard")
         self.dispatch.skipStep("mouse")
+        self.dispatch.skipStep("network")
+        self.dispatch.skipStep("languagesupport")
         return None
     
         
