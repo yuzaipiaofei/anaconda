@@ -26,6 +26,7 @@ import copy
 import types
 import raid
 import constants
+import lvm
 
 from iw_gui import *
 from flags import flags
@@ -1171,7 +1172,8 @@ class PartitionWindow(InstallWindow):
 
 
     def makeLvmCB(self, widget):
-	if not fileSystemTypeGet('physical volume (LVM)').isSupported():
+	if (not fileSystemTypeGet('physical volume (LVM)').isSupported() or
+            lvm.lvmDevicePresent == 0):
 	    self.intf.messageWindow(_("Not supported"),
 				    _("LVM is NOT supported on "
 				      "this platform."), type="ok",

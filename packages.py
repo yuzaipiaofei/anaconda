@@ -441,6 +441,7 @@ def doMigrateFilesystems(dir, thefsset, diskset, upgrade, instPath):
 
 def turnOnFilesystems(dir, thefsset, diskset, partitions, upgrade, instPath):
     if dir == DISPATCH_BACK:
+        log("unmounting filesystems")
 	thefsset.umountFilesystems(instPath)
 	return
 
@@ -455,6 +456,7 @@ def turnOnFilesystems(dir, thefsset, diskset, partitions, upgrade, instPath):
             thefsset.formatSwap(instPath)
             thefsset.turnOnSwap(instPath)
 	    thefsset.makeFilesystems (instPath)
+            log("mounting filesystems")
             thefsset.mountFilesystems (instPath)
 
 def setupTimezone(timezone, upgrade, instPath, dir):
@@ -784,10 +786,10 @@ def doInstall(method, id, intf, instPath):
 	    nodeprob = rpm.RPMPROB_DISKNODES
 
 	for (descr, (type, mount, need)) in problems:
-            if mount.startswith(instPath):
+            if mount and mount.startswith(instPath):
 		mount = mount[len(instPath):]
-		if not mount:
-		    mount = '/'
+            if not mount:
+                mount = '/'
 
 	    if type == rpm.RPMPROB_DISKSPACE:
 		if spaceneeded.has_key (mount) and spaceneeded[mount] < need:
@@ -1030,6 +1032,7 @@ def doPostInstall(method, id, intf, instPath):
                                             stderr = "/dev/tty5",
                                             root = instPath)
                 ts = rpm.TransactionSet()
+                ts.closeDB()
                 fd = os.open(id.compspkg, os.O_RDONLY)
                 h = ts.hdrFromFdno(fd)
                 os.close(fd)

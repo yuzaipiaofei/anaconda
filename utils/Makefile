@@ -19,7 +19,7 @@ endif
 
 everything: $(TARGET)
 
-all:	modlist moddeps snarffont mapshdr readmap
+all:	modlist moddeps snarffont mapshdr readmap genhdlist
 
 modlist: modlist.o moduleinfo.o
 	$(CC) $(LDFLAGS) -o modlist modlist.o moduleinfo.o $(LOADLIBES)
@@ -43,14 +43,14 @@ md5.o: md5.c md5.h
 
 genhdlist: genhdlist.c hash.c
 	$(CC) $(LDFLAGS) $(RPMCFLAGS) -o genhdlist genhdlist.c hash.c \
-	-lrpm -lrpmdb -lrpmio -lbz2 -lz -lpopt -lelf
+	-lrpm -lrpmdb -lrpmio -lbz2 -lz -lpopt -lelf -lpthread
 
 depends:
 
 install: all
 	mkdir -p $(DESTDIR)/usr/bin
 	mkdir -p $(DESTDIR)/$(RUNTIMEDIR)
-#	install -m755 genhdlist $(DESTDIR)/$(RUNTIMEDIR)
+	install -m755 genhdlist $(DESTDIR)/$(RUNTIMEDIR)
 	install -m755 trimpcitable $(DESTDIR)/$(RUNTIMEDIR)
 	install -m755 moddeps $(DESTDIR)/$(RUNTIMEDIR)
 	install -m755 filtermoddeps $(DESTDIR)/$(RUNTIMEDIR)

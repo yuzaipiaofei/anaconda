@@ -302,6 +302,14 @@ def upgradeFindPackages(intf, method, id, instPath, dir):
 	rebuildTime = str(int(time.time()))
     method.mergeFullHeaders(id.hdList)
 
+    # if we've been through here once for this root, then short-circuit
+    if ((id.upgradeInfoFound is not None) and 
+        (id.upgradeInfoFound == id.upgradeRoot)):
+        log("already found packages to upgrade for %s" %(id.upgradeRoot,))
+        return
+    else:
+        id.upgradeInfoFound = id.upgradeRoot
+
     win = intf.waitWindow(_("Finding"),
                           _("Finding packages to upgrade..."))
 
@@ -507,8 +515,8 @@ def upgradeFindPackages(intf, method, id, instPath, dir):
                         langs = langs[1:-1]
                 break
         del f
-    if langs:
-        rpm.addMacro("_install_langs", langs)
+##     if langs:
+##         rpm.addMacro("_install_langs", langs)
                 
     # check the installed system to see if the packages just
     # are not newer in this release.

@@ -1,23 +1,5 @@
 include ../Makefile.inc
 
-# JKFIXME: this should go somewhere common.  I need to know about diet in
-# a few locations.  and we should really just always use diet
-ifeq (i386, $(ARCH))
-USEDIET=1
-endif
-# should we use diet on this arch?
-ifeq (ppc, $(ARCH))
-USEDIET=1
-endif
-
-ifeq (s390, $(ARCH))
-USEDIET=0
-endif
-
-ifeq (s390x, $(ARCH))
-USEDIET=0
-endif
-
 ifeq (.depend,$(wildcard .depend))
 TARGET=$(PROGS)
 else
@@ -62,16 +44,17 @@ WLITELIB = -lwlite
 ISYSLIB = ../isys/libisys-diet.a
 GUNZIP = ../isys/gzlib/libgunzip-diet.a
 else
-DIET=
 REALCC=gcc
-CC=$(DIET) $(REALCC)
+CC=$(REALCC)
+
+OBJS += dietstubs.o ctype.o
+ISYSLIB += -lrpc
+CTYPEDEP = ctype.c
 endif
 
 ifeq (i386, $(ARCH))
 BINS += loader
-OBJS += dietstubs.o ctype.o
 COPTS += -DUSE_LOGDEV
-ISYSLIB += -lrpc
 endif
 
 # translation stuff
@@ -124,13 +107,13 @@ loader: loader.o $(OBJS) $(NETOBJS)
 	$(CC) -g $(STATIC) -o $@ $^ -lpopt     \
 	$(HWLIBS) $(ISYSLIB) \
 	$(MODULELINKAGE) $(GUNZIP) \
-	-lpump $(NEWTLIB) $(SLANGLIB) $(BTERMLIB) $(WLITELIB)
+	-lpump -lresolv $(NEWTLIB) $(SLANGLIB) $(BTERMLIB) $(WLITELIB)
 
 clean:
 	rm -f *.o *~ .depend init ctype.c mkctype \
 	loader
 
-depend: ctype.c
+depend: $(CTYPEDEP)
 	$(CPP) $(CFLAGS) -DHAVE_CONFIG_H -M $(SOURCES) > .depend
 
 install: all

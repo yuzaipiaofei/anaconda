@@ -708,7 +708,7 @@ static char *doLoaderMain(char * location,
             }
 
             chooseManualDriver(installMethods[validMethods[methodNum]].deviceType,
-                                    modLoaded, *modDepsPtr, modInfo, kd, flags);
+                                    modLoaded, modDepsPtr, modInfo, kd, flags);
             /* it doesn't really matter what we return here; we just want
              * to reprobe and make sure we have the driver */
             step = STEP_DRIVER;
@@ -799,7 +799,7 @@ static int manualDeviceCheck(moduleInfoSet modInfo, moduleList modLoaded,
         if (rc != 2)
             break;
 
-        chooseManualDriver(CLASS_UNSPEC, modLoaded, *modDepsPtr, modInfo, 
+        chooseManualDriver(CLASS_UNSPEC, modLoaded, modDepsPtr, modInfo, 
                            kd, flags);
     } while (1);
     return 0;
@@ -834,7 +834,7 @@ int main(int argc, char ** argv) {
     int mediacheck = 0;
     poptContext optCon;
     struct poptOption optionTable[] = {
-            { "cmdline", '\0', POPT_ARG_STRING, &cmdLine, 0 },
+	{ "cmdline", '\0', POPT_ARG_STRING, &cmdLine, 0 },
         { "ksfile", '\0', POPT_ARG_STRING, &ksFile, 0 },
         { "test", '\0', POPT_ARG_NONE, &testing, 0 },
         { "mediacheck", '\0', POPT_ARG_NONE, &mediacheck, 0},
