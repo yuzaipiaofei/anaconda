@@ -36,7 +36,7 @@ prepareBootImage() {
 }
 
 IDEMODS=""
-SCSIMODS="sd_mod sr_mod"
+SCSIMODS=""
 
 #SECSTAGE="raid0 raid1 raid5 ext3 $IDEMODS $SCSIMODS "
 SECSTAGE="$IDEMODS $SCSIMODS "
@@ -47,7 +47,7 @@ NETWORKMODULES="$COMMONMODULES nfs ctc netiucv"
 
 
 makeinitrd --initrdto $TOPDESTPATH/images/initrd.img \
-	   --initrdsize 2250 \
+	   --initrdsize 6000 \
 	   --loaderbin loader \
 	   --modules "$NETWORKMODULES"
 
@@ -62,7 +62,7 @@ for I in `find $BOOTDISKDIR -type d`; do
     fi
 done
 
-makedriverdisk --padsize 1440 "Supplemental Drivers" "drivers" "+scsi +net"
+#makedriverdisk --padsize 1440 "Supplemental Drivers" "drivers" "+scsi +net"
 
 unset BOOTLANG
 unset BOOTDIR

@@ -121,7 +121,7 @@ findPackage() {
 
 findmodule () {
     if [ ! -f $CACHE ]; then
-        find $KERNELROOT/lib/modules > $CACHE
+        find $KERNELROOT/lib/modules/ > $CACHE
     fi
     
     grep "/$1\.o" $CACHE
@@ -446,12 +446,34 @@ EOF
        ln -s ../linuxrc $MBD_DIR/sbin/init
        cp -vf $IMGPATH/usr/bin/ksh $MBD_DIR/sbin/ksh
        ln -sf ksh $MBD_DIR/sbin/sh
-       cp -vf $IMGPATH/usr/bin/ssh-keygen $MBD_DIR/sbin/ssh-keygen
-       cp -vf $IMGPATH/usr/sbin/sshd $MBD_DIR/sbin/sshd
-       cp -vf $IMGPATH/sbin/insmod $MBD_DIR/sbin/insmod
-       cp -vf $IMGPATH/sbin/portmap $MBD_DIR/sbin/portmap
-       cp -vf $IMGPATH/bin/cat $MBD_DIR/sbin/cat
-       cp -vf $IMGPATH/bin/sed $MBD_DIR/sbin/sed
+       cp -f $IMGPATH/usr/bin/ssh-keygen $MBD_DIR/sbin/ssh-keygen
+       cp -f $IMGPATH/usr/sbin/sshd $MBD_DIR/sbin/sshd
+       cp -f $IMGPATH/usr/sbin/insmod $MBD_DIR/sbin/insmod
+       cp -f $IMGPATH/usr/sbin/ifconfig $MBD_DIR/sbin/ifconfig
+       cp -f $IMGPATH/usr/sbin/inetd $MBD_DIR/sbin/inetd
+       cp -f $IMGPATH/usr/sbin/route $MBD_DIR/sbin/route
+       cp -f $IMGPATH/usr/sbin/portmap $MBD_DIR/sbin/portmap
+       cp -f $IMGPATH/usr/bin/cat $MBD_DIR/sbin/cat
+       cp -f $IMGPATH/usr/bin/chmod $MBD_DIR/sbin/chmod
+       cp -f $IMGPATH/usr/bin/sed $MBD_DIR/sbin/sed
+       cp -f $IMGPATH/usr/bin/hostname $MBD_DIR/sbin/hostname
+       cp -f $IMGPATH/usr/bin/mount $MBD_DIR/sbin/mount
+       mkdir -p $MBD_DIR/lib 
+       cp -df $IMGPATH/lib/libpam.so* $MBD_DIR/lib
+       cp -df $IMGPATH/lib/libdl.so* $MBD_DIR/lib
+       cp -df $IMGPATH/lib/libdl-*.so* $MBD_DIR/lib
+       cp -df $IMGPATH/lib/libnsl.so* $MBD_DIR/lib
+       cp -df $IMGPATH/lib/libnsl-*.so* $MBD_DIR/lib
+       cp -df $IMGPATH/lib/libutil.so* $MBD_DIR/lib
+       cp -df $IMGPATH/lib/libutil-*.so* $MBD_DIR/lib
+       cp -df $IMGPATH/lib/libcrypto.so* $MBD_DIR/lib
+       cp -df $IMGPATH/lib/libc.so* $MBD_DIR/lib
+       cp -df $IMGPATH/lib/libc-*.so* $MBD_DIR/lib
+       cp -df $IMGPATH/lib/ld.so* $MBD_DIR/lib
+       cp -df $IMGPATH/lib/ld-*.so* $MBD_DIR/lib
+       cp -df $IMGPATH/lib/libresolv.so* $MBD_DIR/lib
+       cp -df $IMGPATH/lib/libresolv-*.so* $MBD_DIR/lib
+       cp -df $IMGPATH/usr/lib/libz.so* $MBD_DIR/lib
     else
        ln -s /usr/bin/sh $MBD_DIR/sbin/sh
        ln -s /sbin/init $MBD_DIR/linuxrc
@@ -814,7 +836,11 @@ makedriverdisk () {
 	fi
     fi
 
-    ppackage=$($LATEST $KERNELPATH kernel-pcmcia-cs)
+    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
+       ppackage=$($LATEST $KERNELPATH oco)
+    else
+       ppackage=$($LATEST $KERNELPATH kernel-pcmcia-cs)
+    fi
     if [ ! -f "$ppackage" ]; then
 	ppackage=""
     fi

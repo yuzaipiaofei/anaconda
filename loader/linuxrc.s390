@@ -63,8 +63,8 @@ echo "Starting the S390 initrd to configure networking. Version is 0.24."
 PATH="/bin:/sbin:/usr/bin:/usr/sbin"
 export PATH
 
-mount -n -o remount,rw /
-mount /proc
+#mount -n -o remount,rw /
+mount -t proc none /proc
 
 ifconfig lo 127.0.0.1 netmask 255.0.0.0
 route add -host 127.0.0.1 dev lo
