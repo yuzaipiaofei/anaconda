@@ -122,10 +122,10 @@ mkdir -p $DESTGR
 PACKAGES="glibc glibc-common setup openssl python python2 newt slang
 	 libtermcap zlib ash e2fsprogs util-linux raidtools popt
 	 procps rpm XFree86 Xconfigurator anaconda
-	 anaconda-runtime kudzu-devel kudzu hwdata bzip2
+	 anaconda-runtime kudzu hwdata bzip2
 	 bzip2-libs dosfstools pciutils reiserfs-utils parted sed
-	 busybox-anaconda rpm-python anaconda-help booty hdparm lvm
-	 rhpl pyxf86config libxml2 libxml2-python rdate glib2
+	 busybox-anaconda rpm-python booty hdparm lvm
+	 rhpl pyxf86config libxml2 libxml2-python glib2
 	 elfutils-libelf bogl-bterm krb5-libs"
 
 if [ $ARCH = i386 -o $ARCH = x86_64 ]; then
@@ -140,7 +140,7 @@ if [ $ARCH = s390 -o $ARCH = s390x ]; then
     PACKAGES="$PACKAGES s390utils binutils s390installer libgcc
 	sed net-tools inetd openssh openssh-server coreutils modutils
 	initscripts gawk xauth bash pygtk2 portmap 
-	telnet-server login ssh_keys mount"
+	telnet-server login ssh_keys mount grep"
 fi
 
 # xpm is missing
@@ -151,21 +151,20 @@ fi
 # 
 # Extra stuff we want for rescue mode should go in PACKAGESRESCUE
 #
-PACKAGESGR="anaconda XFree86-libs imlib libpng libtiff libjpeg
-           XFree86-S3 XFree86-SVGA XFree86-75dpi-fonts
+PACKAGESGR="anaconda XFree86-libs libpng libtiff XFree86-75dpi-fonts^
            XFree86-ISO8859-2-75dpi-fonts gtk2
            XFree86-ISO8859-9-75dpi-fonts esound audiofile libgnome
            XFree86-100dpi-fonts fonts-ISO8859-2 fonts-ISO8859-9
            XFree86-xfs e2fsprogs coreutils glibc glibc-common
            readline popt specspo util-linux rpm 
-           grep procps ncurses bash cpio
+           procps ncurses bash cpio
            XFree86 Xconfigurator gnome-python2 pygtk2 gdk-pixbuf 
            XFree86-KOI8-R XFree86-KOI8-R-75dpi-fonts pam 
            reiserfs-utils atk pango freetype gnome-python2-canvas 
-           libgnomecanvas libart_lgpl vte
+           libgnomecanvas libart_lgpl expat
            anaconda-images anaconda-help XFree86-base-fonts
            ttfonts-ko taipeifonts XFree86-ISO8859-15-75dpi-fonts rhpl
-           redhat-config-keyboard Xft fontconfig expat redhat-artwork
+           redhat-config-keyboard Xft fontconfig redhat-artwork
            ttfonts-ja ttfonts-zh_TW bitmap-fonts-cjk urw-fonts 
            comps-extras XFree86-libs-data"
 
@@ -175,11 +174,9 @@ PACKAGESGR="anaconda XFree86-libs imlib libpng libtiff libjpeg
 # these packages are combined with the PACKAGES and PACKAGESGR for big stage 2
 #
 PACKAGESRESCUE=" bzip2 bzip2-libs dump
-                findutils ftp gzip iputils krb5-libs less 
+                findutils ftp gzip iputils joe krb5-libs less man
                 modutils mtools mt-st mtr net-tools open 
-                openssh openssh-clients 
-                pciutils pine rsh
-                traceroute tar"
+                openssh openssh-clients pciutils rsh traceroute tar"
 
 # turn off options we dont want, ie. set package list to something harmless
 if [ -z "$NEEDGR" ]; then
@@ -262,8 +259,11 @@ $LIBDIR/libuuid*
 sbin/badblocks
 sbin/clock
 sbin/debugfs
+sbin/e2fsck
 sbin/e2fsadm
 sbin/e2label
+sbin/fsck.ext2
+sbin/fsck.ext3
 sbin/fdisk
 sbin/hdparm
 sbin/hwclock
@@ -447,14 +447,6 @@ $LIBDIR/libvtoc*.so*
 lib/modules/ibm*
 etc/inetd.conf
 etc/ssh/*
-etc/locale/*
-usr/lib/locale/de_DE/*
-usr/lib/locale/en_US/*
-usr/lib/locale/ja_JP*/*
-usr/lib/gconv/ISO8859-15.so
-usr/lib/gconv/EUC-JP.so
-usr/lib/gconv/libJIS.so
-usr/lib/gconv/gconv-modules
 usr/$LIBDIR/python2.2/site-packages/gtk*/gtk/*
 usr/X11R6/bin/xauth
 usr/share/anaconda/*
@@ -493,7 +485,6 @@ bin/ps
 bin/rm
 bin/rpm
 bin/sed
-bin/sync
 bin/touch
 boot/*.b
 boot/bootlx
@@ -501,6 +492,7 @@ etc/fb.modes
 etc/gtk-2.0/gtkrc*
 etc/im_palette.pal
 etc/imrc
+etc/man.config
 etc/pango/*
 etc/fonts/*
 $LIBDIR/libnss_dns*
@@ -518,10 +510,6 @@ sbin/parted
 sbin/silo
 sbin/tune2fs
 usr/X11R6/bin/XFree86
-usr/X11R6/bin/Xsun
-usr/X11R6/bin/Xsun24
-usr/X11R6/bin/XsunMono
-usr/X11R6/bin/Xtest
 usr/X11R6/bin/setxkbmap
 usr/X11R6/bin/xsetroot
 usr/X11R6/lib/X11/XKeysymDB
@@ -566,7 +554,6 @@ usr/lib/anaconda/iw
 usr/$LIBDIR/gconv/*
 usr/$LIBDIR/gdk-pixbuf/loaders/*png*
 usr/$LIBDIR/gdk-pixbuf/loaders/*la*
-usr/$LIBDIR/gdkimlib*
 usr/$LIBDIR/gtk-2.0/*/engines/libbluecurve.so
 usr/$LIBDIR/gtk-2.0/*/loaders/*png*
 usr/$LIBDIR/gtk-2.0/*/loaders/*la*
@@ -581,26 +568,15 @@ usr/$LIBDIR/libexpat*
 usr/$LIBDIR/libfontconfig*
 usr/$LIBDIR/libfreetype*
 usr/$LIBDIR/libgdk*
-usr/$LIBDIR/libgnome*
-usr/$LIBDIR/libgnomesupport*
+usr/$LIBDIR/libgnomecanvas*
 usr/$LIBDIR/libgnomeui*
-usr/$LIBDIR/libgnorba*
-usr/$LIBDIR/libgnorbagtk*
 usr/$LIBDIR/libgtk*
-usr/$LIBDIR/libgtkxmhtml*
-usr/$LIBDIR/libimlib-png*
-usr/$LIBDIR/libimlib-pnm*
-usr/$LIBDIR/libimlib-xpm*
-usr/$LIBDIR/libjpeg*
 usr/$LIBDIR/libncurses*
 usr/$LIBDIR/libpango*
 usr/$LIBDIR/libpng.so.3*
 usr/$LIBDIR/libpng12*
 usr/$LIBDIR/libreadline*
-usr/$LIBDIR/libthread*
-usr/$LIBDIR/libtiff*
-usr/$LIBDIR/libvte*
-usr/$LIBDIR/locale/*
+usr/lib/locale/*
 usr/$LIBDIR/pango/*
 usr/$LIBDIR/python2.2/site-packages/gtk*/gtk/*
 usr/$LIBDIR/rpm/rpmpopt
@@ -608,7 +584,6 @@ usr/lib/syslinux/*
 usr/sbin/chroot
 usr/sbin/ddcprobe
 usr/sbin/fbset
-usr/sbin/gnome-pty-helper
 usr/sbin/smartctl
 usr/share/anaconda/*
 usr/share/fonts/bitmap-fonts/fangsongti*
@@ -623,7 +598,12 @@ usr/share/fonts/default/Type1/n021024l*
 usr/share/fonts/ko/TrueType/dotum.ttf
 usr/share/fonts/ja/TrueType/kochi-gothic.ttf
 usr/share/fonts/zh_TW/TrueType/bsmi00lp.ttf
-usr/share/locale/*
+usr/share/locale/*/LC_MESSAGES/anaconda.mo
+usr/share/locale/*/LC_MESSAGES/redhat-dist.mo
+usr/share/locale/*/LC_MESSAGES/redhat-config-keyboard.mo
+usr/share/locale/*/LC_MESSAGES/gtk20.mo
+usr/share/locale/*/LC_MESSAGES/libc.mo
+usr/share/locale/*/LC_MESSAGES/rhpl.mo
 usr/share/pixmaps/comps/*.png
 usr/share/pixmaps/gnome-default-dlg.png
 usr/share/pixmaps/gnome-error.png
@@ -683,6 +663,7 @@ bin/ping
 bin/sync
 bin/tar
 bin/zcat
+etc/joe/*
 sbin/arp
 sbin/depmod
 sbin/dump
@@ -700,8 +681,12 @@ sbin/route
 usr/bin/bunzip2
 usr/bin/bzcat
 usr/bin/bzip2
+usr/bin/emacs
 usr/bin/find
 usr/bin/ftp
+usr/bin/jmacs
+usr/bin/joe
+usr/bin/jpico
 usr/bin/less
 usr/bin/mattrib
 usr/bin/mbadblocks
@@ -726,18 +711,18 @@ usr/bin/mtools
 usr/bin/mtype
 usr/bin/mzip
 usr/bin/open
-usr/bin/pico
 usr/bin/rcp
 usr/bin/rlogin
 usr/bin/rsh
 usr/bin/scp
 usr/bin/sftp
 usr/bin/ssh
+usr/bin/termidx
 usr/bin/xargs
-usr/kerberos/lib/libgssapi*
-usr/kerberos/lib/libkrb5*
-usr/kerberos/lib/libk5crypto*
-usr/kerberos/lib/libcom_err*
+usr/kerberos/$LIBDIR/libgssapi*
+usr/kerberos/$LIBDIR/libkrb5*
+usr/kerberos/$LIBDIR/libk5crypto*
+usr/kerberos/$LIBDIR/libcom_err*
 usr/sbin/mtr
 usr/sbin/traceroute
 EOF
@@ -800,6 +785,13 @@ cat $DESTGR/usr/lib/anaconda/lang-table* | awk '
   if (split ($5, a, "\.") > 1) {
     print gensub(/\..*$/,tolower("." a[2]),"",$5);
   };
+  gsub("-", "", $8);
+  print $8;
+  print gensub(/\..*$/,"","",$8);
+  print gensub(/_.*$/,"","",$8);
+  if (split ($8, a, "\.") > 1) {
+    print gensub(/\..*$/,tolower("." a[2]),"",$8);
+  };
 }
 ' | LC_ALL=C sort -u > $DESTGR/locales
 for p in lib share; do (
@@ -821,6 +813,12 @@ rm -f $DESTGR/usr/X11R6/$LIBDIR/modules/extensions/libxtrap.a
 rm -f $DESTGR/usr/X11R6/$LIBDIR/modules/extensions/librecord.a
 
 rm -f $DESTGR/usr/X11R6/$LIBDIR/modules/extensions/lib{GLcore,glx,pex5}*
+
+# fixup joe links
+ln -fs jpicorc $DESTGR/etc/joe/picorc
+ln -fs jmacsrc $DESTGR/etc/joe/emacsrc
+ln -fs jmacs $DESTGR/usr/bin/emacs
+ln -fs jpico $DESTGR/usr/bin/pico
 
 echo "Creating nsswitch.conf"
 cat > $DEST/etc/nsswitch.conf <<EOF
@@ -844,6 +842,14 @@ EOF
 
 cp $DEST/etc/nsswitch.conf $DESTGR/etc/nsswitch.conf
 
+# fixup man.config to point into /mnt/sysimage for rescue
+echo "Fixing up /etc/man.config to point into /mnt/sysimage"
+if [ -n "$NEEDGR" ]; then
+    mv $DESTGR/etc/man.config $DESTGR/etc/man.config-old
+    cat $DESTGR/etc/man.config-old | sed 's^/usr/bin^/mnt/sysimage/usr/bin^' | sed 's^/bin/cat^/mnt/sysimage/usr/bin/cat^'  > $DESTGR/etc/man.config
+    rm -f $DESTGR/etc/man.config-old
+fi
+
 echo "Running mkfontdir..."
 if [ -n "$NEEDGR" ]; then
     /usr/X11R6/bin/mkfontdir -p /usr/X11R6/lib/X11/fonts/encodings/ -e $DESTGR/usr/X11R6/lib/X11/fonts/encodings $DESTGR/usr/X11R6/lib/X11/fonts/* $DESTGR/usr/share/fonts/ISO8859-9/*
@@ -859,6 +865,13 @@ if [ -n "$NEEDGR" ]; then
 	LD_LIBRARY_PATH=/usr/X11R6/$LIBDIR:$LD_LIBRARY_PATH /usr/sbin/chroot $DESTGR /usr/bin/pango-querymodules > $DESTGR/etc/pango/pango.modules
     fi
     rm -f $DESTGR/usr/bin/pango-querymodules
+fi
+
+echo "Munging gtkrc to not use Bluecurve icon theme"
+if [ -n "$NEEDGR" ]; then
+    mv $DESTGR/usr/share/themes/Bluecurve/gtk-2.0/gtkrc $DESTGR/usr/share/themes/Bluecurve/gtk-2.0/gtkrc-old
+    cat $DESTGR/usr/share/themes/Bluecurve/gtk-2.0/gtkrc-old | grep -v "iconrc" > $DESTGR/usr/share/themes/Bluecurve/gtk-2.0/gtkrc
+    rm -f $DESTGR/usr/share/themes/Bluecurve/gtk-2.0/gtkrc-old
 fi
 
 echo "Getting gtk2 input method modules"
@@ -903,9 +916,9 @@ for p in $DEST $DESTGR; do
 	cp $p/usr/lib/anaconda/kudzu-probe-stub $p/usr/bin/kudzu-probe
 	cp $p/usr/lib/anaconda/loadkeys-stub $p/usr/bin/loadkeys
 	cp $p/usr/lib/anaconda/mknod-stub $p/usr/bin/mknod
-
-	mv $p/usr/sbin/anaconda $p/usr/bin/anaconda
-	mv $p/usr/lib/anaconda-runtime/lib* $p/usr/$LIBDIR
+        cp $p/usr/lib/anaconda/rescue-startx-stub $p/usr/bin/rescue-startx
+        mv $p/usr/sbin/anaconda $p/usr/bin/anaconda
+        mv $p/usr/lib/anaconda-runtime/lib* $p/usr/$LIBDIR
 
 	# we only want the libunicode-lite stuff on the minimal image
 	if [ $p = $DESTGR ]; then
@@ -1038,6 +1051,24 @@ for p in $DEST $DESTGR; do
 	    fi
 	done
 done
+
+# do some stripping of debugging symbols
+if [ -x /usr/bin/runroot -a -n "$COMPONENT" ]; then
+    REALPATH=`(cd $DEST; /bin/pwd | sed 's,/md1/,/,g')`
+    runroot $COMPONENT --onlyone --arch $ARCH "cd $REALPATH; find $DESTGR -type f -name '*.so' -exec strip -g '{}' ';'"
+else
+    find $DESTGR -type f -name '*.so' |xargs strip -g
+fi
+
+# some python stuff we don't need for stage2
+rm -f $DESTGR/usr/$LIBDIR/python?.?/site-packages/distutils/
+rm -f $DESTGR/usr/$LIBDIR/python?.?/site-packages/lib-dynload/japanese
+rm -f $DESTGR/usr/$LIBDIR/python?.?/site-packages/encodings/
+rm -f $DESTGR/usr/$LIBDIR/python?.?/site-packages/compiler/
+rm -f $DESTGR/usr/$LIBDIR/python?.?/site-packages/email/
+rm -f $DESTGR/usr/$LIBDIR/python?.?/site-packages/curses/
+rm -f $DESTGR/usr/$LIBDIR/python?.?/site-packages/pydoc.py
+
 
 # this is only for the minimal second stage
 echo "Cleaning ramdisk install images..."
