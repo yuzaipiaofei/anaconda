@@ -586,7 +586,7 @@ class InstallControlWindow:
                               N_("_Back"), self.prevClicked),
                              ('gtk-go-forward', "nextButtonStock",
                               N_("_Next"), self.nextClicked),
-                             ('gtk-help', "releaseButton",
+                             ('gtk-new', "releaseButton",
                               N_("_Release Notes"), self.releaseClicked),
                              ('gtk-help', "showHelpButton",
                               N_("Show _Help"), self.helpClicked),

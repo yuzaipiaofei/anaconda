@@ -15,6 +15,7 @@
 
 import gtk
 import gnome.canvas
+import pango
 from iw_gui import *
 from translate import _, N_
 from partitioning import *
@@ -82,6 +83,7 @@ class DiskStripeSlice:
         return "cornsilk1"
 
     def hideOrShowText(self):
+        # XXX disable until CanvasRect's bounds function gets implemetned
         return
         if self.box.get_bounds()[2] < self.text.get_bounds()[2]:
             self.text.hide()
@@ -128,12 +130,12 @@ class DiskStripeSlice:
         self.box.set(x1=0.0, y1=0.0, x2=xlength,
                      y2=yheight, fill_color=self.fillColor(),
                      outline_color='black', width_units=1.0)
-#        self.text.set(x=2.0, y=texty + 2.0, text=self.sliceText(),
-#                      fill_color='black',
-#                      anchor=ANCHOR_NW, clip=gtk.TRUE,
-#                      clip_width=xlength-1, clip_height=yheight-1)
-#        self.hideOrShowText()
-        
+        self.text.set(x=2.0, y=texty + 2.0, text=self.sliceText(),
+                      fill_color='black',
+                      anchor=gtk.ANCHOR_NW, clip=gtk.TRUE,
+                      clip_width=xlength-1, clip_height=yheight-1)
+        self.hideOrShowText()
+       
     def __init__(self, parent, partition, ctree, editCb):
         self.text = None
         self.partition = partition
@@ -145,8 +147,8 @@ class DiskStripeSlice:
         self.group = pgroup.add(gnome.canvas.CanvasGroup)
         self.box = self.group.add(gnome.canvas.CanvasRect)
         self.group.connect("event", self.eventHandler)
-#        self.text = self.group.add ("text",
-#                                    fontset="-*-helvetica-medium-r-*-*-8-*")
+        self.text = self.group.add (gnome.canvas.CanvasText,
+                                    font="helvetica", size_points=8)
         self.update()
 
 class DiskStripe:
@@ -168,9 +170,9 @@ class DiskStripe:
 #        else:
 #            width = CANVAS_WIDTH_640
         
-        group.add (gnome.canvas.CanvasRect, x1=0.0, y1=10.0, x2=width,
-                   y2=STRIPE_HEIGHT, fill_color='green',
-                   outline_color='grey71', width_units=1.0)
+        group.add(gnome.canvas.CanvasRect, x1=0.0, y1=10.0, x2=width,
+                  y2=STRIPE_HEIGHT, fill_color='green',
+                  outline_color='grey71', width_units=1.0)
 #        group.lower_to_bottom()
 
     def shutDown(self):
@@ -183,7 +185,7 @@ class DiskStripe:
         del self.disk
 
     def holds(self, partition):
-        return self.hash.has_key (partition)
+        return self.hash.has_key(partition)
 
     def getSlice(self, partition):
         return self.hash[partition]
@@ -194,10 +196,10 @@ class DiskStripe:
     def getDrive(self):
         return self.drive
 
-    def getGroup (self):
+    def getGroup(self):
         return self.group
 
-    def getCanvas (self):
+    def getCanvas(self):
         return self.canvas
 
     def selectSlice(self, partition, updateTree=0):
@@ -210,17 +212,17 @@ class DiskStripe:
             self.tree.unselect(self.tree.selection[0])
             nodes = self.tree.base_nodes()
             for node in nodes:
-                row = self.tree.find_by_row_data (node, partition)
+                row = self.tree.find_by_row_data(node, partition)
                 self.tree.select(row)
                 break
         self.selected = slice
 
     def deselect(self):
         if self.selected:
-            self.selected.deselect ()
+            self.selected.deselect()
         self.selected = None
     
-    def add (self, partition):
+    def add(self, partition):
         stripe = DiskStripeSlice(self, partition, self.tree, self.editCb)
         self.slices.append(stripe)
         self.hash[partition] = stripe
@@ -268,24 +270,28 @@ class DiskStripeGraph:
             if stripe.holds(partition):
                 return stripe.getDisk()
 
-    def add (self, drive, disk):
+    def add(self, drive, disk):
 #        yoff = len(self.diskStripes) * (STRIPE_HEIGHT + 5)
         yoff = self.next_ypos
-#        text = self.canvas.root().add_item("text", x=0.0, y=yoff,
-#                          fontset="-*-helvetica-bold-r-normal-*-*-120-*-*-p-*-iso8859-1")
-#        drivetext = "Drive %s (Geom: %s/%s/%s) (Model: %s)" % ('/dev/' + drive,
-#                                       disk.dev.cylinders,
-#                                       disk.dev.heads,
-#                                       disk.dev.sectors,
-#                                       disk.dev.model)
-#        text.set(text=drivetext, fill_color='black', anchor=ANCHOR_NW)
-#        (xxx1, yyy1, xxx2, yyy2) =  text.get_bounds()
-#        textheight = yyy2 - yyy1
-#        self.textlabels.append(text)
-        # next line remove XXX
-        textheight = 0 
-        group = self.canvas.root().add(gnome.canvas.CanvasGroup, x=0, y=yoff+textheight)
-        stripe = DiskStripe (drive, disk, group, self.ctree, self.canvas, self.editCb)
+        text = self.canvas.root().add(gnome.canvas.CanvasText,
+                                      x=0.0, y=yoff,
+                                      font="helvetica",
+                                      weight=pango.WEIGHT_BOLD,
+                                      size_points=12)
+        drivetext = ("Drive %s (Geom: %s/%s/%s) "
+                     "(Model: %s)") % ('/dev/' + drive,
+                                       disk.dev.cylinders,
+                                       disk.dev.heads,
+                                       disk.dev.sectors,
+                                       disk.dev.model)
+        text.set(text=drivetext, fill_color='black', anchor=gtk.ANCHOR_NW)
+        (xxx1, yyy1, xxx2, yyy2) =  text.get_bounds()
+        textheight = yyy2 - yyy1
+        self.textlabels.append(text)
+        group = self.canvas.root().add(gnome.canvas.CanvasGroup,
+                                       x=0, y=yoff+textheight)
+        stripe = DiskStripe(drive, disk, group, self.ctree, self.canvas,
+                             self.editCb)
         self.diskStripes.append(stripe)
         self.next_ypos = self.next_ypos + STRIPE_HEIGHT+textheight+10
         return stripe
@@ -301,7 +307,7 @@ def createAlignedLabel(text):
 
 def createMountPointCombo(request):
     mountCombo = gtk.Combo()
-    mountCombo.set_popdown_strings (defaultMountPoints)
+    mountCombo.set_popdown_strings(defaultMountPoints)
 
     mountpoint = request.mountpoint
 
@@ -346,7 +352,7 @@ def fstypechangeCB(widget, mountCombo):
     
 def createAllowedDrivesClist(disks, reqdrives):
     driveclist = gtk.CList()
-    driveclist.set_selection_mode (gtk.SELECTION_MULTIPLE)
+    driveclist.set_selection_mode(gtk.SELECTION_MULTIPLE)
     driveclist.set_usize(-1, 75)
 
     driverow = 0
@@ -370,14 +376,14 @@ def createAllowedDrivesClist(disks, reqdrives):
 def createAllowedRaidPartitionsClist(allraidparts, reqraidpart):
 
     partclist = gtk.CList()
-    partclist.set_selection_mode (gtk.SELECTION_MULTIPLE)
+    partclist.set_selection_mode(gtk.SELECTION_MULTIPLE)
     partclist.set_usize(-1, 95)
     sw = gtk.ScrolledWindow()
     sw.add(partclist)
     sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
 
     partrow = 0
-    for (part, size, used) in allraidparts:
+    for part, size, used in allraidparts:
         partname = "%s: %8.0f MB" % (part, size)
         partclist.append((partname,))
 
@@ -394,7 +400,7 @@ def createRaidLevelMenu(levels, reqlevel, raidlevelchangeCB, sparesb):
     i = 0
     for lev in levels:
         item = gtk.MenuItem(lev)
-        item.set_data ("level", lev)
+        item.set_data("level", lev)
         leveloptionmenu.add(item)
         if reqlevel and lev == reqlevel:
             defindex = i
@@ -402,7 +408,7 @@ def createRaidLevelMenu(levels, reqlevel, raidlevelchangeCB, sparesb):
             item.connect("activate", raidlevelchangeCB, sparesb)
         i = i + 1
 
-    leveloption.set_menu (leveloptionmenu)
+    leveloption.set_menu(leveloptionmenu)
     
     if defindex:
         leveloption.set_history(defindex)
@@ -415,8 +421,8 @@ def createRaidLevelMenu(levels, reqlevel, raidlevelchangeCB, sparesb):
 # pass in callback for when fs changes because of python scope issues
 def createFSTypeMenu(fstype, fstypechangeCB, mountCombo,
                      availablefstypes = None, ignorefs = None):
-    fstypeoption = gtk.OptionMenu ()
-    fstypeoptionMenu = gtk.Menu ()
+    fstypeoption = gtk.OptionMenu()
+    fstypeoptionMenu = gtk.Menu()
     types = fileSystemTypeGetTypes()
     if availablefstypes:
         names = availablefstypes
@@ -439,7 +445,7 @@ def createFSTypeMenu(fstype, fstypechangeCB, mountCombo,
         
         if fileSystemTypeGet(name).isFormattable():
             item = gtk.MenuItem(name)
-            item.set_data ("type", types[name])
+            item.set_data("type", types[name])
             fstypeoptionMenu.add(item)
             if default and default.getName() == name:
                 defindex = i
@@ -448,7 +454,7 @@ def createFSTypeMenu(fstype, fstypechangeCB, mountCombo,
                 item.connect("activate", fstypechangeCB, mountCombo)
             i = i + 1
 
-    fstypeoption.set_menu (fstypeoptionMenu)
+    fstypeoption.set_menu(fstypeoptionMenu)
 
     if defindex:
         fstypeoption.set_history(defindex)
@@ -482,8 +488,8 @@ def raidlevelchangeCB(widget, sparesb):
 class PartitionWindow(InstallWindow):
     def __init__(self, ics):
 	InstallWindow.__init__(self, ics)
-        ics.setTitle (_("Disk Setup"))
-        ics.setNextEnabled (gtk.TRUE)
+        ics.setTitle(_("Disk Setup"))
+        ics.setNextEnabled(gtk.TRUE)
         ics.readHTML("partition")
         self.parent = ics.getICW().window
 
@@ -492,22 +498,22 @@ class PartitionWindow(InstallWindow):
 
     def presentPartitioningComments(self, type,
                                     title, labelstr1, labelstr2, comments):
-        win = GnomeDialog(title)
+        win = gtk.Dialog(title)
         
         if type == "ok":
-            win.append_button(_("OK"))
+            win.add_button('gtk-ok', 1)
         elif type == "yesno":
-            win.append_button(_("Yes"))
-            win.append_button(_("No"))
+            win.add_button('gtk-yes', 1)
+            win.add_button('gtk-no', 2)
 
+        image = gtk.Image()
+        image.set_from_stock('gtk-dialog-warning', gtk.ICON_SIZE_DIALOG)
         hbox = gtk.HBox(gtk.FALSE)
-        file = pixmap_file('gnome-warning.png')
-        if file:
-            hbox.pack_start(GnomePixmap(file), gtk.FALSE)
+        hbox.pack_start(image, gtk.FALSE)
 
-        win.connect ("clicked", self.quit)
+        win.connect("clicked", self.quit)
         textbox = gtk.Text()
-        textbox.insert_defaults (comments)
+        textbox.insert_defaults(comments)
         textbox.set_word_wrap(1)
         textbox.set_editable(0)
         
@@ -531,11 +537,11 @@ class PartitionWindow(InstallWindow):
 
         win.vbox.pack_start(hbox)
         win.set_usize(400,300)
-        win.set_position(WIN_POS_CENTER)
+        win.set_position(gtk.WIN_POS_CENTER)
         win.show_all()
         rc = win.run()
         win.close()
-        return not rc
+        return rc
         
     def getNext(self):
         (errors, warnings) = sanityCheckAllRequests(self.partitions,
@@ -550,11 +556,11 @@ class PartitionWindow(InstallWindow):
                           "Red Hat Linux.")
 
             commentstr = string.join(errors, "\n\n")
-
-            rc = self.presentPartitioningComments("ok",
-                                                  _("Partitioning Errors"),
-                                                  labelstr1, labelstr2,
-                                                  commentstr)
+            
+            self.presentPartitioningComments("ok",
+                                             _("Partitioning Errors"),
+                                             labelstr1, labelstr2,
+                                             commentstr)
             raise gui.StayOnScreen
         
         if warnings:
@@ -608,7 +614,7 @@ class PartitionWindow(InstallWindow):
         del self.parent
         return None
     
-    def populate (self, initial = 0):
+    def populate(self, initial = 0):
         drives = self.diskset.disks.keys()
         drives.sort()
 
@@ -622,14 +628,15 @@ class PartitionWindow(InstallWindow):
             stripe = self.diskStripeGraph.add(drive, disk)
 
             # add a parent node to the tree
-            parent = self.tree.insert_node (None, None, text,
-                                            is_leaf = gtk.FALSE, expanded = gtk.TRUE,
-                                            spacing = TREE_SPACING)
+            parent = self.tree.insert_node(None, None, text,
+                                           is_leaf = gtk.FALSE,
+                                           expanded = gtk.TRUE,
+                                           spacing = TREE_SPACING)
             extendedParent = None
-            part = disk.next_partition ()
+            part = disk.next_partition()
             while part:
                 if part.type & parted.PARTITION_METADATA:
-                    part = disk.next_partition (part)
+                    part = disk.next_partition(part)
                     continue
                 stripe.add(part)
 
@@ -685,26 +692,26 @@ class PartitionWindow(InstallWindow):
                         raise RuntimeError, ("can't handle more than "
                                              "one extended partition per disk")
                     extendedParent = \
-                                   self.tree.insert_node (parent,
-                                                          None, text,
-                                                          is_leaf=gtk.FALSE,
-                                                          expanded=gtk.TRUE,
-                                                          spacing=TREE_SPACING)
+                                   self.tree.insert_node(parent,
+                                                         None, text,
+                                                         is_leaf=gtk.FALSE,
+                                                         expanded=gtk.TRUE,
+                                                         spacing=TREE_SPACING)
                     node = extendedParent
                                         
                 elif part.type & parted.PARTITION_LOGICAL:
                     if not extendedParent:
                         raise RuntimeError, ("crossed logical partition "
                                              "before extended")
-                    node = self.tree.insert_node (extendedParent, None, text,
-                                                  spacing = TREE_SPACING)
+                    node = self.tree.insert_node(extendedParent, None, text,
+                                                 spacing = TREE_SPACING)
                 else:
-                    node = self.tree.insert_node (parent, None, text,
-                                                  spacing = TREE_SPACING)
+                    node = self.tree.insert_node(parent, None, text,
+                                                 spacing = TREE_SPACING)
                
-                self.tree.node_set_row_data (node, part)
+                self.tree.node_set_row_data(node, part)
 
-                part = disk.next_partition (part)
+                part = disk.next_partition(part)
 
         # handle RAID next
         raidcounter = 0
@@ -734,11 +741,11 @@ class PartitionWindow(InstallWindow):
                                           "%g" % (request.size)
 
                 # add a parent node to the tree
-                parent = self.tree.insert_node (None, None, text,
-                                                is_leaf = gtk.FALSE,
-                                                expanded = gtk.TRUE,
-                                                spacing = TREE_SPACING)
-                self.tree.node_set_row_data (parent, request.device)
+                parent = self.tree.insert_node(None, None, text,
+                                               is_leaf = gtk.FALSE,
+                                               expanded = gtk.TRUE,
+                                               spacing = TREE_SPACING)
+                self.tree.node_set_row_data(parent, request.device)
                 raidcounter = raidcounter + 1
                 
         canvas = self.diskStripeGraph.getCanvas()
@@ -752,7 +759,7 @@ class PartitionWindow(InstallWindow):
 
     def treeSelectCb(self, tree, node, column):
         node = gtk.ctree_node_from_cobject(node)
-        partition = tree.node_get_row_data (node)
+        partition = tree.node_get_row_data(node)
         if partition:
             self.diskStripeGraph.selectSlice(partition)
 
@@ -795,7 +802,8 @@ class PartitionWindow(InstallWindow):
 
         def cylspinchangedCB(widget, data):
             (dev, startcylspin, endcylspin, bycyl_sizelabel) = data
-            startsec = start_cyl_to_sector(dev, startcylspin.get_value_as_int())
+            startsec = start_cyl_to_sector(dev,
+                                           startcylspin.get_value_as_int())
             endsec = end_cyl_to_sector(dev, endcylspin.get_value_as_int())
             cursize = (endsec - startsec)/2048
             bycyl_sizelabel.set_text("%s" % (int(cursize))) 
@@ -805,21 +813,24 @@ class PartitionWindow(InstallWindow):
 
         # pass in CB defined above because of two scope limitation of python!
         def createSizeOptionsFrame(request, fillmaxszCB):
-            frame = gtk.Frame (_("Additional Size Options"))
+            frame = gtk.Frame(_("Additional Size Options"))
             sizeoptiontable = gtk.Table()
             sizeoptiontable.set_row_spacings(5)
             sizeoptiontable.set_border_width(4)
             
             fixedrb     = gtk.RadioButton(label=_("Fixed size"))
-            fillmaxszrb = gtk.RadioButton(group=fixedrb, label=_("Fill all space up to (MB):"))
-            maxsizeAdj = gtk.Adjustment (value = 1, lower = 1,
+            fillmaxszrb = gtk.RadioButton(group=fixedrb,
+                                          label=_("Fill all space up "
+                                                  "to (MB):"))
+            maxsizeAdj = gtk.Adjustment(value = 1, lower = 1,
                                         upper = MAX_PART_SIZE, step_incr = 1)
             fillmaxszsb = gtk.SpinButton(maxsizeAdj, digits = 0)
             fillmaxszhbox = gtk.HBox()
             fillmaxszhbox.pack_start(fillmaxszrb)
             fillmaxszhbox.pack_start(fillmaxszsb)
             fillunlimrb = gtk.RadioButton(group=fixedrb,
-                                         label=_("Fill to maximum allowable size"))
+                                         label=_("Fill to maximum allowable "
+                                                 "size"))
 
             fillmaxszrb.connect("toggled", fillmaxszCB, fillmaxszsb)
 
@@ -848,16 +859,14 @@ class PartitionWindow(InstallWindow):
         #
 
 
-        dialog = GnomeDialog(_("Add Partition"))
-        dialog.set_parent(self.parent)
-        dialog.append_button (_("OK"))
-        dialog.append_button (_("Cancel"))
-        dialog.set_position(WIN_POS_CENTER)
-        dialog.close_hides(gtk.TRUE)
+        dialog = gtk.Dialog(_("Add Partition"), self.parent)
+        dialog.add_button('gtk-ok', 1)
+        dialog.add_button('gtk-cancel', 2)
+        dialog.set_position(gtk.WIN_POS_CENTER)
         
         maintable = gtk.Table()
-        maintable.set_row_spacings (5)
-        maintable.set_col_spacings (5)
+        maintable.set_row_spacings(5)
+        maintable.set_col_spacings(5)
         row = 0
 
         # see if we are creating a floating request or by cylinder
@@ -881,13 +890,15 @@ class PartitionWindow(InstallWindow):
                                                           mountCombo)
             maintable.attach(newfstype, 1, 2, row, row + 1)
         else:
-            maintable.attach(createAlignedLabel(_("Original Filesystem Type:")),
+            maintable.attach(createAlignedLabel(_("Original Filesystem "
+                                                  "Type:")),
                              0, 1, row, row + 1)
 
             if origrequest.origfstype:
                 typestr = origrequest.origfstype.getName()
                 if origrequest.origfstype.getName() == "foreign":
-                    part = get_partition_by_name(self.diskset.disks, origrequest.device)
+                    part = get_partition_by_name(self.diskset.disks,
+                                                 origrequest.device)
                     typestr = map_foreign_to_fsname(part.native_type)
             else:
                 typestr = _("Unknown")
@@ -922,7 +933,8 @@ class PartitionWindow(InstallWindow):
 
         # original fs label
         if origrequest.type != REQUEST_NEW and origrequest.fslabel:
-            maintable.attach(createAlignedLabel(_("Original Filesystem Label:")),
+            maintable.attach(createAlignedLabel(_("Original Filesystem "
+                                                  "Label:")),
                              0, 1, row, row + 1)
             fslabel = gtk.Label(origrequest.fslabel)
             maintable.attach(fslabel, 1, 2, row, row + 1)
@@ -935,7 +947,7 @@ class PartitionWindow(InstallWindow):
                 # Size specification
                 maintable.attach(createAlignedLabel(_("Size (MB):")),
                                  0, 1, row, row + 1)
-                sizeAdj = gtk.Adjustment (value = 1, lower = 1,
+                sizeAdj = gtk.Adjustment(value = 1, lower = 1,
                                          upper = MAX_PART_SIZE, step_incr = 1)
                 sizespin = gtk.SpinButton(sizeAdj, digits = 0)
 
@@ -957,18 +969,18 @@ class PartitionWindow(InstallWindow):
                                  0, 1, row, row + 1)
 
                 maxcyl = self.diskset.disks[origrequest.drive[0]].dev.cylinders
-                cylAdj = gtk.Adjustment (value = origrequest.start,
-                                        lower = origrequest.start,
-                                        upper = maxcyl,
-                                        step_incr = 1)
-                startcylspin = gtk.SpinButton(cylAdj, digits = 0)
+                cylAdj = gtk.Adjustment(value=origrequest.start,
+                                        lower=origrequest.start,
+                                        upper=maxcyl,
+                                        step_incr=1)
+                startcylspin = gtk.SpinButton(cylAdj, digits=0)
                 maintable.attach(startcylspin, 1, 2, row, row + 1)
                 row = row + 1
                 
-                endcylAdj = gtk.Adjustment (value = origrequest.end,
-                                        lower = origrequest.start,
-                                        upper = maxcyl,
-                                        step_incr = 1)
+                endcylAdj = gtk.Adjustment(value=origrequest.end,
+                                           lower=origrequest.start,
+                                           upper=maxcyl,
+                                           step_incr=1)
                 maintable.attach(createAlignedLabel(_("End Cylinder:")),
                                  0, 1, row, row + 1)
                 endcylspin = gtk.SpinButton(endcylAdj, digits = 0)
@@ -1009,12 +1021,13 @@ class PartitionWindow(InstallWindow):
             maintable.attach(label, 0, 2, row, row + 1)
             row = row + 1
             
-            noformatrb = gtk.RadioButton (label=_("Leave unchanged (preserve data)"))
+            noformatrb = gtk.RadioButton(label=_("Leave unchanged "
+                                                 "(preserve data)"))
             noformatrb.set_active(1)
             maintable.attach(noformatrb, 0, 2, row, row + 1)
             row = row + 1
 
-            formatrb = gtk.RadioButton (label=_("Format partition as:"),
+            formatrb = gtk.RadioButton(label=_("Format partition as:"),
                                        group = noformatrb)
             formatrb.set_active(0)
             if origrequest.format:
@@ -1034,8 +1047,8 @@ class PartitionWindow(InstallWindow):
                                                          mountCombo, ofstype))
 
             if origrequest.origfstype.isMigratable():
-                migraterb = gtk.RadioButton (label=_("Migrate partition to:"),
-                                                  group=noformatrb)
+                migraterb = gtk.RadioButton(label=_("Migrate partition to:"),
+                                            group=noformatrb)
                 migraterb.set_active(0)
                 if origrequest.migrate:
                     migraterb.set_active(1)
@@ -1078,7 +1091,9 @@ class PartitionWindow(InstallWindow):
         # size options
         if origrequest.type == REQUEST_NEW:
             if not newbycyl:
-                (sizeframe, fixedrb, fillmaxszrb, fillmaxszsb) = createSizeOptionsFrame(origrequest, fillmaxszCB)
+                (sizeframe, fixedrb, fillmaxszrb,
+                 fillmaxszsb) = createSizeOptionsFrame(origrequest,
+                                                       fillmaxszCB)
                 sizespin.connect("changed", sizespinchangedCB, fillmaxszsb)
 
                 maintable.attach(sizeframe, 0, 2, row, row + 1)
@@ -1091,7 +1106,8 @@ class PartitionWindow(InstallWindow):
 
         # create only as primary
         if origrequest.type == REQUEST_NEW:
-            primonlycheckbutton = gtk.CheckButton(_("Force to be a primary partition"))
+            primonlycheckbutton = gtk.CheckButton(_("Force to be a primary "
+                                                    "partition"))
             primonlycheckbutton.set_active(0)
             if origrequest.primary:
                 primonlycheckbutton.set_active(1)
@@ -1113,8 +1129,8 @@ class PartitionWindow(InstallWindow):
             rc = dialog.run()
 
             # user hit cancel, do nothing
-            if rc == 1:
-                dialog.close()
+            if rc == 2:
+                dialog.destroy()
                 return
 
             if origrequest.type == REQUEST_NEW:
@@ -1223,7 +1239,8 @@ class PartitionWindow(InstallWindow):
 #                    if not queryFormatPreExisting(self.intf):
 #                        continue
 
-                if not request.format and request.mountpoint and isFormatOnByDefault(request):
+                if (not request.format and
+                    request.mountpoint and isFormatOnByDefault(request)):
                     if not queryNoFormatPreExisting(self.intf):
                         continue
             
@@ -1239,15 +1256,16 @@ class PartitionWindow(InstallWindow):
                     self.partitions.addRequest(origrequest)
                 if self.refresh():
                     # this worked before and doesn't now...
-                    raise RuntimeError, "Returning partitions to state prior to edit failed"
+                    raise RuntimeError, ("Returning partitions to state "
+                                         "prior to edit failed")
             else:
                 break
 
-        dialog.close()
+        dialog.destroy()
 
     def deleteCb(self, widget):
         node = self.tree.selection[0]
-        partition = self.tree.node_get_row_data (node)
+        partition = self.tree.node_get_row_data(node)
 
         if doDeletePartitionByRequest(self.intf, self.partitions, partition):
             self.refresh()
@@ -1257,8 +1275,8 @@ class PartitionWindow(InstallWindow):
         while node:
             self.tree.remove_node(node)
             node = self.tree.node_nth(0)
-        self.tree.set_selection_mode (gtk.SELECTION_SINGLE)
-        self.tree.set_selection_mode (gtk.SELECTION_BROWSE)
+        self.tree.set_selection_mode(gtk.SELECTION_SINGLE)
+        self.tree.set_selection_mode(gtk.SELECTION_BROWSE)
 
     def resetCb(self, *args):
         if not confirmResetPartitionState(self.intf):
@@ -1286,21 +1304,24 @@ class PartitionWindow(InstallWindow):
             rc = -1
         except PartitioningWarning, msg:
             # XXX somebody other than me should make this look better
-            dialog = GnomeDialog(_("Warning"))
+            # XXX this doesn't handle the 'delete /boot partition spec' case
+            #     (it says 'add anyway')
+            dialog = gtk.Dialog(_("Warning"))
             dialog.set_parent(self.parent)
-            dialog.append_button(_("Modify Partition"))
-            dialog.append_button(_("Add anyway"))
-            dialog.set_position(WIN_POS_CENTER)
-            dialog.close_hides(gtk.TRUE)
+            button = gtk.Button(_("_Modify Partition"))
+            dialog.add_action_widget(button, 1)
+            button = gtk.Button(_("_Continue"))
+            dialog.add_action_widget(button, 2)
+            dialog.set_position(gtk.WIN_POS_CENTER)
 
-            label = gtk.Label(_("Warning: %s.") %(msg))
+            label = gtk.Label(_("Warning: %s.") % (msg))
             label.set_line_wrap(gtk.TRUE)
             dialog.vbox.pack_start(label)
             dialog.show_all()
             rc = dialog.run()
-            dialog.close()
+            dialog.destroy()
             
-            if rc != 1:
+            if rc == 1:
                 rc = -1
             else:
                 rc = 0
@@ -1314,9 +1335,10 @@ class PartitionWindow(InstallWindow):
 
     def editCb(self, widget):
         node = self.tree.selection[0]
-        part = self.tree.node_get_row_data (node)
+        part = self.tree.node_get_row_data(node)
 
-        (type, request) = doEditPartitionByRequest(self.intf, self.partitions, part)
+        (type, request) = doEditPartitionByRequest(self.intf, self.partitions,
+                                                   part)
         if request:
             if type == "RAID":
                 self.editRaidRequest(request)
@@ -1330,30 +1352,29 @@ class PartitionWindow(InstallWindow):
         #
         # start of editRaidRuquest
         #
-        dialog = GnomeDialog(_("Make RAID Device"))
-        dialog.set_parent(self.parent)
-        dialog.append_button (_("OK"))
-        dialog.append_button (_("Cancel"))
-        dialog.set_position(WIN_POS_CENTER)
-        dialog.close_hides(gtk.TRUE)
-        
-        maintable = gtk.Table()
-        maintable.set_row_spacings (5)
-        maintable.set_col_spacings (5)
-        row = 0
-
         availraidparts = get_available_raid_partitions(self.diskset,
                                                        self.partitions,
                                                        raidrequest)
 
         # if no raid partitions exist, raise an error message and return
         if len(availraidparts) < 2:
-            dlg = GnomeMessageBox(_("At least two software RAID partitions are needed."),
-                                  MESSAGE_BOX_ERROR,STOCK_BUTTON_OK)
-            dlg.set_position(WIN_POS_CENTER)
-            dlg.show()
-            dlg.run_and_close()
+            dlg = gtk.MessageDialog(None, 0, gtk.MESSAGE_ERROR, gtk.BUTTONS_OK,
+                                    _("At least two software RAID "
+                                      "partitions are needed."))
+            dlg.set_position(gtk.WIN_POS_CENTER)
+            dlg.run()
+            dlg.destroy()
             return
+
+        dialog = gtk.Dialog(_("Make RAID Device"), self.parent)
+        dialog.add_button('gtk-ok', 1)
+        dialog.add_button('gtk-cancel', 2)
+        dialog.set_position(gtk.WIN_POS_CENTER)
+        
+        maintable = gtk.Table()
+        maintable.set_row_spacings(5)
+        maintable.set_col_spacings(5)
+        row = 0
 
         # Mount Point entry
         maintable.attach(createAlignedLabel(_("Mount Point:")),
@@ -1390,8 +1411,8 @@ class PartitionWindow(InstallWindow):
         else:
             maxspares = 0
 
-        spareAdj = gtk.Adjustment (value = nspares, lower = 0,
-                               upper = maxspares, step_incr = 1)
+        spareAdj = gtk.Adjustment(value = nspares, lower = 0,
+                                  upper = maxspares, step_incr = 1)
         sparesb = gtk.SpinButton(spareAdj, digits = 0)
         sparesb.set_data("numparts", numparts)
 
@@ -1428,7 +1449,7 @@ class PartitionWindow(InstallWindow):
 
         # format or not?
         if raidrequest.fstype and raidrequest.fstype.isFormattable():
-            formatButton = gtk.CheckButton (_("Format partition?"))
+            formatButton = gtk.CheckButton(_("Format partition?"))
             # XXX this probably needs more logic once we detect existing raid
             if raidrequest.format == None or raidrequest.format != 0:
                 formatButton.set_active(1)
@@ -1449,12 +1470,9 @@ class PartitionWindow(InstallWindow):
             rc = dialog.run()
 
             # user hit cancel, do nothing
-            if rc == 1:
-                dialog.close()
+            if rc == 2:
+                dialog.destroy()
                 return
-            elif rc == -1:
-                # something died in dialog
-                raise ValueError, "Died inside of raid edit dialog!"
 
             # read out UI into a partition specification
             request = copy.copy(raidrequest)
@@ -1502,17 +1520,18 @@ class PartitionWindow(InstallWindow):
                 if not isNew:
                     self.partitions.addRequest(raidrequest)
                 if self.refresh():
-                    raise RuntimeError, "Returning partitions to state prior to RAID edit failed"
+                    raise RuntimeError, ("Returning partitions to state "
+                                         "prior to RAID edit failed")
             else:
                 break
 
-        dialog.close()
+        dialog.destroy()
 
     def makeraidCB(self, widget):
         request = PartitionSpec(fileSystemTypeGetDefault(), REQUEST_RAID, 1)
         self.editRaidRequest(request, isNew = 1)
 
-    def getScreen (self, fsset, diskset, partitions, intf):
+    def getScreen(self, fsset, diskset, partitions, intf):
         self.fsset = fsset
         self.diskset = diskset
         self.intf = intf
@@ -1528,9 +1547,7 @@ class PartitionWindow(InstallWindow):
 
         # operational buttons
         buttonBox = gtk.HButtonBox()
-        buttonBox.set_layout (gtk.BUTTONBOX_SPREAD)
-
-        self.accelgroup = gtk.AccelGroup()
+        buttonBox.set_layout(gtk.BUTTONBOX_SPREAD)
 
         ops = ((_("_New"), self.newCB),
                (_("_Edit"), self.editCb),
@@ -1539,17 +1556,10 @@ class PartitionWindow(InstallWindow):
                (_("Make _RAID"), self.makeraidCB))
         
         for label, cb in ops:
-            labelwid = gtk.Label(label)
-            key = labelwid.parse_uline(label)
-            button = gtk.Button ()
-            button.add(labelwid)
-            button.add_accelerator("clicked", self.accelgroup, key,
-                                   gtk.gdk.MOD1_MASK, 0)
+            button = gtk.Button(label)
             buttonBox.add (button)
             button.connect ("clicked", cb)
 
-        self.ics.getICW().window.add_accel_group (self.accelgroup)
-        
         # set up the tree
         titles = [N_("Device"), N_("Start"), N_("End"),
                   N_("Size (MB)"), N_("Type"), N_("Mount Point"), N_("Format")]
@@ -1563,8 +1573,8 @@ class PartitionWindow(InstallWindow):
             i = i + 1
 
         self.numCols = len(titles)
-        self.tree = gtk.CTree (self.numCols, 0, titles)
-        self.tree.set_selection_mode (gtk.SELECTION_BROWSE)
+        self.tree = gtk.CTree(self.numCols, 0, titles)
+        self.tree.set_selection_mode(gtk.SELECTION_BROWSE)
         self.tree.column_titles_passive()
         for i in range(self.numCols):
             self.tree.set_column_resizeable(i, 0)
@@ -1572,33 +1582,35 @@ class PartitionWindow(InstallWindow):
         self.tree.set_column_justification(1, gtk.JUSTIFY_RIGHT)
         self.tree.set_column_justification(2, gtk.JUSTIFY_RIGHT)
         self.tree.set_column_justification(3, gtk.JUSTIFY_RIGHT)
-        self.tree.connect ("select_row", self.treeSelectClistRowCb, self.tree)
-        self.tree.connect ("tree_select_row", self.treeSelectCb)
+        self.tree.connect("select_row", self.treeSelectClistRowCb, self.tree)
+        self.tree.connect("tree_select_row", self.treeSelectCb)
 
         # set up the canvas
         self.diskStripeGraph = DiskStripeGraph(self.tree, self.editCb)
         
         # do the initial population of the tree and the graph
-        self.populate (initial = 1)
+        self.populate(initial = 1)
 
         box = gtk.VBox(gtk.FALSE, 5)
         sw = gtk.ScrolledWindow()
-        sw.add (self.diskStripeGraph.getCanvas())
-        sw.set_policy (gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
-        box.pack_start (sw, gtk.TRUE)
-        box.pack_start (buttonBox, gtk.FALSE)
+        sw.add(self.diskStripeGraph.getCanvas())
+        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        frame = gtk.Frame()
+        frame.add(sw)
+        box.pack_start(frame, gtk.TRUE, gtk.TRUE)
+        box.pack_start(buttonBox, gtk.FALSE)
         sw = gtk.ScrolledWindow()
-        sw.add (self.tree)
-        sw.set_policy (gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
-        box.pack_start (sw, gtk.TRUE)
+        sw.add(self.tree)
+        sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+        box.pack_start(sw, gtk.TRUE)
 
 	return box
 
 class AutoPartitionWindow(InstallWindow):
     def __init__(self, ics):
     	InstallWindow.__init__(self, ics)
-        ics.setTitle (_("Automatic Partitioning"))
-        ics.setNextEnabled (gtk.TRUE)
+        ics.setTitle(_("Automatic Partitioning"))
+        ics.setNextEnabled(gtk.TRUE)
         ics.readHTML("autopart")
         self.parent = ics.getICW().window
 
@@ -1616,8 +1628,9 @@ class AutoPartitionWindow(InstallWindow):
 
         if len(allowdrives) < 1:
             self.intf.messageWindow(_("Warning"), 
-                                    _("You need to select at least one drive to have "
-                                      "Red Hat Linux installed onto."), type = "ok")
+                                    _("You need to select at least one "
+                                      "drive to have Red Hat Linux installed "
+                                      "onto."), type = "ok")
             raise gui.StayOnScreen
 
         self.partitions.autoClearPartDrives = allowdrives
@@ -1643,8 +1656,8 @@ class AutoPartitionWindow(InstallWindow):
         type = partitions.autoClearPartType
         cleardrives = partitions.autoClearPartDrives
         
-        box = gtk.VBox (gtk.FALSE)
-        box.set_border_width (5)
+        box = gtk.VBox(gtk.FALSE)
+        box.set_border_width(5)
 
         label = gtk.Label(_(AUTOPART_DISK_CHOICE_DESCR_TEXT))
 
@@ -1659,7 +1672,7 @@ class AutoPartitionWindow(InstallWindow):
         label.set_alignment(0.0, 0.0)
         clearbox.pack_start(label, gtk.FALSE, gtk.FALSE, 10)
         
-        radioBox = gtk.VBox (gtk.FALSE)
+        radioBox = gtk.VBox(gtk.FALSE)
         self.clearLinuxRB = gtk.RadioButton(
             None, _(CLEARPART_TYPE_LINUX_DESCR_TEXT))
 	radioBox.pack_start(self.clearLinuxRB, gtk.FALSE, gtk.FALSE)
@@ -1720,7 +1733,7 @@ class AutoPartitionWindow(InstallWindow):
         
 	box.pack_start(self.inspect, gtk.FALSE, gtk.FALSE, 10)
 
-        self.ics.setNextEnabled (gtk.TRUE)
+        self.ics.setNextEnabled(gtk.TRUE)
 
 	align = gtk.Alignment()
 	align.add(box)
