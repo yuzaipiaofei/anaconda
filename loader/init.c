@@ -220,6 +220,11 @@ void doklog(char * fn) {
 	close(log);
 	return;
     }
+#ifdef INCLUDE_RESCUE
+    if(ioctl(0, TIOCNOTTY, (char *)0)) {
+	printstr("ioctl(0, TIOCNOTTY, NULL) failed\n");
+    }
+#endif /* INCLUDE_RESCUE */
     close(0); 
     close(1);
     close(2);
@@ -755,16 +760,30 @@ int main(int argc, char **argv) {
 
     setsid();
 
+#ifndef INCLUDE_RESCUE
     if (!(installpid = fork())) {
 	/* child */
+#endif /* INCLUDE_RESCUE */	    
 	*argvp++ = "/sbin/loader";
 	*argvp++ = NULL;
 
 	printf("running %s\n", argvc[0]);
 	execve(argvc[0], argvc, env);
-	
+	printf("execve failed!\n");
+#ifndef INCLUDE_RESCUE
 	exit(0);
     }
+#endif /* INCLUDE_RESCUE */
+
+#ifdef INCLUDE_RESCUE    
+    /* just close the file descriptors
+    * don't even think about to call
+    * ioctl(0, TIOCNOTTY, (char *)0)
+    * you will kill the main linuxrc and provocate a kernel panic */
+    close(0);
+    close(1);
+    close(2);
+#endif /* INCLUDE_RESCUE */
 
     while (!doShutdown) {
 	childpid = wait4(-1, &waitStatus, 0, NULL);

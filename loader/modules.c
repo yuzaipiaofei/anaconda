@@ -54,6 +54,10 @@ int simpleRemoveLoadedModule(const char * modName, moduleList modLoaded,
 int reloadUnloadedModule(char * modName, void * location,
 			 moduleList modLoaded, char ** args, int flags);
 
+#ifdef INCLUDE_RESCUE
+static void addModuleFile(const char *modName);
+#endif
+
 static int ethCount(void) {
     int fd;
     char buf[16384];
@@ -225,6 +229,27 @@ char ** tsortModules(moduleList modLoaded, moduleDeps ml, char ** args,
     return list;
 }
 
+#ifdef INCLUDE_RESCUE
+static void addModuleFile(const char *modName) {
+    /* DIRTY HACK: Since we don't have the network modules in the initrd,
+     * save the detected hardware to disk so we can load the correct modules
+     * later */
+    /* FIXME:  why doesn't this use the standard module loading that
+     * the loader does after mounting stage2?  
+     */
+
+    int fd;
+    char module[256];
+
+    fd = open("/MODULES", O_RDWR|O_APPEND|O_CREAT);
+    if(fd != -1) {
+        sprintf(module, "%s\n", modName);
+        write(fd, module, strlen(module));
+        close(fd);
+    }
+}
+#endif /* INCLUDE_RESCUE */
+
 static int loadModule(const char * modName, struct extractedModule * path, 
 		      moduleList modLoaded, char ** args, 
 		      moduleInfoSet modInfo, int flags) {
@@ -252,6 +277,10 @@ static int loadModule(const char * modName, struct extractedModule * path,
 	}
     }
 
+#ifdef INCLUDE_RESCUE /* INCLUDE_RESCUE */
+    addModuleFile(modName);
+#endif /* INCLUDE_RESCUE */
+    
     sprintf(fileName, "%s.o", modName);
     for (argPtr = args; argPtr && *argPtr; argPtr++)  {
 	strcat(fileName, " ");
@@ -608,6 +637,7 @@ static int doLoadModules(const char * origModNames, moduleList modLoaded,
 	    if (!p->path) {
 		if (*items) strcat(items, " ");
 		strcat(items, *l);
+		addModuleFile(*l);
 		i++;
 	    }
 	}

@@ -15,9 +15,9 @@ SLANGLIB = ../minislang/libslang.a
 endif
 endif
 
-LOADEROBJS = loader.o loader-pcmcia.o popen.o
+LOADEROBJS = loader.o loader-pcmcia.o loader-rescue.o popen.o
 SOURCES = $(subst .o,.c,$(OBJS)) loader.c
-BINS = init
+BINS = init init-rescue
 DIRS = 
 NETOBJS = net.o urls.o telnet.o telnetd.o
 PCMCIAOBJS = pcmcia.o $(NETOBJS)
@@ -38,7 +38,7 @@ LOADERLIBS = -lpci
 
 # XXX Japanese is i386 only at the moment
 ifeq (i386, $(ARCH))
-BINS += loader-local loader-network loader-pcmcia
+BINS += loader-local loader-network loader-pcmcia loader-rescue
  ifeq (1, $(JAPANESE))
  KONOBJS = ./kon2/src/libkon.a ./kon2/src/display.a ./kon2/lib/libgon.a
  CFLAGS += -DINCLUDE_KON
@@ -167,6 +167,19 @@ loader-pcmcia: loader-pcmcia.o pcmcia.o popen.o $(OBJS) $(PCMCIAOBJS)
 	$(MODULELINKAGE) $(GUNZIP) \
         -lpump -lz -lresolv -lnewt $(SLANGLIB) $(LOADERLIBS) $(KONOBJS)
 
+loader-rescue: loader-rescue.o pcmcia.o popen.o $(OBJS) $(PCMCIAOBJS)
+# FIXME: this is a hack
+	rm -f modules.o
+	$(CC) $(CFLAGS) -DINCLUDE_RESCUE -c -o modules.o modules.c
+	$(CC) -g $(STATIC) -o $@ loader-rescue.o $(OBJS) \
+	    $(PCMCIAOBJS) -lcardmgr_loader -lprobe_loader popen.o \
+        -lpopt     \
+        -lkudzu_loader $(ISYS) ../balkan/libbalkan.a \
+	$(MODULELINKAGE) $(GUNZIP) \
+        -lpump -lz -lresolv -lnewt $(SLANGLIB) $(LOADERLIBS) $(KONOBJS)
+# FIXME: other part of hack
+	rm -f modules.o
+
 loader.o: loader.c
 	$(CC) -DINCLUDE_LOCAL -DINCLUDE_NETWORK $(CFLAGS) -o $@ -c $<
 
@@ -180,8 +193,16 @@ loader-pcmcia.o: loader.c
 	$(CC) -DINCLUDE_PCMCIA -DINCLUDE_LOCAL -DINCLUDE_NETWORK \
 	    $(CFLAGS) -o $@ -c $<
 
+loader-rescue.o: loader.c
+	$(CC) -DINCLUDE_PCMCIA -DINCLUDE_LOCAL -DINCLUDE_NETWORK \
+	    -DINCLUDE_RESCUE $(CFLAGS) -o $@ -c $<
+
 init: init.o $(MINILIBC)
 	$(REALCC) $(STATIC) $(COPTS) $(LDFLAGS) -o $@ init.o $(MINILIBC)
+
+init-rescue: init.c $(MINILIBC)
+	$(REALCC) $(STATIC) $(COPTS) $(LDFLAGS) -O2 \
+	    -DINCLUDE_RESCUE -o $@ init.c $(MINILIBC)
 
 init.o: init.c 
 	$(REALCC) -O2 $(COPTS) -c -o init.o init.c

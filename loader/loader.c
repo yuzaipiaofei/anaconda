@@ -44,6 +44,14 @@
 #include <sys/vt.h>
 #include <linux/fb.h>
 
+#include <sys/reboot.h>
+#include <sys/wait.h>
+
+#ifdef INCLUDE_RESCUE
+#include <asm/unistd.h>
+static inline _syscall2(int,pivot_root,const char *,one,const char *,two);
+#endif /* INCLUDE_RESCUE */
+
 #if defined(__i386__) || defined(__ia64__) || defined(__alpha__)
 #include <linux/cdrom.h>
 #endif
@@ -134,12 +142,12 @@ static struct installMethod installMethods[] = {
 #if defined(INCLUDE_LOCAL)
     { N_("Local CDROM"), 0, CLASS_CDROM, mountCdromImage },
 #endif
-#if defined(INCLUDE_NETWORK)
+#if defined(INCLUDE_NETWORK) && !defined(INCLUDE_RESCUE)
     { N_("NFS image"), 1, CLASS_NETWORK, mountNfsImage },
     { "FTP", 1, CLASS_NETWORK, mountUrlImage },
     { "HTTP", 1, CLASS_NETWORK, mountUrlImage },
 #endif
-#if defined(INCLUDE_LOCAL)
+#if defined(INCLUDE_LOCAL) && !defined(INCLUDE_RESCUE)
     { N_("Hard drive"), 0, CLASS_HD, mountHardDrive },
 #endif
 };
@@ -275,6 +283,7 @@ static int detectHardware(moduleInfoSet modInfo,
 
     if (devices == NULL) {
         *modules = NULL;
+	logMessage("no PCI or SBUS devices found!");
 	return LOADER_OK;
     }
 
@@ -1269,9 +1278,14 @@ static void mountCdromStage2(char *cddev) {
 		break;
 	    }
 	} while (1);
-	
+
+#ifndef INCLUDE_RESCUE	
 	if (mountLoopback("/mnt/source/RedHat/base/stage2.img",
 			  "/mnt/runtime", "loop0")) {
+#else /* INCLUDE_RESCUE */
+	if (access("/mnt/source/cramfs.img", R_OK) || 
+	    mountLoopback("/mnt/source/cramfs.img", "/mnt/source", "loop1")) {
+#endif /* INCLUDE_RESCUE */
 	    umount("/mnt/source");
 	    ejectCdrom();
 	    wrongCDMessage();
@@ -1304,12 +1318,94 @@ static void queryMediaCheck(char *name, int flags) {
       
       /* test CD(s) */
       mediaCheckCdrom(name);
-      
+
       /* remount stage2 from CD #1 and proceed */
       mountCdromStage2(name);
     }
   }
 }
+
+#ifdef INCLUDE_RESCUE
+/* XXX this ignores "location", which should be fixed */
+static char * setupCdrom(struct installMethod * method,
+		      char * location, struct knownDevices * kd,
+    		      moduleInfoSet modInfo, moduleList modLoaded,
+		      moduleDeps * modDepsPtr, int flags, int probeQuickly,
+		      int needRedHatCD) {
+    int i;
+    int rc;
+    int hasCdrom = 0;
+    char * buf;
+
+    do {
+	for (i = 0; i < kd->numKnown; i++) {
+	    if (kd->known[i].class != CLASS_CDROM) continue;
+
+	    hasCdrom = 1;
+
+	    logMessage("trying to mount device %s", kd->known[i].name);
+	    devMakeInode(kd->known[i].name, "/tmp/cdrom");
+	    if (!doPwMount("/tmp/cdrom", "/mnt/source", "iso9660", 1, 0, NULL,
+			   NULL)) {
+		if (access("/mnt/source/cramfs.img", R_OK) ||
+		    mountLoopback("/mnt/source/cramfs.img", "/mnt/source", 
+				  "loop1")) {
+		    umount("/mnt/source");
+		    continue;
+		}
+
+		queryMediaCheck(kd->known[i].name, flags);
+
+		if (!access("/mnt/source/etc/.rescue", R_OK)) {
+		    pid_t init;
+		    int fd;
+		    
+		    /* We choose the ramdisk device as root device */
+		    /* Prevents the kernel from reloading the root-dev */
+		    fd = open("/proc/sys/kernel/real-root-dev", O_WRONLY);
+		    write(fd, "0x100\n", 6);
+		    close(fd);
+		    
+		    chdir("/mnt/source");
+		    stopNewt();
+		    closeLog();
+
+		    if ( pivot_root("/mnt/source", "initrd") ) {
+			perror("pivot_root");
+			return NULL;
+		    }
+		    chdir("/");
+		    /*setsid();*/
+		    exit(0);
+		    /* This will tell the kernel to run /sbin/init as pid 0 */
+		}
+		umount("/mnt/source");
+		umount("/mnt/source");
+	    }
+	    unlink("/tmp/cdrom");
+	}
+
+	if (hasCdrom) {
+	    char *buf = sdupprintf(_("The %s Rescue CD was not found in "
+				     "any of your CDROM drives. Please "
+				     "insert the %s Rescue CD and press "
+				     "%s to retry."), PRODUCTNAME,
+				   PRODUCTNAME, _("OK"));
+	    rc = newtWinChoice(_("Error"), _("OK"), _("Back"), buf, _("OK"));
+	    free(buf);
+	    if (rc == 2) return NULL;
+	} else {
+	    rc = setupCDdevice(kd, modInfo, modLoaded, modDepsPtr, 
+			       floppyDevice, flags);
+	    if (rc == LOADER_BACK) return NULL;
+	}
+    } while (1);
+
+    abort();
+
+    return NULL;
+}
+#else
 
 /* XXX this ignores "location", which should be fixed */
 static char * setupCdrom(struct installMethod * method,
@@ -1378,6 +1474,7 @@ static char * setupCdrom(struct installMethod * method,
 
     return NULL;
 }
+#endif /* INCLUDE_RESCUE */
 
 static char * mountCdromImage(struct installMethod * method,
 		      char * location, struct knownDevices * kd,
@@ -1889,6 +1986,8 @@ static char * doMountImage(char * location,
     /* This is a check for NFS or CD-ROM rooted installs */
     if (!access("/mnt/source/RedHat/instimage/usr/bin/anaconda", X_OK))
 	return "cdrom://unknown/mnt/source/.";
+   
+#ifndef INCLUDE_RESCUE
     
 #if defined (INCLUDE_LOCAL) || defined (__sparc__) || defined (__alpha__)
 # if defined (__sparc__) || defined (__alpha__)
@@ -1906,8 +2005,14 @@ static char * doMountImage(char * location,
     }
 #endif /* defined (INCLUDE_LOCAL) || defined (__sparc__) */
 
+#endif /* INCLUDE_RESCUE */
+    
     startNewt(flags);
 
+/* FIXME: this should die.  we should have translations for the rescue cd */
+#ifdef INCLUDE_RESCUE
+    step = STEP_KBD;
+#else
 #ifdef INCLUDE_KON
     if (continuing)
 	step = STEP_KBD;
@@ -1916,7 +2021,8 @@ static char * doMountImage(char * location,
 #else
     step = STEP_LANG;
 #endif
-	
+#endif
+    
     while (step != STEP_DONE) {
 	switch (step) {
 	case STEP_LANG:
@@ -1954,6 +2060,7 @@ static char * doMountImage(char * location,
 	    break;
 	    
 	case STEP_METHOD:
+#ifndef INCLUDE_RESCUE
 	    rc = newtWinMenu(FL_RESCUE(flags) ? _("Rescue Method") :
 			     _("Installation Method"), 
 			     FL_RESCUE(flags) ?
@@ -1970,6 +2077,11 @@ static char * doMountImage(char * location,
 		step = STEP_URL;
                 dir = 1;
             }
+#else
+	    methodNum = 0;
+	    step = STEP_URL;
+	    dir = 1;
+#endif
 	    break;
 	case STEP_URL:
 logMessage("starting to STEP_URL");
@@ -1991,6 +2103,12 @@ logMessage("starting to STEP_URL");
 	
     }
 
+#ifdef INCLUDE_RESCUE
+
+    url = setupCdrom(NULL, location, kd, modInfo, modLoaded, modDepsPtr,
+		     flags, 1, 1);
+#endif
+    
     return url;
 }
 
@@ -3149,6 +3267,18 @@ int main(int argc, char ** argv) {
 	    { 0, 0, 0, 0, 0 }
     };
 
+#ifdef INCLUDE_RESCUE
+    int fd, size;
+    char buf[65535];                    /* this should be big enough */
+    char * chptr, * start;
+    struct {
+      char * name;
+      int len;
+    } filesystems[500], tmp;
+    int numFilesystems = 0;
+    int j;
+#endif
+
     if (!strcmp(argv[0] + strlen(argv[0]) - 6, "insmod"))
 	return ourInsmodCommand(argc, argv);
     else if (!strcmp(argv[0] + strlen(argv[0]) - 5, "rmmod"))
@@ -3253,7 +3383,7 @@ int main(int argc, char ** argv) {
     modDeps = mlNewDeps();
     mlLoadDeps(&modDeps, "/modules/modules.dep");
 
-    mlLoadModuleSet("cramfs:vfat", modLoaded, modDeps, modInfo, flags);
+    mlLoadModuleSet("cramfs:vfat:loop", modLoaded, modDeps, modInfo, flags);
 
 
 #if defined (__s390__) || defined (__s390x__)
@@ -3426,9 +3556,11 @@ int main(int argc, char ** argv) {
 #endif
     }
 
+#ifndef INCLUDE_RESCUE
     logMessage("getting ready to spawn shell now");
 
     spawnShell(flags);			/* we can attach gdb now :-) */
+#endif
 
     verifyImagesMatched();
 
@@ -3503,6 +3635,8 @@ int main(int argc, char ** argv) {
 
 
     usbInitializeMouse(modLoaded, modDeps, modInfo, flags);
+
+#ifndef INCLUDE_RESCUE
 
 #if 0
     for (i = 0; i < kd.numKnown; i++) {
@@ -3645,6 +3779,29 @@ int main(int argc, char ** argv) {
     	execv(anacondaArgs[0], anacondaArgs);
         perror("exec");
     }
+
+#else
+
+
+    closeLog();
+    kill (19,9);
+
+    fd = open("/proc/mounts", O_RDONLY, 0);
+    if (fd < 1) {
+        /* FIXME: was perror */
+        printf("failed to open /proc/mounts, %u\n", errno);
+        sleep(2);
+        return;
+    }
+
+    size = read(fd, buf, sizeof(buf) - 1);
+    buf[size] = '\0';
+
+    close(fd);
+
+    exit(0);
+
+#endif
 
     return 1;
 }
