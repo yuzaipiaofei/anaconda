@@ -118,6 +118,7 @@ class FDasdWindow (InstallWindow):
         box.add (clist)
 
         box2 = GtkHButtonBox ()
+        box2.set_layout (BUTTONBOX_SPREAD)
         button = GtkButton ("Run fdasd")
         button.connect ("clicked", self.fdasd_button_clicked)
         box2.add(button)
