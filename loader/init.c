@@ -61,7 +61,7 @@ char * env[] = {
     "/mnt/sysimage/usr/bin:/mnt/sysimage/usr/sbin:/mnt/sysimage/sbin",
     "LD_LIBRARY_PATH=/lib:/usr/lib:/usr/X11R6/lib:/mnt/usr/lib:"
     "/mnt/sysimage/lib:/mnt/sysimage/usr/lib",
-    "HOME=/tmp",
+    "HOME=/",
     "TERM=linux",
     "DEBUG=",
     "TERMINFO=/etc/linux-terminfo",
