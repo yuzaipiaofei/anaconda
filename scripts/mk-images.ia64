@@ -1,5 +1,5 @@
 # No modules yet
-#SECSTAGE="vfat raid0 raid1 raid5"
+SECSTAGE="msdos vfat raid0 raid1 raid5"
 
 prepareBootImage() {
 	gunzip < $BOOTDISKDIR/bootfs.gz > $MBD_TMPIMAGE
@@ -17,4 +17,5 @@ makebootdisk --kernelto $TOPDESTPATH/kernels/vmlinux  \
 
 makeinstimage --size1 8192 --size2 8192 "netstg"
 makeinstimage --size1 8192 --size2 8192 "hdstg" 
+makemainmodules "$SECSTAGE"
 makemainimage "stage2"

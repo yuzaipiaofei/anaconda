@@ -109,7 +109,7 @@ MODINFO=$PWD/../anaconda/loader/module-info
 MODDEPS=$KERNELROOT/moddeps
 
 depmod -e -i -m $KERNELROOT/boot/System.map-$version \
-	$KERNELROOT/lib/modules/$version/*/*.o | $FILTERMODDEPS > $MODDEPS
+	`find $KERNELROOT/lib/modules/$version -name *.o` | $FILTERMODDEPS > $MODDEPS
 
 NETMODULES=$(resdeps `$MODLIST --modinfo-file $MODINFO net | egrep -v $EXCLUDENETMODULES`)
 SCSIMODULES=$(resdeps `$MODLIST --modinfo-file $MODINFO scsi`)
