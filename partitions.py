@@ -181,100 +181,102 @@ class Partitions:
             self.addRequest(spec)
 
         # now to read in pre-existing LVM stuff
-        lvm.vgscan()
-        lvm.vgactivate()
+	# FIXME: Temporary hack until we have a kernel with lvm enabled on S390
+	if iutil.getArch() != "s390":
+		lvm.vgscan()
+		lvm.vgactivate()
 
-        vgs = []
-        if os.path.isdir("/proc/lvm/VGs"):
-            vgs = os.listdir("/proc/lvm/VGs")
+		vgs = []
+		if os.path.isdir("/proc/lvm/VGs"):
+			vgs = os.listdir("/proc/lvm/VGs")
 
-        for vg in vgs:
-            # first find the PE size
-            f = open("/proc/lvm/VGs/%s/group" %(vg,), "r")
-            lines = f.readlines()
-            f.close()
-            pesize = 0
-            for line in lines:
-                fields = line.split(':',1)
-                if len(fields) < 2:
-                    continue
-                if fields[0].strip() == "PE size":
-                    pesize = fields[1].strip()
-                    try:
-                        pesize = int(pesize)
-                    except:
-                        log("PE size for %s not a valid integer, defaulting to 4096" %(vg,))
-                        pesize = 4096
+		for vg in vgs:
+			# first find the PE size
+			f = open("/proc/lvm/VGs/%s/group" %(vg,), "r")
+			lines = f.readlines()
+			f.close()
+			pesize = 0
+			for line in lines:
+				fields = line.split(':',1)
+				if len(fields) < 2:
+					continue
+				if fields[0].strip() == "PE size":
+					pesize = fields[1].strip()
+					try:
+						pesize = int(pesize)
+					except:
+						log("PE size for %s not a valid integer, defaulting to 4096" %(vg,))
+						pesize = 4096
 
-            if not pesize:
-                log("Unable to find PE size for %s, defaulting to 4096" %(vg,))
-                pesize = 4096
+			if not pesize:
+				log("Unable to find PE size for %s, defaulting to 4096" %(vg,))
+				pesize = 4096
 
-            # Now find the physical volumes associated with this VG
-            if not os.path.isdir("/proc/lvm/VGs/%s/PVs" % (vg,)):
-                log("Unable to find PVs for %s" % (vg,))
-                continue
-            pvs = os.listdir("/proc/lvm/VGs/%s/PVs/" % (vg,))
-            pvids = []
-            for pv in pvs:
-                req = self.getRequestByDeviceName(pv)
-                if not req:
-                    log("Volume group %s using non-existent partition %s"
-                        %(vg, pv))
-                    continue
-                pvids.append(req.uniqueID)
-            spec = partRequests.VolumeGroupRequestSpec(format = 0,
-                                                       vgname = vg,
-                                                       physvols = pvids,
-                                                       pesize = pesize,
-                                                       preexist = 1)
-            vgid = self.addRequest(spec)
+			# Now find the physical volumes associated with this VG
+			if not os.path.isdir("/proc/lvm/VGs/%s/PVs" % (vg,)):
+				log("Unable to find PVs for %s" % (vg,))
+				continue
+			pvs = os.listdir("/proc/lvm/VGs/%s/PVs/" % (vg,))
+			pvids = []
+			for pv in pvs:
+				req = self.getRequestByDeviceName(pv)
+				if not req:
+					log("Volume group %s using non-existent partition %s"
+						%(vg, pv))
+					continue
+				pvids.append(req.uniqueID)
+			spec = partRequests.VolumeGroupRequestSpec(format = 0,
+													   vgname = vg,
+													   physvols = pvids,
+													   pesize = pesize,
+													   preexist = 1)
+			vgid = self.addRequest(spec)
 
-            # now we need to find out about the logical volumes
-            if not os.path.isdir("/proc/lvm/VGs/%s/LVs" %(vg,)):
-                log("Unable to find LVs for %s" % (vg,))
-                continue
-            lvs = os.listdir("/proc/lvm/VGs/%s/LVs" % (vg,))
-            for lv in lvs:
-                f = open("/proc/lvm/VGs/%s/LVs/%s" % (vg,lv), "r")
-                lines = f.readlines()
-                f.close()
-                lvsize = None
-                for line in lines:
-                    fields = line.split(':',1)
-                    if len(fields) < 2:
-                        continue
-                    if fields[0].strip() == "size":
-                        lvsize = fields[1].strip()
-                if lvsize is None:
-                    log("Unable to find LV size for %s/%s" % (vg, lv))
-                    continue
-                # size is listed as number of blocks, we want size in megs
-                lvsize = int(lvsize) / 2048.0
+			# now we need to find out about the logical volumes
+			if not os.path.isdir("/proc/lvm/VGs/%s/LVs" %(vg,)):
+				log("Unable to find LVs for %s" % (vg,))
+				continue
+			lvs = os.listdir("/proc/lvm/VGs/%s/LVs" % (vg,))
+			for lv in lvs:
+				f = open("/proc/lvm/VGs/%s/LVs/%s" % (vg,lv), "r")
+				lines = f.readlines()
+				f.close()
+				lvsize = None
+				for line in lines:
+					fields = line.split(':',1)
+					if len(fields) < 2:
+						continue
+					if fields[0].strip() == "size":
+						lvsize = fields[1].strip()
+				if lvsize is None:
+					log("Unable to find LV size for %s/%s" % (vg, lv))
+					continue
+				# size is listed as number of blocks, we want size in megs
+				lvsize = int(lvsize) / 2048.0
 
-                theDev = "/dev/%s/%s" %(vg, lv)
-                fs = partedUtils.sniffFilesystemType(theDev)
-                if fs is None:
-                    fsystem = fsset.fileSystemTypeGet("foreign")
-                else:
-                    fsystem = fsset.fileSystemTypeGet(fs)
+				theDev = "/dev/%s/%s" %(vg, lv)
+				fs = partedUtils.sniffFilesystemType(theDev)
+				if fs is None:
+					fsystem = fsset.fileSystemTypeGet("foreign")
+				else:
+					fsystem = fsset.fileSystemTypeGet(fs)
 
-                if fs == "swap":
-                    mnt = "swap"
-                    format = 1
-                else:
-                    mnt = None
-                    format = 0
+				if fs == "swap":
+					mnt = "swap"
+					format = 1
+				else:
+					mnt = None
+					format = 0
 
-                spec = partRequests.LogicalVolumeRequestSpec(fsystem,
-                                                             format = format,
-                                                             size = lvsize,
-                                                             volgroup = vgid,
-                                                             lvname = lv,
-                                                             mountpoint = mnt,
-                                                             preexist = 1)
-                self.addRequest(spec)
-        lvm.vgdeactivate()
+				spec = partRequests.LogicalVolumeRequestSpec(fsystem,
+															 format = format,
+															 size = lvsize,
+															 volgroup = vgid,
+															 lvname = lv,
+															 mountpoint = mnt,
+															 preexist = 1)
+				self.addRequest(spec)
+		lvm.vgdeactivate()
 
         diskset.stopAllRaid()
             
