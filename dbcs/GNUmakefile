@@ -1,3 +1,5 @@
+include ../Makefile.inc
+
 CFLAGS = -g -Wall
 
 objects = widestr.o
