@@ -262,6 +262,8 @@ class ClusterServer(InstallClass):
 	self.setMakeBootdisk(1)
 	self.setPostScript(
 """
+echo "* Security script for HA started" >&2
+
 # The purpose of this script is to turn off any and all non
 # essential services. As we are flagging security as an issue
 # we will turn off almost all network services. The LVS routers
@@ -322,12 +324,16 @@ echo "# you could extend this file beyond the basic ALL:ALL" >> /etc/hosts.deny
 echo "# See man hosts.deny for more details" >> /etc/hosts.deny
 echo "ALL: ALL" >> /etc/hosts.deny
 
-echo "# These two are examples. Please edit these to" >> /etc/hosts.allow 
+echo "# Please edit these example to suit" >> /etc/hosts.allow 
 echo "# your local setup requirements" >> /etc/hosts.allow
 echo "# in.telnetd: myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
 echo "# in.ftp:     myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
 echo "# in.rshd:    myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
 echo "# in.rlogind: myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
+
+# Example rhost file for root
+#
+echo "# user host" > /root/.rhosts
 
 # Passwords by default should rotate on a regular basis
 # /etc/login.defs offers a mechanism to tweek the defaults
@@ -344,6 +350,13 @@ echo "# in.rlogind: myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
 #
 /bin/mv /etc/logrotate.conf /etc/logrotate.conf.orig
 /bin/sed -e 's/rotate 4/rotate 9/' < /etc/logrotate.conf.orig > /etc/logrotate.conf
+
+echo "* Security script for HA completed, Altering the MOTD" >&2
+echo "" > /etc/motd
+echo "Red Hat Highly Available Server 1.0" >> /etc/issue
+echo "" >> /etc/motd 
+echo "" >> /etc/motd
+
 """)
 
 
