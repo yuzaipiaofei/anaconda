@@ -157,7 +157,6 @@ class BaseInstallClass:
 	    dispatch.skipStep("monitor", permanent = 1)
 	    dispatch.skipStep("xcustom", permanent = 1)
 	    dispatch.skipStep("writexconfig", permanent = 1)
-	    dispatch.skipStep("writeksconfig", permanent = 1)
 	    dispatch.skipStep("bootdisk", permanent = 1)
 	else:
 	    dispatch.skipStep("fdasd", permanent = 1)
