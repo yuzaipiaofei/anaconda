@@ -48,9 +48,10 @@ class DefaultsWindow(InstallWindow):
     
         
     # MouseWindow tag="mouse"
-    def getScreen(self, dispatch, id):
+    def getScreen(self, dispatch, id, intf):
         self.dispatch = dispatch
         self.id = id
+        self.intf = intf
         self.keyboard = id.keyboard
 	self.mouse = id.mouse
         self.network = id.network
@@ -210,7 +211,7 @@ class DefaultsWindow(InstallWindow):
         app.anacondaScreen(self.mouse, self.mouseLabel)
 
     def networkClicked(self, *args):
-        app = network_dialog_gui.childWindow(self.ics)
+        app = network_dialog_gui.childWindow(self.ics, self.intf)
         app.anacondaScreen(self.networkLabel, self.network)
 
     def langSupportClicked(self, *args):

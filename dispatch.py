@@ -63,7 +63,7 @@ installSteps = [
     ("installtype", ("dispatch", "id", "method", "intf")),
 
     ("networkdevicecheck", networkDeviceCheck, ("id.network", "dispatch")),
-    ("defaults", ("dispatch", "id")),    
+    ("defaults", ("dispatch", "id", "intf")),    
     ("partitionmethod", ("id.partitions", "id.instClass")),
     ("partitionobjinit", partitionObjectsInitialize, ("id.diskset",
                                                       "id.partitions",
