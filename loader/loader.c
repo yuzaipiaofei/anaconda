@@ -2435,8 +2435,6 @@ static char * setupKickstart(char * location, struct knownDevices * kd,
 	char * login;
 	memset(&ui, 0, sizeof(ui));
 
-	imageUrl = strdup(url);
-
 	if (!strncmp("ftp://", url, 6)) {
 	    ui.protocol = URL_METHOD_FTP;
 	    url += 6;
@@ -2496,6 +2494,10 @@ static char * setupKickstart(char * location, struct knownDevices * kd,
 	sprintf(url, "%s://%s%s/%s", 
 		ui.protocol == URL_METHOD_FTP ? "ftp" : "http",
 		login, ui.address, finalPrefix);
+
+	logMessage("final url = %s", url);
+
+	imageUrl = strdup(url);
     }
 #endif
 
