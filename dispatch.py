@@ -54,7 +54,7 @@ from rhpl.log import log
 
 installSteps = [
 #    ("welcome", ("id.configFileData",)),
-#    ("betanag", betaNagScreen, ("intf", "dir")),
+    ("betanag", betaNagScreen, ("intf", "dir")),
     ("language", ("intf", "id.instLanguage")),
     ("findrootparts", findRootParts, ("intf", "id", "dispatch", "dir", "instPath")),
     ("findinstall", ("dispatch", "intf", "id", "instPath")),

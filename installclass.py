@@ -101,7 +101,7 @@ class BaseInstallClass:
 		 "mouse",
 #		 "welcome",
                  "findrootparts",
-#		 "betanag",
+		 "betanag",
 		 "installtype",
                  "partitionmethod",
                  "partitionobjinit",
