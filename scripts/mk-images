@@ -414,8 +414,6 @@ makeinitrd() {
     install -s -m 755 $LOADERBINDIR/$LOADERBIN $MBD_DIR/sbin/loader
     if [ "$BUILDARCH" != "s390" -a "$BUILDARCH" != "s390x" ]; then
        install -s -m 755 $LOADERBINDIR/$INITBIN $MBD_DIR/sbin
-    #else
-    #   install -s -m 755 $LOADERBINDIR/$INITBIN $MBD_DIR/sbin/startanaconda
     fi
     install -m 644 $KEYMAPS $MBD_DIR/etc/keymaps.gz
     install -m 644 $FONTS $MBD_DIR/etc/fonts.cgz
@@ -427,6 +425,12 @@ makeinitrd() {
       for i in a/ansi d/dumb s/screen v/vt100 v/vt102 x/xterm; do
          install -m 644 $IMGPATH/usr/share/terminfo/$i $MBD_DIR/etc/terminfo/$i
       done
+      cat > $MBD_DIR/etc/issue.net <<EOF
+Welcome to the Red Hat Linux install environment for S/390.
+ 
+Login as 'root' and run 'loader' to install Red Hat Linux.
+ 
+EOF
     fi
     if [ -n "$JAPANESE" ]; then
         mkdir -p $MBD_DIR/etc/terminfo/k
