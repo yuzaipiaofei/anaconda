@@ -2045,8 +2045,20 @@ class ToDo:
                 if unmountUSB:
                     isys.umount(self.instPath + '/proc/bus/usb', removeDir = 0)
 		if arch == 'ia64':
+		    bootdev = self.fstab.getBootDevice()
+		    if not bootdev:
+			bootdev = "/dev/sda1"
+		    ind = len(bootdev)
+		    try:
+			while (bootdev[ind-1] in string.digits):
+			    ind = ind - 1
+		    except IndexError:
+			ind = len(bootdev) - 1
+		    bootdisk = bootdev[:ind]
+		    bootpart = bootdev[ind:]
+		    
 		    argv = [ "/usr/sbin/efibootmgr", "-c" , "-L",
-		    	     "Red Hat Linux" ]
+		    	     "Red Hat Linux", "-d", bootdisk, "-p", bootpart ]
 		    devnull = os.open("/dev/null", os.O_RDWR)
 		    iutil.execWithRedirect(argv[0], argv, root = self.instPath,
 		    			   stdout = devnull)
