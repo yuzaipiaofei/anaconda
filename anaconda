@@ -144,7 +144,10 @@ if (mode == 'g' and not os.environ.has_key('DISPLAY')):
 if (mode == 'g'):
     if not test and not localInstall:
         for i in ( "imrc", "im_palette.pal", "gtk" ):
-            os.symlink ("../mnt/source/RedHat/instimage/etc/" + i, "/etc/" + i)
+            try:
+                os.symlink ("../mnt/source/RedHat/instimage/etc/" + i, "/etc/" + i)
+            except:
+                pass
     from gui import InstallInterface
 elif (mode == 't'):
     from text import InstallInterface
