@@ -156,7 +156,7 @@ install: all
 	install -m 644 kon.cfg $(DESTDIR)/$(RUNTIMEDIR)/loader
 	install -m 644 minikon.fnt $(DESTDIR)/$(RUNTIMEDIR)/loader
 	for n in $(S390FILES); do \
-	   install -f -m 755 s390/$$n $(DESTDIR)/$(RUNTIMEDIR)/loader; \
+	   install -m 755 s390/$$n $(DESTDIR)/$(RUNTIMEDIR)/loader; \
 	done
 
 urltest: urltest.o ftp.o urls.o lang.o log.o windows.o
