@@ -247,21 +247,22 @@ class Language (SimpleConfigFile):
     
     def set (self, lang):
         self.lang = self.langs[lang]
-        if self.info["LANG"] != "ja_JP.eucJP":
-            self.info["LANG"] = self.langs[lang]
-
-            if self.font[lang] != "None":
-                self.info["SYSFONT"] = self.font[lang]
-                self.info["SYSFONTACM"] = self.map[lang]
-            else:
-                if self.info.has_key("SYSFONT"):
-                    del self.info["SYSFONT"]
-                if self.info.has_key("SYSFONTACM"):
-                    del self.info["SYSFONTACM"]
-
-            rpm.addMacro("_install_langs", self.langs[lang]);
-
         os.environ["LANG"] = self.langs[lang]
+        if self.info["LANG"] == "ja_JP.eucJP":
+            return
+
+        self.info["LANG"] = self.langs[lang]
+
+	if self.font[lang] != "None":
+	    self.info["SYSFONT"] = self.font[lang]
+	    self.info["SYSFONTACM"] = self.map[lang]
+	else:
+            if self.info.has_key("SYSFONT"):
+                del self.info["SYSFONT"]
+            if self.info.has_key("SYSFONTACM"):
+                del self.info["SYSFONTACM"]
+
+	rpm.addMacro("_install_langs", self.langs[lang]);
         os.environ["LINGUAS"] = self.langs[lang]
         
     def get (self):
