@@ -58,8 +58,8 @@ makeinstimage --size1 3800 --size2 4096 "netstg" "$SECSTAGE $SCSIMODULES"
 makeinstimage --size1 3800 --size2 4096 "hdstg" "$SECSTAGE $NETMODULES"
 makemainimage "stage2"
 
-if [ -f $TOPDESTPATH/preview/kernel-2.4.0-*.alpha.rpm ]; then
-    K24_PKG=$TOPDESTPATH/preview/kernel-2.4.0-*.alpha.rpm
+if [ -f $TOPDESTPATH/preview/RPMS/kernel-2.4.0-*.alpha.rpm ]; then
+    K24_PKG=$TOPDESTPATH/preview/RPMS/kernel-2.4.0-*.alpha.rpm
     K24_DIR=/tmp/kernel24.dir.$$
     mkdir -p $K24_DIR
     rpm2cpio $K24_PKG | (cd $K24_DIR; cpio --quiet -iumd ./boot/vmlinuz-*)
