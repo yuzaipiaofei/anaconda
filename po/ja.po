@@ -563,7 +563,7 @@ msgstr "依存性チェック"
 
 #: ../todo.py:729
 msgid "Checking dependencies in packages selected for installation..."
-msgstr "インストール対象パッケージの依存性をチェックしていますｷ"
+msgstr "インストール対象パッケージの依存性をチェックしています。"
 
 #: ../todo.py:756 ../todo.py:797 ../todo.py:803 ../todo.py:820
 msgid "no suggestion"
