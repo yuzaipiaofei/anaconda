@@ -1807,7 +1807,7 @@ static char * setupKickstart(char * location, struct knownDevices * kd,
 
 #ifdef INCLUDE_NETWORK
     if (ksType == KS_CMD_NFS) {
-	int count = 0, maxcount = 1, sleeptime = 1;
+	int count = 0;
 	
 	mlLoadModule("nfs", NULL, modLoaded, *modDepsPtr, NULL, modInfo, flags);
 	fullPath = alloca(strlen(host) + strlen(dir) + 2);
@@ -1815,19 +1815,15 @@ static char * setupKickstart(char * location, struct knownDevices * kd,
 
 	logMessage("mounting nfs path %s", fullPath);
 
-	if (FL_KICKSTART(flags)) {
-	    maxcount = 3;
-	    sleeptime = 3;
-	}
-	while (count < maxcount
+	while (count < 3
 	       && doPwMount(fullPath, "/mnt/source", "nfs", 1, 0,
 			    NULL, NULL)) {
 	    logMessage("mount failed, retrying after 3 second sleep");
-	    sleep(sleeptime);
+	    sleep(3);
 	    count++;
 	}
 
-	if (count == maxcount)
+	if (count == 3)
 	    return NULL;
 	    
 	if (mountLoopback("/mnt/source/RedHat/base/stage2.img",
