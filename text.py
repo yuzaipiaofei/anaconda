@@ -36,7 +36,8 @@ stepToClasses = {
     "language" : ("language_text", "LanguageWindow"),
     "keyboard" : ("keyboard_text", "KeyboardWindow"),
     "mouse" : ("mouse_text", ("MouseWindow", "MouseDeviceWindow")),
-    "welcome" : ("welcome_text", "WelcomeWindow"),
+#    "welcome" : ("welcome_text", "WelcomeWindow"),
+    "defaults" : ("defaults_text", "DefaultsWindow"),
     "installtype" : ("installpath_text", "InstallPathWindow"),
     "autopartition" : ("partition_text", "AutoPartitionWindow"),
     "custom-upgrade" : ("upgrade_text", "UpgradeExamineWindow"),
@@ -374,7 +375,7 @@ class InstallInterface:
 
 # uncomment this line to make the installer quit on <Ctrl+Z>
 # handy for quick debugging.
-#	self.screen.suspendCallback(killSelf, self.screen)
+	self.screen.suspendCallback(killSelf, self.screen)
 # uncomment this line to drop into the python debugger on <Ctrl+Z>
 # --VERY handy--
         if DEBUG:
@@ -433,7 +434,8 @@ class InstallInterface:
 		win = nextWindow()
 
 		#log("TUI running step %s (class %s, file %s)" % 
-			    #(step, file, classNames))
+                           #(step, file, classNames))
+
 
 		rc = apply(win, (self.screen, ) + args)
 
