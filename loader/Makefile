@@ -1,4 +1,4 @@
-VERSION = 6.1
+VERSION = 6.0
 
 DESTDIR = ../../trees/initrd
 
@@ -39,7 +39,7 @@ BINS += loader
 endif
 
 ifeq (sparc, $(ARCH))
-BINS += loader loader-local
+BINS += loader
 OBJS += stubs.o
 endif
 
@@ -68,11 +68,7 @@ STATIC=-static
 endif
 endif
 
-ifeq (1, $(KON))
-LANGS = ja
-else
-LANGS = cs hu is id it no ro ru sr sk sl tr uk fr de ja
-endif
+LANGS = cs de fr hu is id it no ro ru sr sk sl tr uk
 
 TR = $(patsubst %,tr/%.tr,$(LANGS))
 
@@ -105,7 +101,7 @@ install: all
 
 loader: loader.o $(OBJS) $(NETOBJS)
 	$(CC) -g $(STATIC) -o $@ $^ -lpopt     \
-	../kudzu/libkudzu_loader.a ../isys/libisys.a ../balkan/libbalkan.a \
+	../kudzu/libkudzu.a ../isys/libisys.a ../balkan/libbalkan.a \
 	../isys/modutils/insmod/libmodutils.a    \
 	../isys/modutils/util/libutil.a          \
 	../isys/modutils/obj/libobj.a            \
@@ -154,8 +150,7 @@ init: init.o $(MINILIBC)
 	$(CC) $(STATIC) -g $(LDFLAGS) -o $@ init.o $(MINILIBC)
 
 clean: 
-	rm -f *.o .depend *~ loader-local loader-network loader.old loader-pcmcia probe modprobe \
-	      loader.po loader.tr tr/*.tr loader init
+	rm -f *.o .depend *~ loader-local loader-network loader.old loader-pcmcia probe modprobe
 
 depend:
 	$(CPP) $(CFLAGS) -DHAVE_CONFIG_H -M $(SOURCES) > .depend
