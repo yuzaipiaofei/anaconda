@@ -1980,6 +1980,9 @@ int main(int argc, char ** argv) {
 	    *argptr++ = ksFile;
 	}
 
+	if (!lang)
+	    lang = getenv ("LC_ALL");
+
 	if (lang) {
 	    *argptr++ = "--lang";
 	    *argptr++ = lang;
