@@ -1,5 +1,5 @@
 # No modules yet
-SECSTAGE="msdos vfat raid0 raid1 raid5"
+SECSTAGE="fat vfat raid0 raid1 raid5"
 
 prepareBootImage() {
 	gunzip < $BOOTDISKDIR/bootfs.gz > $MBD_TMPIMAGE
