@@ -14,7 +14,7 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 
-import sys
+import sys iutil
 
 class Anaconda_LogFile:
     def __init__ (self):
@@ -37,7 +37,13 @@ class Anaconda_LogFile:
 	elif file:
 	    self.logFile = file
 	else:
-            self.logFile = open("/dev/tty3", "w")
+            if iutil.getArch() != "s390" and iutil.getArch() != "s390x":
+                self.logFile = open("/dev/tty3", "w")
+            else:
+                try:
+                   self.logFile = open("/anaconda-s390.log", "w")
+                except:
+                   self.logFile = sys.stderr
             try:
                 self.logFile2 = open("/tmp/anaconda.log", "a")
             except:

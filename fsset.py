@@ -40,10 +40,11 @@ else:
 fileSystemTypes = {}
 
 # XXX define availraidlevels and defaultmntpts as arch characteristics
-if iutil.getArch() != "s390":
+if (iutil.getArch() != "s390" and iutil.getArch() != "s390x"):
     availRaidLevels = ['RAID0', 'RAID1', 'RAID5']
 else:    
     availRaidLevels = ['RAID0', 'RAID5']
+    defaultMountPoints.insert(4, '/usr/share')
 
 def fileSystemTypeGetDefault():
     if fileSystemTypeGet('ext3').isSupported():
@@ -173,7 +174,12 @@ class FileSystemType:
             w = None
         
         devicePath = entry.device.setupDevice(chroot)
-        args = [ "/usr/sbin/badblocks", "-vv", devicePath ]
+        # -vv dumps a lot of messages on the 3270 console of a s390, which
+        # needs to be cleared manually. Don't do this
+        if (iutil.getArch() != "s390" and iutil.getArch() != "s390x"):
+            args = [ "badblocks", "-vv", devicePath ]
+        else:
+            args = [ "badblocks", devicePath ]
 
         # entirely too much cutting and pasting from ext2FormatFileSystem
         fd = os.open("/dev/tty5", os.O_RDWR | os.O_CREAT | os.O_APPEND)
@@ -461,7 +467,8 @@ class extFileSystem(FileSystemType):
                                     stderr = "/dev/tty5")
         if rc:
             raise SystemError
-        entry.setLabel(label)
+        if entry.device.getName() != "RAIDDevice":
+            entry.setLabel(label)
         
     def formatDevice(self, entry, progress, chroot='/'):
         devicePath = entry.device.setupDevice(chroot)
@@ -469,6 +476,8 @@ class extFileSystem(FileSystemType):
         args = [ "/usr/sbin/mke2fs", devicePath]
         args.extend(devArgs)
         args.extend(self.extraFormatArgs)
+        if iutil.getArch() == "s390" or iutil.getArch() == "s390x" :
+            args.extend(['-b', '4096'])
 
         rc = ext2FormatFilesystem(args, "/dev/tty5",
                                   progress,
