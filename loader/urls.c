@@ -127,7 +127,7 @@ int setupRemote(struct iurlinfo * ui) {
         dir = strdup(env);
         strtok(env,"/");
        	ui->address = strdup(env);
-        ui->prefix = index(dir,'/');
+        ui->prefix = strdup(index(dir,'/'));
     }
     return 0;
 }

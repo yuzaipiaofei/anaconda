@@ -1206,8 +1206,8 @@ static int loadSingleUrlImage(struct iurlinfo * ui, char * file, int flags,
 static int loadUrlImages(struct iurlinfo * ui, int flags) {
     setupRamdisk();
 
-    if (loadSingleUrlImage(ui, "RedHat/base/netstg1.img", flags, 
-			   "/tmp/ramfs/netstg1.img",
+    if (loadSingleUrlImage(ui, "RedHat/base/netstg1b.img", flags, 
+			   "/tmp/ramfs/netstg1b.img",
 			   "/mnt/runtime", "loop0")) {
 	newtWinMessage(ui->protocol == URL_METHOD_FTP ?
 			_("FTP") : _("HTTP"), _("Ok"), 
@@ -2691,6 +2691,7 @@ int main(int argc, char ** argv) {
     kdFindNetList(&kd, continuing ? 0 : CODE_PCMCIA);
 #endif
 
+#if !defined (__s390__) && !defined (__s390x__)
     if (!continuing) {
 	if ((access("/proc/bus/pci/devices", X_OK) &&
 	      access("/proc/openprom", X_OK)) || FL_MODDISK(flags)) { 
@@ -2702,6 +2703,7 @@ int main(int argc, char ** argv) {
 	busProbe(modInfo, modLoaded, modDeps, probeOnly, &kd, flags);
 	if (probeOnly) exit(0);
     }
+#endif
 
     if (FL_KSHD(flags)) {
 	ksFile = "/tmp/ks.cfg";
