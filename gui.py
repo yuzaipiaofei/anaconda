@@ -241,15 +241,16 @@ class MessageWindow:
             self.rc = 1
             return
         self.rc = None
+        self.window = gtk.Dialog()
+        self.window.vbox.pack_start(_(text), gtk.FALSE)
         if type == "ok":
-            self.window = GnomeOkDialog (_(text))
-            self.window.connect ("clicked", self.quit)
-            self.window.connect ("close", self.quit)
+            self.window.add_button('gtk-ok', gtk.RESPONSE_ACCEPT)
         if type == "okcancel":
-            self.window = GnomeOkCancelDialog (_(text), self.okcancelquit)
+            self.window.add_button('gtk-ok', gtk.RESPONSE_ACCEPT)
+            self.window.add_button('gtk-cancel', gtk.RESPONSE_REJECT)
         if type == "yesno":
-            self.window = GnomeQuestionDialog (_(text), self.questionquit)
-
+            self.window.add_button('gtk-yes', gtk.RESPONSE_ACCEPT)
+            self.window.add_button('gtk-no', gtk.RESPONSE_ACCEPT)
         # this is the pixmap + the label
         hbox = self.window.vbox.children ()[0]
         label = hbox.children ()[1]
@@ -430,7 +431,6 @@ class InstallControlWindow:
         self.textWin.vbox.pack_start(table)
         self.textWin.add_button('gtk-close', gtk.RESPONSE_NONE)
         self.textWin.connect("response", self.close)
-
         vbox1 = gtk.VBox ()        
         vbox1.set_border_width (10)
         frame = gtk.Frame (_("Release Notes"))
@@ -450,6 +450,7 @@ class InstallControlWindow:
                 
             sw = gtk.ScrolledWindow()
             sw.set_policy(gtk.POLICY_NEVER, gtk.POLICY_ALWAYS)
+            sw.set_shadow_type(gtk.SHADOW_IN)
             sw.add(text)
             vbox1.pack_start(sw)
 
