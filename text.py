@@ -355,11 +355,12 @@ class InstallInterface:
         lang = id.instLanguage.getCurrent()
         # if we don't have any way to display the preselected language,
         # fall back to English.
-        if ((id.instLanguage.getFontFile(lang) == "Kon" and not
-             isys.isPsudoTTY(0)) or
-            id.instLanguage.getFontFile(lang) == "None"):
-            lang = "English"
-            id.instLanguage.setRuntimeLanguage(lang)
+	if iutil.getArch() != 's390' and iutil.getArch() != 's390x':
+            if ((id.instLanguage.getFontFile(lang) == "Kon" and not
+                 isys.isPsudoTTY(0)) or
+                id.instLanguage.getFontFile(lang) == "None"):
+                lang = "English"
+                id.instLanguage.setRuntimeLanguage(lang)
         lang = id.instLanguage.getLangNick(lang)
         self.langSearchPath = expandLangs(lang) + ['C']
         self.instLanguage = id.instLanguage
