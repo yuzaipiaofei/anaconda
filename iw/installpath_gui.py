@@ -63,8 +63,6 @@ class InstallPathWindow (InstallWindow):
 
 	return r
 
-
-
     # InstallPathWindow tag="instpath"
     def getScreen(self, dispatch, id, method, intf): 
         self.id = id
