@@ -18,6 +18,10 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+if [ "$#" = "0" -o  "$1" != "-gui" ]; then
+  unset DISPLAY
+fi
+
 mv /usr/lib /usr/lib_rd 2>/dev/null
 ln -sf /mnt/runtime/usr/lib /usr/lib
 
@@ -26,7 +30,6 @@ ln -sf /mnt/runtime/usr/lib /usr/lib
 
 # Copied from rhsetup to correctly write modules.conf
 # Options for kernel network drivers.
-touch /tmp/modules.conf
 if [ -n "$LCS" ]; then
   echo "alias $DEVICE lcs"   >> /tmp/modules.conf
 fi
