@@ -39,7 +39,7 @@ class IPEditor:
 	self.entrys = {}
 	for name in ip_fields:
 	    self.entrys[name] = gtk.Entry(3)
-	    self.entrys[name].set_size_request(50,-1)
+	    self.entrys[name].set_size_request(40,-1)
 	    self.entrys[name].set_max_length(3)
 
 	for i in range(0, len(ip_fields)):
