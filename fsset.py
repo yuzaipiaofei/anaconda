@@ -26,6 +26,7 @@ import partedUtils
 import raid
 import lvm
 import types
+import stat
 
 from rhpl.log import log
 from rhpl.translate import _, N_
