@@ -1,3 +1,5 @@
+include ../Makefile.inc
+
 all:
 	$(PYTHON) setup.py build --build-platlib=`pwd`
 
