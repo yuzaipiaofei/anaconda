@@ -4,7 +4,7 @@
 # Erik Troan <ewt@redhat.com>
 # Matt Wilson <msw@redhat.com>
 # Michael Fulbright <msf@redhat.com>
-# Jeremy Katz <katzj@redhat.com>
+# Jeremy Katzj <katzj@redhat.com>
 #
 # Copyright 2001-2003 Red Hat, Inc.
 #
@@ -32,12 +32,11 @@ from flags import flags
 from product import *
 from constants import *
 from syslogd import syslog
-from hdrlist import PKGTYPE_MANDATORY, PKGTYPE_DEFAULT, DependencyChecker
+from comps import PKGTYPE_MANDATORY, PKGTYPE_DEFAULT
 from installmethod import FileCopyException
 
 from rhpl.log import log
 from rhpl.translate import _
-import rhpl.arch
 
 def queryUpgradeContinue(intf, dir):
     if dir == DISPATCH_FORWARD:
@@ -131,19 +130,10 @@ def writeXConfiguration(id, instPath):
     id.desktop.write(instPath)
 
 def readPackages(intf, method, id):
-    if id.grpset:
-        grpset = id.grpset
-        hdrlist = id.grpset.hdrlist
-        doselect = 0
-    else:
-        grpset = None
-        hdrlist = None
-        doselect = 1
-        
-    while hdrlist is None:
+    while id.hdList is None:
 	w = intf.waitWindow(_("Reading"), _("Reading package information..."))
         try:
-            hdrlist = method.readHeaders()
+            id.hdList = method.readHeaders()
         except FileCopyException:
             w.pop()
             method.unmountCD()
@@ -154,10 +144,11 @@ def readPackages(intf, method, id):
             continue
 
         w.pop()
+        id.instClass.setPackageSelection(id.hdList, intf)
 
-    while grpset is None:
+    while id.comps is None:
         try:
-            grpset = method.readComps(hdrlist)
+            id.comps = method.readComps(id.hdList)
         except FileCopyException:
             method.unmountCD()            
             intf.messageWindow(_("Error"),
@@ -165,11 +156,12 @@ def readPackages(intf, method, id):
                                  "due to a missing file or bad media.  "
                                  "Press <return> to try again."))
             continue
-    id.grpset = grpset
+        id.instClass.setGroupSelection(id.comps, intf)
 
-    if doselect:
-        id.instClass.setGroupSelection(grpset, intf)
-        id.instClass.setPackageSelection(hdrlist, intf)
+    else:
+	# re-evaluate all the expressions for packages with qualifiers.
+
+	id.comps.updateSelections()
 
 def handleX11Packages(dir, intf, disp, id, instPath):
 
@@ -177,32 +169,27 @@ def handleX11Packages(dir, intf, disp, id, instPath):
         return
         
     # skip X setup if it is not being installed
-    #
-    # uncomment this block if you want X configuration to be presented
-    #
-# START BLOCK
-#     if (not id.grpset.hdrlist.has_key('XFree86') or
-#         not id.grpset.hdrlist['XFree86'].isSelected()):
-#         disp.skipStep("videocard")
-#         disp.skipStep("monitor")
-#         disp.skipStep("xcustom")
-#         disp.skipStep("writexconfig")
-#         id.xsetup.skipx = 1
-#     elif disp.stepInSkipList("videocard"):
-#         # if X is being installed, but videocard step skipped
-#         # need to turn it back on
-#         disp.skipStep("videocard", skip=0)
-#         disp.skipStep("monitor", skip=0)
-#         disp.skipStep("xcustom", skip=0)
-#         disp.skipStep("writexconfig", skip=0)
-#         id.xsetup.skipx = 0
-# END BLOCK
+    if (not id.comps.packages.has_key('XFree86') or
+        not id.comps.packages['XFree86'].selected):
+        disp.skipStep("videocard")
+        disp.skipStep("monitor")
+        disp.skipStep("xcustom")
+        disp.skipStep("writexconfig")
+        id.xsetup.skipx = 1
+    elif disp.stepInSkipList("videocard"):
+        # if X is being installed, but videocard step skipped
+        # need to turn it back on
+        disp.skipStep("videocard", skip=0)
+        disp.skipStep("monitor", skip=0)
+        disp.skipStep("xcustom", skip=0)
+        disp.skipStep("writexconfig", skip=0)
+        id.xsetup.skipx = 0
 
     # set default runlevel based on packages
-    gnomeSelected = (id.grpset.hdrlist.has_key('gnome-session')
-                     and id.grpset.hdrlist['gnome-session'].isSelected())
-    kdeSelected = (id.grpset.hdrlist.has_key('kdebase')
-                   and id.grpset.hdrlist['kdebase'].isSelected())
+    gnomeSelected = (id.comps.packages.has_key('gnome-session')
+                     and id.comps.packages['gnome-session'].selected)
+    kdeSelected = (id.comps.packages.has_key('kdebase')
+                   and id.comps.packages['kdebase'].selected)
 
     if gnomeSelected:
         id.desktop.setDefaultDesktop("GNOME")
@@ -212,36 +199,26 @@ def handleX11Packages(dir, intf, disp, id, instPath):
     if gnomeSelected or kdeSelected:
         id.desktop.setDefaultRunLevel(5)
 
-# verifies that monitor is not Unprobed, and if so we can skip monitor question
-def checkMonitorOK(monitor, dispatch):
-    rc = 0
-    if monitor is not None:
-	if monitor.getMonitorID() != "Unprobed Monitor":
-	    rc = 1
-
-    dispatch.skipStep("monitor", skip=rc)
-
-# sets a reasonable default for X settings.
-def setSaneXSettings(xsetup):
-    if xsetup is not None and xsetup.xhwstate is not None:
-	if not xsetup.imposed_sane_default:
-	    xsetup.xhwstate.choose_sane_default()
-	    xsetup.imposed_sane_default = 1
-	    
-def getAnacondaTS(instPath = None):
-    if instPath:
-        ts = rpm.TransactionSet(instPath)
-    else:
-        ts = rpm.TransactionSet()
-    ts.setVSFlags(~(rpm.RPMVSF_NORSA|rpm.RPMVSF_NODSA))
-    ts.setFlags(rpm.RPMTRANS_FLAG_ANACONDA)
-
-    # set color if needed.  FIXME: why isn't this the default :/
-    if (rhpl.arch.canonArch.startswith("ppc64") or
-        rhpl.arch.canonArch in ("s390x", "sparc64", "x86_64", "ia64")):
-        ts.setColor(3)
-
-    return ts
+def checksig(fileName):
+    # RPM spews to stdout/stderr.  Redirect.
+    # stolen from up2date/up2date.py
+    saveStdout = os.dup(1)
+    saveStderr = os.dup(2)
+    redirStdout = os.open("/dev/null", os.O_WRONLY | os.O_APPEND)
+    redirStderr = os.open("/dev/null", os.O_WRONLY | os.O_APPEND)
+    os.dup2(redirStdout, 1)
+    os.dup2(redirStderr, 2)
+    # now do the rpm thing
+    ret = rpm.checksig(fileName, rpm.CHECKSIG_MD5)
+    # restore normal stdout and stderr
+    os.dup2(saveStdout, 1)
+    os.dup2(saveStderr, 2)
+    # Clean up
+    os.close(redirStdout)
+    os.close(redirStderr)
+    os.close(saveStdout)
+    os.close(saveStderr)
+    return ret    
 
 def checkDependencies(dir, intf, disp, id, instPath):
     if dir == DISPATCH_BACK:
@@ -250,37 +227,16 @@ def checkDependencies(dir, intf, disp, id, instPath):
     win = intf.waitWindow(_("Dependency Check"),
       _("Checking dependencies in packages selected for installation..."))
 
-    # FIXME: we really don't need to build up a ts more than once
-    # granted, this is better than before still
-    if id.upgrade.get():
-        ts = getAnacondaTS(instPath)
-        how = "u"
-    else:
-        ts = getAnacondaTS()        
-        how = "i"
-
-    # set the rpm log file to /dev/null so that we don't segfault
-    f = open("/dev/null", "w+")
-    rpm.setLogFile(f)
-    ts.scriptFd = f.fileno()
-    
-    for p in id.grpset.hdrlist.pkgs.values():
-        if p.isSelected():
-            ts.addInstall(p.hdr, p.hdr, how)
-    depcheck = DependencyChecker(id.grpset, how)
-    id.dependencies = ts.check(depcheck.callback)
+    id.dependencies = id.comps.verifyDeps(instPath, id.upgrade.get())
 
     win.pop()
 
-    if depcheck.added and id.handleDeps == CHECK_DEPS:
+    if (id.dependencies and id.comps.canResolveDeps(id.dependencies)
+        and id.handleDeps == CHECK_DEPS):
 	disp.skipStep("dependencies", skip = 0)
-        log("FIXME: had dependency problems.  resolved them without informing the user")
-	disp.skipStep("dependencies")
     else:
 	disp.skipStep("dependencies")
 
-    return
-    # FIXME: I BROKE IT
     # this is kind of hackish, but makes kickstart happy
     if id.handleDeps == CHECK_DEPS:
         pass
@@ -291,10 +247,37 @@ def checkDependencies(dir, intf, disp, id, instPath):
         id.comps.selectDepCause(id.dependencies)        
         id.comps.selectDeps(id.dependencies)
 
+#XXX
+#try:
+    #self.todo.getHeaderList ()
+    #self.todo.getCompsList()
+    #self.files_found = "TRUE"
+#except ValueError, msg:
+    #extra = msg
+#except RuntimeError, msg:
+    #extra = msg
+#except TypeError, msg:
+    #extra = msg
+#except KeyError, key:
+    #extra = ("The comps file references a package called \"%s\" which "
+	     #"could not be found." % (key,))
+#except:
+    #extra = ""
+#
+#if self.files_found == "FALSE":
+    #if extra:
+	#text = (_("The following error occurred while "
+		  #"retreiving hdlist file:\n\n"
+		  #"%s\n\n"
+		  #"Installer will exit now.") % extra)
+    #else:
+	#text = (_("An error has occurred while retreiving the hdlist "
+		  #"file.  The installation media or image is "
+		  #"probably corrupt.  Installer will exit now."))
+    #win = ErrorWindow (text)
+#else:
+
 class InstallCallback:
-    def packageDownloadCB(self, state,  amount):
-	self.progress.setPackageStatus(state, amount)
-    
     def cb(self, what, amount, total, h, (param)):
 	# first time here means we should pop the window telling
 	# user to wait until we get here
@@ -310,14 +293,9 @@ class InstallCallback:
 		   self.progressWindowClass (_("Processing"),
 					     _("Preparing to install..."),
 					     total)
-                try:
-                    self.incr = total / 10
-                except:
-                    pass
 	if (what == rpm.RPMCALLBACK_TRANS_PROGRESS):
-            if self.progressWindow and amount > self.lastprogress + self.incr:
+	    if self.progressWindow:
 		self.progressWindow.set (amount)
-                self.lastprogress = amount
 		
 	if (what == rpm.RPMCALLBACK_TRANS_STOP and self.progressWindow):
 	    self.progressWindow.pop ()
@@ -331,8 +309,7 @@ class InstallCallback:
 	    self.progress.setPackageScale(0, 1)
 	    self.instLog.write (self.modeText % (h[rpm.RPMTAG_NAME],
                                                  h[rpm.RPMTAG_VERSION],
-                                                 h[rpm.RPMTAG_RELEASE],
-                                                 h[rpm.RPMTAG_ARCH]))
+                                                 h[rpm.RPMTAG_RELEASE]))
 	    self.instLog.flush ()
 
 	    self.rpmFD = -1
@@ -340,8 +317,7 @@ class InstallCallback:
 
 	    while self.rpmFD < 0:
 		try:
-                    fn = self.method.getRPMFilename(h, self.pkgTimer,
-			 callback=self.packageDownloadCB)
+                    fn = self.method.getFilename(h, self.pkgTimer)
 		    self.rpmFD = os.open(fn, os.O_RDONLY)
 
                     # Make sure this package seems valid
@@ -371,7 +347,7 @@ class InstallCallback:
 			  "Press <return> to try again.") % (h['name'],
                                                              h['version'],
                                                              h['release']))
-	    self.progress.setPackageStatus(_("Installing..."), None)
+
 	    fn = self.method.unlinkFilename(fn)
 	    return self.rpmFD
 	elif (what == rpm.RPMCALLBACK_INST_PROGRESS):
@@ -415,8 +391,6 @@ class InstallCallback:
 	self.method = method
 	self.progressWindowClass = progressWindowClass
 	self.progressWindow = None
-        self.lastprogress = 0
-        self.incr = 20
 	self.instLog = instLog
 	self.modeText = modeText
 	self.beenCalled = 0
@@ -498,10 +472,6 @@ def setupTimezone(timezone, upgrade, instPath, dir):
     # we don't need this on an upgrade or going backwards
     if upgrade.get() or (dir == DISPATCH_BACK):
         return
-
-    # dont do this in test mode!
-    if flags.test:
-	return
     
     os.environ["TZ"] = timezone.tz
     tzfile = "/usr/share/zoneinfo/" + timezone.tz
@@ -513,13 +483,13 @@ def setupTimezone(timezone, upgrade, instPath, dir):
         except OSError, (errno, msg):
             log("Error copying timezone (from %s): %s" %(tzfile, msg))
 
-    if iutil.getArch() == "s390":
-        return
     args = [ "/usr/sbin/hwclock", "--hctosys" ]
     if timezone.utc:
         args.append("-u")
     elif timezone.arc:
         args.append("-a")
+    else:
+        flags = None
 
     try:
         iutil.execWithRedirect(args[0], args, stdin = None,
@@ -530,13 +500,16 @@ def setupTimezone(timezone, upgrade, instPath, dir):
             
 
 def doPreInstall(method, id, intf, instPath, dir):
+    if flags.test:
+	return
+
     if dir == DISPATCH_BACK:
         return
 
     arch = iutil.getArch ()
 
     # this is a crappy hack, but I don't want bug reports from these people
-    if (arch == "i386") and (not id.grpset.hdrlist.has_key("kernel")):
+    if (arch == "i386") and (not id.hdList.has_key("kernel")):
         intf.messageWindow(_("Error"),
                            _("You are trying to install on a machine "
                              "which isn't supported by this release of "
@@ -548,73 +521,66 @@ def doPreInstall(method, id, intf, instPath, dir):
     # shorthand
     upgrade = id.upgrade.get()
 
-    def select(hdrlist, name):
-        if hdrlist.has_key(name):
-            hdrlist[name].select(isManual = 1)
-            return 1
-        return 0
+    def select(hdList, name):
+        if hdList.has_key(name):
+            hdList[name].selected = 1
 
     if not upgrade:
-        foundkernel = 0
-	if isys.smpAvailable() or isys.htavailable():
-            if select(id.grpset.hdrlist, 'kernel-smp'):
-                foundkernel = 1
+	# this is NICE and LATE. It lets kickstart/server/workstation
+	# installs detect this properly
+        if arch == "s390":
+	    if (string.find(os.uname()[2], "tape") > -1):
+		select(id.hdList, 'kernel-tape')
+	    else:
+		select(id.hdList, 'kernel')
+	elif isys.smpAvailable() or isys.htavailable():
+            select(id.hdList, 'kernel-smp')
 
-        if iutil.needsEnterpriseKernel():
-            if select(id.grpset.hdrlist, "kernel-bigmem"):
-                foundkernel = 1
+	if (id.hdList.has_key('kernel-bigmem')):
+	    if iutil.needsEnterpriseKernel():
+		id.hdList['kernel-bigmem'].selected = 1
 
-        if isys.summitavailable():
-            if select(id.grpset.hdrlist, "kernel-summit"):
-                foundkernel = 1
+	if (id.hdList.has_key('kernel-summit')):
+	    if isys.summitavailable():
+		id.hdList['kernel-summit'].selected = 1
 
-        if foundkernel == 0:
-            # we *always* need to have some sort of kernel installed
-            select(id.grpset.hdrlist, 'kernel')
+	# we *always* need a kernel installed
+        select(id.hdList, 'kernel')
 
 	# if NIS is configured, install ypbind and dependencies:
 	if id.auth.useNIS:
-            select(id.grpset.hdrlist, 'ypbind')
-            select(id.grpset.hdrlist, 'yp-tools')
-            select(id.grpset.hdrlist, 'portmap')
+            select(id.hdList, 'ypbind')
+            select(id.hdList, 'yp-tools')
+            select(id.hdList, 'portmap')
 
 	if id.auth.useLdap:
-            select(id.grpset.hdrlist, 'nss_ldap')
-            select(id.grpset.hdrlist, 'openldap')
-            select(id.grpset.hdrlist, 'perl')
+            select(id.hdList, 'nss_ldap')
+            select(id.hdList, 'openldap')
+            select(id.hdList, 'perl')
 
 	if id.auth.useKrb5:
-            select(id.grpset.hdrlist, 'pam_krb5')
-            select(id.grpset.hdrlist, 'krb5-workstation')
-            select(id.grpset.hdrlist, 'krbafs')
-            select(id.grpset.hdrlist, 'krb5-libs')
+            select(id.hdList, 'pam_krb5')
+            select(id.hdList, 'krb5-workstation')
+            select(id.hdList, 'krbafs')
+            select(id.hdList, 'krb5-libs')
 
         if id.auth.useSamba:
-            select(id.grpset.hdrlist, 'pam_smb')
+            select(id.hdList, 'pam_smb')
 
         if iutil.getArch() == "i386" and id.bootloader.useGrubVal == 0:
-            select(id.grpset.hdrlist, 'lilo')
+            select(id.hdList, 'lilo')
         elif iutil.getArch() == "i386" and id.bootloader.useGrubVal == 1:
-            select(id.grpset.hdrlist, 'grub')
-        elif iutil.getArch() == "s390":
-            select(id.grpset.hdrlist, 's390utils')
-        elif iutil.getArch() == "ppc":
-            select(id.grpset.hdrlist, 'yaboot')
-        elif iutil.getArch() == "ia64":
-            select(id.grpset.hdrlist, 'elilo')
+            select(id.hdList, 'grub')
 
         if pcmcia.pcicType():
-            select(id.grpset.hdrlist, 'kernel-pcmcia-cs')
-
-    if flags.test:
-	return
+            select(id.hdList, 'kernel-pcmcia-cs')
 
     # make sure that all comps that include other comps are
     # selected (i.e. - recurse down the selected comps and turn
     # on the children
     while 1:
         try:
-            method.mergeFullHeaders(id.grpset.hdrlist)
+            method.mergeFullHeaders(id.hdList)
         except FileCopyException:
             method.unmountCD()
             intf.messageWindow(_("Error"),
@@ -630,13 +596,13 @@ def doPreInstall(method, id, intf, instPath, dir):
 	f = open(instPath + "/etc/mtab", "w+")
 	f.close()
 
-    if method.systemMounted (id.fsset, instPath):
+    if method.systemMounted (id.fsset, instPath, id.hdList.selected()):
 	id.fsset.umountFilesystems(instPath)
 	return DISPATCH_BACK
 
     for i in ( '/var', '/var/lib', '/var/lib/rpm', '/tmp', '/dev', '/etc',
 	       '/etc/sysconfig', '/etc/sysconfig/network-scripts',
-	       '/etc/X11', '/root', '/var/tmp', '/etc/rpm' ):
+	       '/etc/X11', '/root', '/var/tmp' ):
 	try:
 	    os.mkdir(instPath + i)
 	except os.error, (errno, msg):
@@ -645,9 +611,6 @@ def doPreInstall(method, id, intf, instPath, dir):
 
 
     if flags.setupFilesystems:
-        # setup /etc/rpm/platform for the post-install environment
-        iutil.writeRpmPlatform(instPath)
-        
 	try:
             # FIXME: making the /var/lib/rpm symlink here is a hack to
             # workaround db->close() errors from rpm
@@ -679,6 +642,33 @@ def doPreInstall(method, id, intf, instPath, dir):
             iutil.copyFile("/tmp/modules.conf", 
                            instPath + "/etc/modules.conf")
 
+    # add lines for usb to modules.conf
+    # these aren't handled in the loader since usb is built into kernel
+    # so we don't insert the modules there
+    try:
+	usbcontrollers = kudzu.probe(kudzu.CLASS_USB, kudzu.BUS_PCI, kudzu.PROBE_ALL)
+    except:
+	usbcontrollers = []
+	
+    ohcifnd = 0
+    ehcifnd = 0
+    for u in usbcontrollers:
+	if u.driver == "usb-ohci":
+	    ohcifnd = 1
+	elif u.driver == "ehci-hcd":
+	    ehcifnd = 1
+
+    if ohcifnd or ehcifnd:
+	f = open(instPath + "/etc/modules.conf", "a")
+	if ohcifnd:
+	    f.write("alias usb-controller usb-ohci\n")
+	if ehcifnd:
+	    if ohcifnd:
+		f.write("alias usb-controller1 ehci-hcd\n")
+	    else:
+		f.write("alias usb-controller ehci-hcd\n")
+	f.close()
+	    
     # make a /etc/mtab so mkinitrd can handle certain hw (usb) correctly
     f = open(instPath + "/etc/mtab", "w+")
     f.write(id.fsset.mtab())
@@ -697,7 +687,10 @@ def doInstall(method, id, intf, instPath):
     import whiteout
     
     upgrade = id.upgrade.get()
-    ts = getAnacondaTS(instPath)
+    ts = rpm.TransactionSet(instPath)
+
+    ts.setVSFlags(~(rpm.RPMVSF_NORSA|rpm.RPMVSF_NODSA))
+    ts.setFlags(rpm.RPMTRANS_FLAG_ANACONDA)
 
     total = 0
     totalSize = 0
@@ -706,17 +699,15 @@ def doInstall(method, id, intf, instPath):
 	how = "u"
     else:
 	how = "i"
-        rpm.addMacro("__dbi_htconfig", "hash nofsync %{__dbi_other} %{__dbi_perms}")
 
     l = []
 
-    for p in id.grpset.hdrlist.values():
-        if p.isSelected():
-            l.append(p)
+    for p in id.hdList.selected():
+	l.append(p)
     l.sort(sortPackages)
 
     progress = intf.progressWindow(_("Processing"),
-                                   _("Preparing RPM transaction..."),
+                                   _("Setting up RPM transaction..."),
                                    len(l))
 
 
@@ -737,36 +728,28 @@ def doInstall(method, id, intf, instPath):
         # new transaction set
         ts.closeDB()
         del ts
-        ts = getAnacondaTS(instPath)
+        ts = rpm.TransactionSet(instPath)
+        ts.setVSFlags(~(rpm.RPMVSF_NORSA|rpm.RPMVSF_NODSA))
+        ts.setFlags(rpm.RPMTRANS_FLAG_ANACONDA)
 
         # we don't want to try to remove things more than once (#84221)
         id.upgradeRemove = []
 
     i = 0
-    updcount = 0
-    updintv = len(l) / 25
     for p in l:
-	ts.addInstall(p.hdr, p.hdr, how)
+	ts.addInstall(p.h, p.h, how)
 	total = total + 1
 	totalSize = totalSize + (p[rpm.RPMTAG_SIZE] / 1024)
         i = i + 1
-
-	# HACK - dont overload progress bar with useless requests
-	updcount = updcount + 1
-	if updcount > updintv:
-	    progress.set(i)
-	    updcount = 0
+        progress.set(i)
 
     progress.pop()
-
-    depcheck = DependencyChecker(id.grpset)
-    if not id.grpset.hdrlist.preordered():
+    
+    if not id.hdList.preordered():
 	log ("WARNING: not all packages in hdlist had order tag")
         # have to call ts.check before ts.order() to set up the alIndex
-        ts.check(depcheck.callback)
+        ts.check()
         ts.order()
-    else:
-        ts.check(depcheck.callback)
 
     if upgrade:
 	logname = '/root/upgrade.log'
@@ -780,17 +763,12 @@ def doInstall(method, id, intf, instPath):
 	pass
 
     instLog = open(instLogName, "w+")
-
-    # dont start syslogd if we arent creating filesystems
-    if flags.setupFilesystems:
-	syslogname = "%s%s.syslog" % (instPath, logname)
-	try:
-	    iutil.rmrf (syslogname)
-	except OSError:
-	    pass
-	syslog.start (instPath, syslogname)
-    else:
-	syslogname = None
+    syslogname = "%s%s.syslog" % (instPath, logname)
+    try:
+        iutil.rmrf (syslogname)
+    except OSError:
+        pass
+    syslog.start (instPath, syslogname)
 
     if id.compspkg is not None:
         num = i + 1
@@ -808,9 +786,9 @@ def doInstall(method, id, intf, instPath):
     # dup'd when we go out of scope
 
     if upgrade:
-	modeText = _("Upgrading %s-%s-%s.%s.\n")
+	modeText = _("Upgrading %s-%s-%s.\n")
     else:
-	modeText = _("Installing %s-%s-%s.%s.\n")
+	modeText = _("Installing %s-%s-%s.\n")
 
     errors = rpmErrorClass(instLog)
     pkgTimer = timer.Timer(start = 0)
@@ -831,7 +809,7 @@ def doInstall(method, id, intf, instPath):
                         "\n"
                         "%s"
                         "\n\n") % (id.upgradeDeps,))
-
+        
     cb.initWindow = intf.waitWindow(_("Install Starting"),
 				    _("Starting install process, this may take several minutes..."))
 
@@ -846,6 +824,11 @@ def doInstall(method, id, intf, instPath):
 	spaceneeded = {}
 	nodeneeded = {}
 	size = 12
+
+	# XXX
+	nodeprob = -1
+	if rpm.__dict__.has_key ("RPMPROB_DISKNODES"):
+	    nodeprob = rpm.RPMPROB_DISKNODES
 
 	for (descr, (type, mount, need)) in problems:
             log("(%s, (%s, %s, %s))" %(descr, type, mount, need))
@@ -915,9 +898,7 @@ def doInstall(method, id, intf, instPath):
         ts.closeDB()
 	del ts
 	instLog.close()
-
-	if syslogname:
-	    syslog.stop()
+	syslog.stop()
 
 	method.systemUnmounted ()
 
@@ -948,6 +929,20 @@ def doInstall(method, id, intf, instPath):
         log("failed to unlink /var/lib/rpm: %s" %(e,))
             
 
+    if upgrade:
+        instLog.write(_("\n\nThe following packages were available in "
+                        "this version but NOT upgraded:\n"))
+        lines = []
+        for p in id.hdList.packages.values ():
+            if not p.selected:
+                lines.append("%s-%s-%s.%s.rpm\n" %
+                             (p.h[rpm.RPMTAG_NAME],
+                              p.h[rpm.RPMTAG_VERSION],
+                              p.h[rpm.RPMTAG_RELEASE],
+                              p.h[rpm.RPMTAG_ARCH]))
+        lines.sort()
+        for line in lines:
+            instLog.write(line)
     instLog.close ()
 
     id.instProgress = None
@@ -974,7 +969,7 @@ def doPostInstall(method, id, intf, instPath):
 	if not upgrade:
 	    w.set(1)
 
-	    copyExtraModules(instPath, id.grpset, id.extraModules)
+	    copyExtraModules(instPath, id.comps, id.extraModules)
 
 	    w.set(2)
 
@@ -982,10 +977,6 @@ def doPostInstall(method, id, intf, instPath):
 	    if arch == "i386":
 		pcmcia.createPcmciaConfig(
 			instPath + "/etc/sysconfig/pcmcia")
-
-            # we need to write out the network bits before kudzu runs
-            # to avoid getting devices in the wrong order (#102276)
-            id.network.write(instPath)
 		       
 	    w.set(3)
 
@@ -998,9 +989,9 @@ def doPostInstall(method, id, intf, instPath):
 	    # XXX currently Bad Things (X async reply) happen when doing
 	    # Mouse Magic on Sparc (Mach64, specificly)
 	    # The s390 doesn't even have a mouse!
-            if os.environ.get('DISPLAY') == ':1' and arch != 'sparc':
+	    if os.environ.has_key ("DISPLAY") and not (arch == "sparc" or arch == "s390"):
+		import xmouse
 		try:
-                    import xmouse
 		    mousedev = xmouse.get()[0]
 		except RuntimeError:
 		    pass
@@ -1036,9 +1027,9 @@ def doPostInstall(method, id, intf, instPath):
                     pass
 
                 argv = [ "/usr/sbin/kudzu", "-q" ]
-                if id.grpset.hdrlist.has_key("kernel"):
-                    ver = "%s-%s" %(id.grpset.hdrlist["kernel"][rpm.RPMTAG_VERSION],
-                                    id.grpset.hdrlist["kernel"][rpm.RPMTAG_RELEASE])
+                if id.hdList.has_key("kernel"):
+                    ver = "%s-%s" %(id.hdList["kernel"][rpm.RPMTAG_VERSION],
+                                    id.hdList["kernel"][rpm.RPMTAG_RELEASE])
                     argv.extend(["-k", ver])
                 
                 devnull = os.open("/dev/null", os.O_RDWR)
@@ -1082,6 +1073,12 @@ def doPostInstall(method, id, intf, instPath):
 
         w.set(5)
 
+	# put RHN key in place
+	try:
+	    iutil.copyFile("/tmp/updates/RHNS-CA-CERT", "/mnt/sysimage/usr/share/rhn/RHNS-CA-CERT")
+	except:
+	    log("Exception copying RHNS-CA-CERT from /tmp/updates")
+
         # FIXME: hack to install the comps package
         if (id.compspkg is not None and
             os.access(id.compspkg, os.R_OK)):
@@ -1101,13 +1098,12 @@ def doPostInstall(method, id, intf, instPath):
                 h = ts.hdrFromFdno(fd)
                 os.close(fd)
                 if upgrade:
-                    text = _("Upgrading %s-%s-%s.%s.\n")
+                    text = _("Upgrading %s-%s-%s.\n")
                 else:
-                    text = _("Installing %s-%s-%s.%s.\n")
+                    text = _("Installing %s-%s-%s.\n")
                 instLog.write(text % (h['name'],
                                       h['version'],
-                                      h['release'],
-                                      h['arch']))
+                                      h['release']))
                 os.unlink(id.compspkg)
                 del ts
 
@@ -1122,28 +1118,9 @@ def doPostInstall(method, id, intf, instPath):
                 
         w.set(6)
 
+
     finally:
 	pass
-
-    if upgrade:
-        instLog.write(_("\n\nThe following packages were available in "
-                        "this version but NOT upgraded:\n"))
-    else:
-        instLog.write(_("\n\nThe following packages were available in "
-                        "this version but NOT installed:\n"))
-        
-    lines = []
-    for p in id.grpset.hdrlist.values():
-        if not p.isSelected():
-            lines.append("%s-%s-%s.%s.rpm\n" %
-                         (p.hdr[rpm.RPMTAG_NAME],
-                          p.hdr[rpm.RPMTAG_VERSION],
-                          p.hdr[rpm.RPMTAG_RELEASE],
-                          p.hdr[rpm.RPMTAG_ARCH]))
-    lines.sort()
-    for line in lines:
-        instLog.write(line)
-    
 
     # XXX hack - we should really write a proper /etc/lvmtab.  but for now
     # just create the lvmtab if they have /sbin/vgscan and some VGs
@@ -1184,9 +1161,7 @@ def doPostInstall(method, id, intf, instPath):
     w.pop ()
 
     sys.stdout.flush()
-    
-    if flags.setupFilesystems:
-	syslog.stop()
+    syslog.stop()
 
 def migrateXinetd(instPath, instLog):
     if not os.access (instPath + "/usr/sbin/inetdconvert", os.X_OK):
@@ -1203,15 +1178,8 @@ def migrateXinetd(instPath, instLog):
 			   stdout = logfile, stderr = logfile)
     os.close(logfile)
 
-def copyExtraModules(instPath, grpset, extraModules):
-    kernelVersions = grpset.kernelVersionList()
-
-    try:
-        f = open("/etc/arch")
-        arch = f.readline().strip()
-        del f
-    except IOError:
-        arch = os.uname()[2]
+def copyExtraModules(instPath, comps, extraModules):
+    kernelVersions = comps.kernelVersionList()
 
     for (path, subdir, name) in extraModules:
         if not path:
@@ -1219,26 +1187,18 @@ def copyExtraModules(instPath, grpset, extraModules):
 	pattern = ""
 	names = ""
 	for (n, tag) in kernelVersions:
-            if tag == "up":
-                pkg = "kernel"
-            else:
-                pkg = "kernel-%s" %(tag,)
-            arch = grpset.hdrlist[pkg][rpm.RPMTAG_ARCH]
-            # version 1 path
-            pattern = pattern + " %s/%s/%s.o " % (n, arch, name)
-            # version 0 path
-            pattern = pattern + " %s/%s.o " % (n, name)
-            names = names + " %s.o" % (name,)
+	    pattern = pattern + " " + n + "/" + name + ".o"
+	    names = names + " " + name + ".o"
 	command = ("cd %s/lib/modules; gunzip < %s | "
-                   "%s/bin/cpio --quiet -iumd %s" % 
+                   "%s/bin/cpio  --quiet -iumd %s" % 
                    (instPath, path, instPath, pattern))
 	log("running: '%s'" % (command, ))
 	os.system(command)
 
 	for (n, tag) in kernelVersions:
 	    fromFile = "%s/lib/modules/%s/%s.o" % (instPath, n, name)
-	    toDir = "%s/lib/modules/%s/updates" % \
-		    (instPath, n)
+	    toDir = "%s/lib/modules/%s/kernel/drivers/%s" % \
+		    (instPath, n, subdir)
 	    to = "%s/%s.o" % (toDir, name)
 
 	    if (os.access(fromFile, os.R_OK) and 
@@ -1258,11 +1218,17 @@ def copyExtraModules(instPath, grpset, extraModules):
 #Recreate initrd for use when driver disks add modules
 def recreateInitrd (kernelTag, instRoot):
     log("recreating initrd for %s" % (kernelTag,))
-    iutil.execWithRedirect("/sbin/new-kernel-pkg",
-                           [ "/sbin/new-kernel-pkg", "--mkinitrd",
-                             "--depmod", "--install", kernelTag ],
+    if iutil.getArch() == 'ia64':
+        initrd = "/boot/efi/EFI/redhat/initrd-%s.img" % (kernelTag, )
+    else:
+        initrd = "/boot/initrd-%s.img" % (kernelTag, )
+
+    iutil.execWithRedirect("/sbin/mkinitrd",
+                           [ "/sbin/mkinitrd", "--ifneeded", "-f",
+                             initrd, kernelTag ],
                            stdout = None, stderr = None,
                            searchPath = 1, root = instRoot)
+                
 
 # XXX Deprecated.  Is this ever called anymore?
 def depmodModules(comps, instPath):
@@ -1276,25 +1242,13 @@ def depmodModules(comps, instPath):
 
 
 def betaNagScreen(intf, dir):
-    publicBetas = { "Red Hat Linux": "Red Hat Linux Public Beta",
-                    "Red Hat Enterprise Linux": "Red Hat Enterprise Linux Public Beta" }
-
-    
     if dir == DISPATCH_BACK:
 	return DISPATCH_NOOP
-
-    fileagainst = None
-    for (key, val) in publicBetas.items():
-        if productName.startswith(key):
-            fileagainst = val
-
-    if fileagainst is None:
-        fileagainst = "%s Beta" %(productName,)
     
     while 1:
 	rc = intf.messageWindow( _("Warning! This is a beta!"),
 				 _("Thank you for downloading this "
-				   "%s Beta release.\n\n"
+				   "Red Hat Beta release.\n\n"
 				   "This is not a final "
 				   "release and is not intended for use "
 				   "on production systems.  The purpose of "
@@ -1302,9 +1256,9 @@ def betaNagScreen(intf, dir):
 				   "from testers, and it is not suitable "
 				   "for day to day usage.\n\n"
 				   "To report feedback, please visit:\n\n"
-				   "   http://bugzilla.redhat.com/bugzilla\n\n"
-				   "and file a report against '%s'.\n"
-                                   %(productName, fileagainst)),
+				   "    http://bugzilla.redhat.com/bugzilla\n\n"
+				   "and file a report against 'Red Hat Public "
+				   "Beta'.\n"),
 				   type="custom", custom_icon="warning",
 				   custom_buttons=[_("_Exit"), _("_Install BETA")])
 
@@ -1319,35 +1273,49 @@ def betaNagScreen(intf, dir):
 	    break
 
 # FIXME: this is a kind of poor way to do this, but it will work for now
-def selectLanguageSupportGroups(grpset, langSupport):
+def selectLanguageSupportGroups(comps, langSupport):
     sup = langSupport.supported
     if len(sup) == 0:
         sup = langSupport.getAllSupported()
 
-    for group in grpset.groups.values():
-        xmlgrp = grpset.compsxml.groups[group.basename]
-        langs = []
+    for group in comps.compsxml.groups.values():
         for name in sup:
             try:
                 lang = langSupport.langInfoByName[name][0]
-                langs.extend(language.expandLangs(lang))
+                langs = language.expandLangs(lang)
             except:
                 continue
-            
-        if group.langonly is not None and group.langonly in langs:
-            group.select()
-            for package in xmlgrp.pkgConditionals.keys():
-                req = xmlgrp.pkgConditionals[package]
-                if not grpset.hdrlist.has_key(package):
-                    log("Missing %s which is in a langsupport conditional" %(package,))
+            if group.langonly in langs:
+                if not comps.compsDict.has_key(group.name):
+                    log("Where did the %s component go?"
+                        %(group.name,))
                     continue
-                # add to the deps in the dependencies structure for the
-                # package.  this should take care of whenever we're
-                # selected
-                grpset.hdrlist[req].addDeps([package], main = 0)
-                if grpset.hdrlist[req].isSelected():
-                    grpset.hdrlist[package].select()
-                    sys.stdout.flush()
-                    grpset.hdrlist[package].usecount += grpset.hdrlist[req].usecount - 1
-                    group.selectDeps([package], uses = grpset.hdrlist[req].usecount)
-    
+                comps.compsDict[group.name].select()
+                for package in group.pkgConditionals.keys():
+                    req = group.pkgConditionals[package]
+                    if not comps.packages.has_key(package):
+                        log("Missing %s which is in a langsupport conditional" %(package,))
+                        continue
+                    if not comps.compsxml.packages.has_key(req):
+                        log("Missing %s which is required by %s in a langsupport group" %(req, package))
+                        continue
+                    # add to the deps in the dependencies structure --
+                    # this will take care of if we're ever added as a dep
+                    comps.compsxml.packages[req].dependencies.append(package)
+                    # also add to components as needed
+                    # if the req is PKGTYPE_MANDATORY, then just add to the
+                    # depsDict.  if the req is PKGTYPE_DEFAULT, add it
+                    # as DEFAULT
+                    pkg = comps.packages[package]
+                    reqp = comps.packages[req]
+                    for comp in comps.packages[req].comps:
+                        if comp.newpkgDict.has_key(reqp):
+                            if comp.newpkgDict[reqp][0] == PKGTYPE_MANDATORY:
+                                comp.addDependencyPackage(pkg)
+                                comp.updateDependencyCountForAddition(pkg)
+                            else:
+                                comp.addPackage(pkg, PKGTYPE_DEFAULT)
+                        elif comp.depsDict.has_key(req):
+                            comp.addDependencyPackage(pkg)
+                            comp.updateDependencyCountForAddition(pkg)
+    comps.updateSelections()
