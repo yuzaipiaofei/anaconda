@@ -441,7 +441,7 @@ EOF
 
     ln -s /usr/bin/sh $MBD_DIR/sbin/sh
     if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
-       cp /usr/lib/anaconda/loader/linuxrc.s390 $MBD_DIR/linuxrc
+       cp -vf $LOADERBINDIR/linuxrc.s390 $MBD_DIR/linuxrc
     else
        ln -s /sbin/init $MBD_DIR/linuxrc
     fi
