@@ -1723,7 +1723,7 @@ msgstr "または次を使用する:"
 
 #: ../textw/userauth_text.py:311
 msgid "Request server via broadcast"
-msgstr "ブロードキャスト経由でサーバを要求する"
+msgstr "ブロードキャストで検索する"
 
 #: ../installclasses/custom.py:7
 msgid "Custom System"
