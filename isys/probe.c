@@ -156,7 +156,7 @@ char *getDasdPorts() {
         FILE *fd;
         fd = fopen ("/proc/dasd/devices", "r");
         if(!fd) {
-                return;
+                return NULL;
         }
         line = (char *)malloc(100*sizeof(char));
         while (fgets (line, 100, fd) != NULL) {
