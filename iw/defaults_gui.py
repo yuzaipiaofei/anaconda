@@ -22,8 +22,8 @@ import rhpl.keyboard
 from flags import flags
 
 import sys
-sys.path.append("/home/bfox/redhat/redhat-config-keyboard/src")
 import keyboard_gui
+import mouse_gui
 
 class DefaultsWindow(InstallWindow):
     windowTitle = N_("Defaults")
@@ -143,6 +143,25 @@ class DefaultsWindow(InstallWindow):
         self.defaultsTable.attach(self.timezoneLabel, 2, 3, 2, 3, gtk.SHRINK|gtk.FILL)
         self.defaultsTable.attach(timezoneButton, 3, 4, 2, 3,  gtk.SHRINK, gtk.SHRINK)    
 
+        icon = self.ics.readPixmap("timezone.png")
+        label = gtk.Label("")
+        label.set_markup("<span foreground='#000000' size='large' font_family='Helvetica'><b>%s:</b></span>" % _("Timezone"))
+        label.set_alignment(0.0, 0.5)
+        self.timezoneLabel = gtk.Label(defaultLang.getDefaultTimeZone())
+        self.timezoneLabel.set_alignment(0.0, 0.5)
+        timezoneButton = gtk.Button()
+        buttonLabel = gtk.Label("")
+        buttonLabel.set_markup('<span foreground="#3030c0"><u>'
+                                    '%s</u></span>' % (_('Change'),))
+        timezoneButton.add(buttonLabel)
+        timezoneButton.set_relief(gtk.RELIEF_NONE)
+#        mouseButton.connect("clicked", self.keyboardClicked)
+
+        self.defaultsTable.attach(icon, 0, 1, 2, 3, gtk.SHRINK)
+        self.defaultsTable.attach(label, 1, 2, 2, 3, gtk.SHRINK|gtk.FILL)
+        self.defaultsTable.attach(self.timezoneLabel, 2, 3, 2, 3, gtk.SHRINK|gtk.FILL)
+        self.defaultsTable.attach(timezoneButton, 3, 4, 2, 3,  gtk.SHRINK, gtk.SHRINK)    
+
 
 
         lowerVBox = gtk.VBox()
@@ -158,4 +177,9 @@ class DefaultsWindow(InstallWindow):
         print "keyboard clicked"
         app = keyboard_gui.childWindow()
         app.anacondaScreen(self.defaultKeyboard, self.keyboardLabel, self.kbd)
-#       app.stand_alone()
+
+    def mouseClicked(self, *args):
+        print "mouse clicked"
+        app = mouse_gui.childWindow()
+        app.anacondaScreen(self.mouse, self.mouseLabel)
+
