@@ -831,11 +831,6 @@ def doInstall(method, id, intf, instPath):
 		prob = "%-15s %d %c\n" % (mount, need, suffix)
 		probs = probs + prob
 
-        if len(probs) == 0:
-            probs = ("ERROR: NO!  An unexpected problem has occurred with "
-                     "your transaction set.  Please see tty3 for more "
-                     "information")
-
 	if nodeneeded:
 	    if probs:
 		probs = probs + '\n'
@@ -849,6 +844,11 @@ def doInstall(method, id, intf, instPath):
 	    for (mount, need) in nodeneeded.items ():
 		prob = "%-15s %d\n" % (mount, need)
 		probs = probs + prob
+
+        if len(probs) == 0:
+            probs = ("ERROR: NO!  An unexpected problem has occurred with "
+                     "your transaction set.  Please see tty3 for more "
+                     "information")
 
 	intf.messageWindow (_("Disk Space"), probs)
 
