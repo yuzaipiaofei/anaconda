@@ -2424,13 +2424,11 @@ int main(int argc, char ** argv) {
     arg = FL_TESTING(flags) ? "./module-info" : "/modules/module-info";
     modInfo = isysNewModuleInfoSet();
 
-#if !defined(__ia64__)
     if (isysReadModuleInfo(arg, modInfo, NULL)) {
         fprintf(stderr, "failed to read %s\n", arg);
 	sleep(5);
 	exit(1);
     }
-#endif
 
     openLog(FL_TESTING(flags));
 
@@ -2471,7 +2469,7 @@ int main(int argc, char ** argv) {
     }
 #endif
 
-#if defined(__ia64__)
+#if 0 /* defined(__ia64__) */
     kdFindIdeList(&kd, 0);
     kdFindScsiList(&kd, 0);
     kdFindNetList(&kd, 0);
@@ -2583,7 +2581,7 @@ logMessage("found url image %s", url);
     pciReadDrivers("/modules/pcitable");
 
     /*modInfo = isysNewModuleInfoSet();*/
-#if !defined(__ia64__)
+#if 1 /* !defined(__ia64__) */
     if (isysReadModuleInfo(arg, modInfo, NULL)) {
         fprintf(stderr, "failed to read %s\n", arg);
 	sleep(5);
@@ -2723,7 +2721,7 @@ logMessage("found url image %s", url);
 	    *argptr++ = instClass;
 	}
 
-#ifndef __ia64__
+#if 1 /* ndef __ia64__ */
 	for (i = 0; i < modLoaded->numModules; i++) {
 	    if (!modLoaded->mods[i].path) continue;
 
