@@ -1,4 +1,6 @@
 Name: anaconda-ia64
+Summary: The Red Hat Linux installer.
+Group: Applications/System
 Version: @@VERSION@@
 Release: @@RELEASE@@
 Copyright: GPL
