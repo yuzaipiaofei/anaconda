@@ -294,7 +294,7 @@ class InstallInterface:
             ugh = "%s\n\n" % (exceptionTextNoFloppy,)
             buttons=[TEXT_OK_BUTTON, _("Debug")]
 
-        rc = ButtonChoiceWindow(self.screen, title, ugh + text, buttons)
+	rc = ButtonChoiceWindow(self.screen, title, ugh + text, buttons)
         if rc == string.lower(_("Debug")):
             return 1
 	elif rc == string.lower(_("Save")):
