@@ -60,8 +60,11 @@ except TypeError, msg:
 # save because we're about to munge argv
 [execname] = string.split(sys.argv[0], '/')[-1:]
 
+savedargs = []
+
 # remove the arguments - gnome_init doesn't understand them
 for arg in sys.argv[1:]:
+    savedargs.append (arg)
     sys.argv.remove (arg)
 sys.argc = 1
 
