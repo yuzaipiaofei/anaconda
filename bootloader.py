@@ -78,7 +78,10 @@ class KernelArguments:
 	    if os.environ.has_key("DASD"):
                 self.args = "dasd=" + os.environ["DASD"]
 	    if os.environ.has_key("CHANDEV"):
-		self.args = self.args + " chandev=" + os.environ["CHANDEV"]
+	        if os.environ.has_key("QETHPARM"):
+	            self.args = self.args + " chandev=" + os.environ["CHANDEV"] + ";" +  os.environ["QETHPARM"]
+	        else:
+	            self.args = self.args + " chandev=" + os.environ["CHANDEV"]
 	else:
 	    cdrw = isys.ideCdRwList()
 	    str = ""
@@ -786,8 +789,8 @@ class s390BootloaderInfo(bootloaderInfo):
 	if os.environ.has_key("CHANDEV"):
 	    fd = open(instroot + "/etc/chandev.conf", "w+")
 	    fd.write('%s\n' % (os.environ["CHANDEV"]))
-	    if os.environ.has_key("PORTNAME"):
-	       fd.write('%s\n' % (os.environ["PORTNAME"]))
+	    if os.environ.has_key("QETHPARM"):
+	       fd.write('%s\n' % (os.environ["QETHPARM"]))
 	    fd.close()
 	return ""
 	
