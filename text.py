@@ -70,7 +70,8 @@ class LanguageWindow:
         choice = descriptions[choice]
         lang = languages [choice]
 
-        if lang[:2] == "ja" and not isys.isPsudoTTY(0):
+        if (todo.setupFilesystems
+            and lang[:2] == "ja" and not isys.isPsudoTTY(0)):
             # we're not running KON yet, lets fire it up
             os.environ["ANACONDAARGS"] = (os.environ["ANACONDAARGS"] +
                                           " --lang ja_JP.eucJP")
