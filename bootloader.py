@@ -788,7 +788,7 @@ class s390BootloaderInfo(bootloaderInfo):
 	    fd.write('%s\n' % (os.environ["CHANDEV"]))
 	    if os.environ.has_key("PORTNAME"):
 	       fd.write('%s\n' % (os.environ["PORTNAME"]))
-	    fd.close(fd)
+	    fd.close()
 	return ""
 	
     
