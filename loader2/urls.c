@@ -149,6 +149,7 @@ int urlinstStartTransfer(struct iurlinfo * ui, char * filename,
     char * buf;
     int fd;
     char * finalPrefix;
+    int tries = 0;
 
     if (!strcmp(ui->prefix, "/"))
         finalPrefix = "/.";
@@ -163,10 +164,17 @@ int urlinstStartTransfer(struct iurlinfo * ui, char * filename,
     sprintf(buf, "%s/%s", finalPrefix, filename);
 
     if (ui->protocol == URL_METHOD_FTP) {
-        ui->ftpPort = ftpOpen(ui->address, 
-                              ui->login ? ui->login : "anonymous", 
-                              ui->password ? ui->password : "rhinstall@", 
-                              NULL, -1);
+        /* can't quite count on link reporting, so try a few times (#115825) */
+        while (tries++ < 5) {
+            ui->ftpPort = ftpOpen(ui->address, 
+                                  ui->login ? ui->login : "anonymous", 
+                                  ui->password ? ui->password : "rhinstall@", 
+                                  NULL, -1);
+            if (ui->ftpPort >= 0)
+                break;
+            sleep(1);
+        }
+
         if (ui->ftpPort < 0) {
             newtWinMessage(_("Error"), _("OK"), 
                 _("Failed to log into %s: %s"), ui->address, 
@@ -183,7 +191,14 @@ int urlinstStartTransfer(struct iurlinfo * ui, char * filename,
             return -1;
         }
     } else {
-        fd = httpGetFileDesc(ui->address, -1, buf, extraHeaders);
+        /* can't quite count on link reporting, so try a few times (#115825) */
+        while (tries++ < 5) {
+            fd = httpGetFileDesc(ui->address, -1, buf, extraHeaders);
+            if (fd >= 0)
+                break;
+            sleep(1);
+        }
+
         if (fd < 0) {
             if (!silentErrors)
                 newtWinMessage(_("Error"), _("OK"), 

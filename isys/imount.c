@@ -67,16 +67,24 @@ int doPwMount(char * dev, char * where, char * fs, int rdonly, int istty,
 #ifndef DISABLE_NETWORK
 	    char * extra_opts = NULL;
 	    int flags = 0;
+            int tries = 0;
 
 	    buf = dev;
 	    /*logMessage("calling nfsmount(%s, %s, &flags, &extra_opts, &mount_opt)",
 			buf, where);*/
 
-	    if (nfsmount(buf, where, &flags, &extra_opts, &mount_opt, 0)) {
-		/*logMessage("\tnfsmount returned non-zero");*/
-		/*fprintf(stderr, "nfs mount failed: %s\n",
-			nfs_error());*/
-		return IMOUNT_ERR_OTHER;
+            /* this is something of a hack, but counting on link reporting
+             * to be accurate seems to be somewhat bollocks (#115825) */
+            while (tries++ < 5) {
+                if (nfsmount(buf, where, &flags, &extra_opts, &mount_opt, 0)) {
+                    /*logMessage("\tnfsmount returned non-zero");*/
+                    /*fprintf(stderr, "nfs mount failed: %s\n",
+                      nfs_error());*/
+                    if (tries > 5)
+                        return IMOUNT_ERR_OTHER;
+                    sleep(1);
+                }
+                break;
 	    }
 #endif
 	}
