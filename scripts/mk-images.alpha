@@ -29,7 +29,7 @@ mkdir -p $TOPDESTPATH/boot
 cp $BOOTDISKDIR/bootlx $TOPDESTPATH/boot
 
 makeinitrd --initrdto $TOPDESTPATH/images/ramdisk.img \
-	   --initrdsize 3000 \
+	   --initrdsize 4096 \
 	   --padsize 1440 \
 	   --loaderbin loader \
 	   --modules "$NETMODULES $SCSIMODULES vfat"
@@ -38,6 +38,6 @@ makebootdisk --bootdisksize 1440 --kernelto $TOPDESTPATH/kernels/vmlinux.gz \
 	     --imagename generic.img
 
 makemainmodules "$SECSTAGE $SCSIMODULES"
-makeinstimage --size1 3700 --size2 3600 "netstg" "$SECSTAGE $SCSIMODULES"
-makeinstimage --size1 3700 --size2 3600 "hdstg" "$SECSTAGE $NETMODULES"
+makeinstimage --size1 3800 --size2 3700 "netstg" "$SECSTAGE $SCSIMODULES"
+makeinstimage --size1 3800 --size2 3700 "hdstg" "$SECSTAGE $NETMODULES"
 makemainimage "stage2"
