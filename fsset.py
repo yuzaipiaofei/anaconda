@@ -1435,6 +1435,10 @@ class FileSystemSet:
         # XXX another hack.  we don't have the emd devices in the dev
         # package, but need them to keep grub from being unhappy :/
         if isys.isEMDLoaded():
+            if not os.path.exists("%s/dev/emdctl" %(instPath,)):
+                isys.mknod("%s/dev/emdctl" %(instPath,), 0644 | stat.S_IFCHR,
+                           isys.makedev(10, 202))
+            
             for disk in ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
                          'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'):
                 dev = "emd%s" %(disk, )
