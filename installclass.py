@@ -340,7 +340,7 @@ fi
 # Example rhost file for root
 #
 echo "# Replace the <hostname> with your other participating cluster node name" > /root/.rhosts
-echo "# <hostname> root" > /root/.rhosts
+echo "# <hostname> root" >> /root/.rhosts
 
 # Passwords by default should rotate on a regular basis
 # /etc/login.defs offers a mechanism to tweek the defaults
@@ -360,7 +360,7 @@ echo "# <hostname> root" > /root/.rhosts
 
 echo "* Security script for HA completed, Altering the MOTD" >&2
 echo "" > /etc/motd
-echo "Red Hat Highly Available Server 1.0" >> /etc/motd
+echo "Red Hat High Available Server 1.0" >> /etc/motd
 echo "" >> /etc/motd 
 echo "" >> /etc/motd
 
