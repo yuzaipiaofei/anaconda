@@ -1065,10 +1065,10 @@ class ToDo:
     def rpmError (todo):
         todo.instLog.write (rpm.errorString () + "\n")
 
-    def getClass(todo):
-	return todo.instClass
-
     def setClass(todo, instClass):
+	# XXX
+	return 
+
 	todo.instClass = instClass
 	todo.hostname = todo.instClass.getHostname()
 	todo.updateInstClassComps()
