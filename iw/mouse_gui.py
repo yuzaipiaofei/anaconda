@@ -101,6 +101,7 @@ class MouseWindow (InstallWindow):
 	self.ics.setNextEnabled (gtk.TRUE)
 
     def selectMouseType (self, widget, node, *args):
+        node = gtk.ctree_node_from_cobject(node)
         if not node.is_leaf:
 	    self.locList.unselect_all ()
 	    self.locList.set_sensitive (gtk.FALSE)

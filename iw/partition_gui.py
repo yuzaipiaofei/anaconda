@@ -14,8 +14,8 @@
 #
 
 import gtk
+import gnome.canvas
 from iw_gui import *
-from gnome import canvas
 from translate import _, N_
 from partitioning import *
 from fsset import *
@@ -108,10 +108,11 @@ class DiskStripeSlice:
                              * disk.dev.cylinders)
 
         # XXX hack but will work for now
-        if screen_width() > 640:
-            width = CANVAS_WIDTH_800
-        else:
-            width = CANVAS_WIDTH_640
+        width = CANVAS_WIDTH_800        
+#        if screen_width() > 640:
+#            width = CANVAS_WIDTH_800
+#        else:
+#            width = CANVAS_WIDTH_640
 
         xoffset = self.partition.geom.start / totalSectors * width
         xlength = self.partition.geom.length / totalSectors * width
@@ -141,8 +142,8 @@ class DiskStripeSlice:
         self.editCb = editCb
         pgroup = parent.getGroup()
 
-        self.group = pgroup.add("group")
-        self.box = self.group.add ("rect")
+        self.group = pgroup.add(gnome.canvas.CanvasGroup)
+        self.box = self.group.add(gnome.canvas.CanvasRect)
         self.group.connect("event", self.eventHandler)
 #        self.text = self.group.add ("text",
 #                                    fontset="-*-helvetica-medium-r-*-*-8-*")
@@ -161,15 +162,16 @@ class DiskStripe:
         self.selected = None
 
         # XXX hack but will work for now
-        if screen_width() > 640:
-            width = CANVAS_WIDTH_800
-        else:
-            width = CANVAS_WIDTH_640
+        width = CANVAS_WIDTH_640
+#        if screen_width() > 640:
+#            width = CANVAS_WIDTH_800
+#        else:
+#            width = CANVAS_WIDTH_640
         
-        group.add ("rect", x1=0.0, y1=10.0, x2=width,
+        group.add (gnome.canvas.CanvasRect, x1=0.0, y1=10.0, x2=width,
                    y2=STRIPE_HEIGHT, fill_color='green',
                    outline_color='grey71', width_units=1.0)
-        group.lower_to_bottom()
+#        group.lower_to_bottom()
 
     def shutDown(self):
         while self.slices:
@@ -225,7 +227,7 @@ class DiskStripe:
 
 class DiskStripeGraph:
     def __init__(self, ctree, editCb):
-        self.canvas = canvas.Canvas()
+        self.canvas = gnome.canvas.Canvas()
         self.diskStripes = []
         self.textlabels = []
         self.ctree = ctree
@@ -269,7 +271,6 @@ class DiskStripeGraph:
     def add (self, drive, disk):
 #        yoff = len(self.diskStripes) * (STRIPE_HEIGHT + 5)
         yoff = self.next_ypos
-        print dir (self.canvas.root())
 #        text = self.canvas.root().add_item("text", x=0.0, y=yoff,
 #                          fontset="-*-helvetica-bold-r-normal-*-*-120-*-*-p-*-iso8859-1")
 #        drivetext = "Drive %s (Geom: %s/%s/%s) (Model: %s)" % ('/dev/' + drive,
@@ -283,7 +284,7 @@ class DiskStripeGraph:
 #        self.textlabels.append(text)
         # next line remove XXX
         textheight = 0 
-        group = self.canvas.root().add_item("group", x=0, y=yoff+textheight)
+        group = self.canvas.root().add(gnome.canvas.CanvasGroup, x=0, y=yoff+textheight)
         stripe = DiskStripe (drive, disk, group, self.ctree, self.canvas, self.editCb)
         self.diskStripes.append(stripe)
         self.next_ypos = self.next_ypos + STRIPE_HEIGHT+textheight+10
@@ -630,7 +631,7 @@ class PartitionWindow(InstallWindow):
                 if part.type & parted.PARTITION_METADATA:
                     part = disk.next_partition (part)
                     continue
-                stripe.add_item(part)
+                stripe.add(part)
 
                 text = [""] * self.numCols
                 device = get_partition_name(part)
@@ -750,6 +751,7 @@ class PartitionWindow(InstallWindow):
                 self.editCb(tree)
 
     def treeSelectCb(self, tree, node, column):
+        node = gtk.ctree_node_from_cobject(node)
         partition = tree.node_get_row_data (node)
         if partition:
             self.diskStripeGraph.selectSlice(partition)
