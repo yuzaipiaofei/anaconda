@@ -143,7 +143,7 @@ if [ $ARCH = alpha ]; then
 fi
 
 if [ $ARCH = ia64 ]; then
-    PACKAGESGR="$PACKAGESGR slang"
+    PACKAGESGR="$PACKAGESGR elilo slang"
 fi
 
 KEEPFILE=/tmp/keepfile.$$
@@ -231,6 +231,8 @@ EOF
 KEEPFILEGR=/tmp/keepfilegr.$$
 cp $KEEPFILE $KEEPFILEGR
 cat >> $KEEPFILEGR <<EOF
+boot/efi/elilo.efi
+boot/efi/efi/boot/bootia64.efi
 bin/bash
 bin/cat
 bin/chmod
