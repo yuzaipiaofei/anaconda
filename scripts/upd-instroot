@@ -287,6 +287,8 @@ if [ $ARCH = s390 -o $ARCH = s390x ]; then
 linuxrc
 usr/share/terminfo/a/ansi
 usr/share/terminfo/d/dumb
+usr/share/terminfo/k/kterm
+usr/share/terminfo/k/kon
 usr/share/terminfo/s/screen
 usr/share/terminfo/v/vt100
 usr/share/terminfo/v/vt102
