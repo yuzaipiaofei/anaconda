@@ -99,7 +99,7 @@ void fatal_error(int usePerror) {
 }
 
 int doMke2fs(char * device, char * size) {
-    char * args[] = { "/usr/bin/mke2fs", NULL, NULL, NULL };
+    char * args[] = { "/usr/sbin/mke2fs", NULL, NULL, NULL };
     int pid, status;
 
     args[1] = device;
@@ -107,7 +107,7 @@ int doMke2fs(char * device, char * size) {
 
     if (!(pid = fork())) {
 	/* child */
-	execve("/usr/bin/mke2fs", args, env);
+	execve("/usr/sbin/mke2fs", args, env);
 	fatal_error(1);
     }
 
@@ -498,7 +498,7 @@ int main(int argc, char **argv) {
 
     setsid();
     if (ioctl(0, TIOCSCTTY, NULL)) {
-	printf("could not set new controlling tty");
+	printf("could not set new controlling tty\n");
     }
 
     if (!testing) {
