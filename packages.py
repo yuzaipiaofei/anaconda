@@ -753,6 +753,9 @@ def doPostInstall(method, id, intf, instPath):
 	    if arch == "i386":
 		pcmcia.createPcmciaConfig(
 			instPath + "/etc/sysconfig/pcmcia")
+
+	    if arch == "s390":
+		copyOCOModules(instPath)
 		       
 	    w.set(3)
 
@@ -809,6 +812,11 @@ def doPostInstall(method, id, intf, instPath):
 
                 if unmountUSB:
                     isys.umount(instPath + '/proc/bus/usb', removeDir = 0)
+
+            else:
+                securetty = open(instPath + '/etc/securetty','a+')
+                securetty.write("console\n")
+                securetty.close()
 
 	w.set(4)
 
@@ -908,6 +916,11 @@ def copyExtraModules(instPath, comps, extraModules):
 			    fromFile)
 
             recreateInitrd(n, instPath)
+
+def copyOCOModules(instPath):
+    command = ("[ -d /OCO ] && cp -a /OCO/* %s/lib/modules" % (instPath))
+    log("running: '%s'" % (command, ))
+    os.system(command)
 
 
 #Recreate initrd for use when driver disks add modules

@@ -62,7 +62,11 @@ TOPDIR=$(cd $TOPDIR; pwd)
     FONTS=$IMGPATH/usr/lib/anaconda-runtime/fonts-${BASEARCH}
     GETMODDEPS=$IMGPATH/usr/lib/anaconda-runtime/moddeps
     MODLIST=$IMGPATH/usr/lib/anaconda-runtime/modlist
-    MODINFO=$IMGPATH/usr/lib/anaconda-runtime/loader/module-info
+    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
+       MODINFO=$IMGPATH/usr/lib/anaconda-runtime/loader/module-info.s390
+    else
+       MODINFO=$IMGPATH/usr/lib/anaconda-runtime/loader/module-info
+    fi
     FILTERMODDEPS=$IMGPATH/usr/lib/anaconda-runtime/filtermoddeps
     LOADERBINDIR=$IMGPATH/usr/lib/anaconda-runtime/loader
     BOOTDISKDIR=$IMGPATH/usr/lib/anaconda-runtime/boot
@@ -304,7 +308,8 @@ makemainmodules() {
 
     if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
        mkdir -p $KERNELROOT/lib/modules/misc
-       cp -f $KERNELROOT/lib/modules/*/kernel/drivers/s390/*/* $KERNELROOT/lib/modules/misc
+       find $KERNELROOT/lib/modules/*/kernel/drivers/s390/ -name "*.o" \
+         -exec cp -f {} $KERNELROOT/lib/modules/misc \;
     fi
     makemoduleball $extraargs $FULLMODPATH "$modlist"
     cp -ar $FULLMODPATH $FINALFULLMODPATH
@@ -639,7 +644,8 @@ makeinstimage () {
     (cd $INSTIMGTEMPLATE; find . | cpio --quiet -p $tmpdir)
     if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
        mkdir -p $KERNELROOT/lib/modules/misc
-       cp -f $KERNELROOT/lib/modules/*/kernel/drivers/s390/*/* $KERNELROOT/lib/modules/misc
+       find $KERNELROOT/lib/modules/*/kernel/drivers/s390/ -name "*.o" \
+          -exec cp -f {} $KERNELROOT/lib/modules/misc \;
     fi
     makemoduleball $tmpdir/modules "$modlist"
     rm -f $tmpdir/.buildstamp

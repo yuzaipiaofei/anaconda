@@ -15,7 +15,8 @@ from snack import *
 from constants_text import *
 from rhpl.translate import _
 from constants import *
-import iutil
+import iutil 
+import string
 
 
 class FinishedWindow:
@@ -52,6 +53,24 @@ class FinishedWindow:
                "http://www.redhat.com/docs.") %
                                  (productName, floppystr, bootstr, productName),
                                  [ _("OK") ], help = "finished", width=60)
+
+       f = open("/proc/mounts", "r")
+       lines = f.readlines()
+       f.close()
+       umounts = []
+       for line in lines:
+          if string.find(line, "/mnt/sysimage") > -1:
+               tokens = string.split(line)
+               umounts.append(tokens[1])
+       umounts.sort()
+       umounts.reverse()
+       for part in umounts:
+           try:
+               _isys.umount(part)
+           except:
+               print part + "is busy, couldn't umount."
+
+
 
         return INSTALL_OK
 
