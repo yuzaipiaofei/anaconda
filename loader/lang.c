@@ -70,18 +70,10 @@ struct langInfo {
     char * lang, * key, * font, * map, * lc_all;
 } ;
 
-#ifdef INCLUDE_KON
-static const struct langInfo languages[] = {
-        { "English",	"en",	NULL,		NULL,		"en_US" },
-	{ "Japanese",	"ja",	NULL,		NULL,		"ja_JP.ujis" },
-};
-#else
 /* FONT LIST STARTS */
 static const struct langInfo languages[] = {
         { "Czech", 	"cs", 	"lat2-sun16", 	"iso02",	"cs_CZ" },
         { "English",	"en",	NULL,		NULL,		"en_US" },
-	{ "French",	"fr",	NULL,		NULL,		"fr_FR" },
-	{ "German",	"de",	NULL,		NULL,		"de_DE" },
 	{ "Hungarian",  "hu",   "lat2-sun16",   "iso02",	"hu_HU" },
 	{ "Icelandic",	"is",	"lat0-sun16",	"iso15",	"is_IS" },
 	{ "Indonesian",	"id",	"lat0-sun16",	"iso15",	"id_ID" },
@@ -96,7 +88,6 @@ static const struct langInfo languages[] = {
 	{ "Ukrainian",  "uk",   "Cyr_a8x16",	"koi2alt",	"ru_RU.KOI8-R" },
 };
 /* FONT LIST ENDS */
-#endif
 const int numLanguages = sizeof(languages) / sizeof(struct langInfo);
 
 void loadLanguage (char * file, int flags) {
@@ -223,7 +214,7 @@ static int loadFont(char * fontFile, int flags) {
 
 void setLanguage (char * key) {
     int i;
-    
+
     for (i = 0; i < numLanguages; i++) {
 	if (!strcmp(languages[i].key, key)) {
 	    setenv("LANG", languages[i].key, 1);
@@ -381,6 +372,8 @@ int chooseKeyboard(char ** keymap, char ** kbdtypep, int flags) {
     gzFile f;
     struct kmapHeader hdr;
     struct kmapInfo * infoTable;
+    char ** argv;
+    int argc;
     char ** kbds;
     char buf[16384]; 			/* I hope this is big enough */
     int i;
@@ -392,9 +385,7 @@ int chooseKeyboard(char ** keymap, char ** kbdtypep, int flags) {
 #define KBDTYPE_PC             1
     int kbdtype = -1;
     int j;
-#endif
-
-    if (FL_SERIAL (flags)) return 0;
+#endif    
 
     /*if (testing) return 0;*/
 
@@ -564,7 +555,7 @@ int chooseKeyboard(char ** keymap, char ** kbdtypep, int flags) {
     if (keymap) *keymap = strdup(infoTable[num].name);
 
 #ifdef __sparc__
-    if (kbdtypep) *kbdtypep = (kbdtype == KBDTYPE_SUN) ? "sun" : "pc";
+    if (kbdtypep) *kbdtypep = (kbdtype == KBDTYPE_SUN) ? "sun" : "pci";
 #endif
 
     return rc;
