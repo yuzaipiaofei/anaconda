@@ -126,7 +126,7 @@ static void startNewt(int flags) {
     if (!newtRunning) {
 	newtInit();
 	newtCls();
-	newtDrawRootText(0, 0, _("Welcome to Red Hat Linux"));
+	newtDrawRootText(0, 0, _("Welcome to Red Hat High Availibity Server"));
 
 	newtPushHelpLine(_("  <Tab>/<Alt-Tab> between elements  | <Space> selects | <F12> next screen "));
 
