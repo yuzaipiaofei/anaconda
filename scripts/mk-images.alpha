@@ -30,7 +30,18 @@ cp $BOOTDISKDIR/bootlx $TOPDESTPATH/boot
 
 mkdir -p $TOPDESTPATH/etc
 cat > $TOPDESTPATH/etc/aboot.cfg <<EOF
+#
+# Red Hat Linux/Alpha aboot configuration
+#
+# Options:
+#
+#   0 - boot into the Red Hat Linux installer
+#   1 - boot into the Red Hat Linux installer using a 2.4 kernel
+#   2 - boot into the Red Hat Linux installer using a Jensen kernel
+#
 0:/kernels/vmlinux.gz initrd=/images/ramdisk.img
+1:/kernels/vmlinuz.24 initrd=/images/ramdisk.img
+2:/kernels/vmlinuz.j initrd=/images/ramdisk.img
 EOF
 
 makeinitrd --initrdto $TOPDESTPATH/images/ramdisk.img \
@@ -46,3 +57,24 @@ makemainmodules "$SECSTAGE $SCSIMODULES"
 makeinstimage --size1 3800 --size2 4096 "netstg" "$SECSTAGE $SCSIMODULES"
 makeinstimage --size1 3800 --size2 4096 "hdstg" "$SECSTAGE $NETMODULES"
 makemainimage "stage2"
+
+if [ -f $TOPLEVEL/preview/kernel-2.4.0-*.alpha.rpm ]; then
+    K24_PKG=$TOPLEVEL/preview/kernel-2.4.0-*.alpha.rpm
+    K24_DIR=/tmp/kernel24.dir.$$
+    mkdir -p $K24_DIR
+    rpm2cpio $K24_PKG | (cd $K24_DIR; cpio --quiet -iumd ./boot/vmlinuz-*)
+    cp $K24_DIR/boot/vmlinuz-* $TOPLEVEL/kernels/vmlinuz.24
+    rm -rf $K24_DIR
+fi
+
+
+if [ -f $KERNELPATH/kernel-jensen-*.rpm ]; then
+    KJ_PKG=$KERNELPATH/kernel-jensen-*.rpm
+    KJ_DIR=/tmp/kernelj.dir.$$
+    mkdir -p $KJ_DIR
+    rpm2cpio $KJ_PKG | (cd $KJ_DIR; cpio --quiet -iumd ./boot/vmlinuz-*)
+    cp $KJ_DIR/boot/vmlinuz-* $TOPLEVEL/kernels/vmlinuz.j
+    rm -rf $KJ_DIR
+fi
+
+
