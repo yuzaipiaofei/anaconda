@@ -1739,7 +1739,7 @@ msgstr "カスタムシステム"
 #: ../installclasses/server.py:8
 #, fuzzy
 msgid "Server System"
-msgstr "システムのアップグレード"
+msgstr "サーバシステム"
 
 #: ../installclasses/server.py:34
 msgid "You are about to erase ALL DATA on your hard drive to make room for your Linux installation."
