@@ -142,7 +142,7 @@ PACKAGESGR="anaconda XFree86-libs libpng XFree86-75dpi-fonts
            libgnomecanvas libart_lgpl expat
            anaconda-images anaconda-help XFree86-base-fonts
            ttfonts-ko taipeifonts XFree86-ISO8859-15-75dpi-fonts rhpl
-           redhat-config-keyboard Xft fontconfig redhat-artwork
+           redhat-config-keyboard redhat-config-mouse Xft fontconfig redhat-artwork
            ttfonts-ja ttfonts-zh_TW bitmap-fonts-cjk urw-fonts 
            comps-extras XFree86-libs-data convertdb1"
 
@@ -579,6 +579,7 @@ usr/share/fonts/zh_TW/TrueType/bsmi00lp.ttf
 usr/share/locale/*/LC_MESSAGES/anaconda.mo
 usr/share/locale/*/LC_MESSAGES/redhat-dist.mo
 usr/share/locale/*/LC_MESSAGES/redhat-config-keyboard.mo
+usr/share/locale/*/LC_MESSAGES/redhat-config-mouse.mo
 usr/share/locale/*/LC_MESSAGES/gtk20.mo
 usr/share/locale/*/LC_MESSAGES/libc.mo
 usr/share/locale/*/LC_MESSAGES/rhpl.mo
@@ -591,6 +592,7 @@ usr/share/pixmaps/gnome-warning.png
 usr/share/pixmaps/no.xpm
 usr/share/pixmaps/yes.xpm
 usr/share/redhat-config-keyboard/*
+usr/share/redhat-config-mouse/*
 usr/share/terminfo/l/linux
 usr/share/terminfo/x/xterm
 usr/share/terminfo/v/vt100
