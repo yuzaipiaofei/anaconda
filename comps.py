@@ -456,11 +456,11 @@ class ComponentSet:
 		    (foo, l) = split(l, None, 1)
                 (l, trash) = split(l, '{', 1)
                 l = strip (l)
-                if l == "Base":
+                if l == "Base" and conditional == None:
                     hidden = 1
 		comp = Component(self, l, default == '1', hidden)
 	    elif (l == "}"):
-                if conditional:
+                if conditional != None:
                     conditional = None
                 else:
                     self.comps.append(comp)

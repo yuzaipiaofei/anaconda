@@ -824,7 +824,7 @@ class ToDo:
 	if not self.hdList.packages.has_key(package):
 	    str = "package %s is not available" % (package,)
 	    raise ValueError, str
-	self.hdList.packages[package].selected = 1
+	self.hdList.packages[package].select()
 
     def writeNetworkConfig (self):
         # /etc/sysconfig/network-scripts/ifcfg-*
