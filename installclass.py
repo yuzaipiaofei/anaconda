@@ -309,7 +309,7 @@ class ClusterServer(InstallClass):
 # be easily reenabled
 #
 /bin/mv /etc/inetd.conf /etc/inetd.conf.orig
-/bin/sed -e 's/^\([^#]\)/#\1/' < /etc/inetd.conf.orig > /etc/inetd.conf
+/bin/cat /etc/inetd.conf.orig | /bin/sed -e 's,^[a-z],#\\0,' > /etc/inetd.conf
 
 # inetd needs a kick to reread the config file
 #
