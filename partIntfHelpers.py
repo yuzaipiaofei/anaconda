@@ -308,7 +308,6 @@ def doEditPartitionByRequest(intf, requestlist, part):
 
         return (None, None)
 
-    intf.messageWindow(_("FIXME Partition type"), "This partition is of type :%s\n\n" % type(part))
     if type(part) == type("RAID"):
 
 	# see if device is in our partition requests, remove
