@@ -1,7 +1,9 @@
 #
-# mouse_gui.py: gui mouse configuration.
+# defaults_gui.py: screen for the default values for anaconda
 #
-# Copyright 2000-2002 Red Hat, Inc.
+# Brent Fox <bfox@redhat.com>
+#
+# Copyright 2003 Red Hat, Inc.
 #
 # This software may be freely redistributed under the terms of the GNU
 # library public license.
@@ -27,8 +29,7 @@ import mouse_gui
 
 class DefaultsWindow(InstallWindow):
     windowTitle = N_("Defaults")
-    htmlTag = "mouse"
-#    kbd = rhpl.keyboard.Keyboard()
+    htmlTag = "defaults"
 
     def getNext(self):
 ##         self.mouse.set(self.currentMouse, self.emulate3.get_active())
@@ -53,7 +54,6 @@ class DefaultsWindow(InstallWindow):
 
         print keyboard.get()
 
-#        print dir(defaultLang)
 #        print defaultLang.getCurrent()
 #        print defaultLang.current
 #        print defaultLang.getDefaultTimeZone()
@@ -127,6 +127,25 @@ class DefaultsWindow(InstallWindow):
         self.defaultsTable.attach(self.mouseLabel, 2, 3, 1, 2, gtk.SHRINK|gtk.FILL)
         self.defaultsTable.attach(mouseButton, 3, 4, 1, 2,  gtk.SHRINK, gtk.SHRINK)    
 
+        icon = self.ics.readPixmap("network.png")
+        label = gtk.Label("")
+        label.set_markup("<span foreground='#000000' size='large' font_family='Helvetica'><b>%s:</b></span>" % _("Network"))
+        label.set_alignment(0.0, 0.5)
+        self.networkLabel = gtk.Label("")
+        self.networkLabel.set_alignment(0.0, 0.5)
+        networkButton = gtk.Button()
+        buttonLabel = gtk.Label("")
+        buttonLabel.set_markup('<span foreground="#3030c0"><u>'
+                                    '%s</u></span>' % (_('Change'),))
+        networkButton.add(buttonLabel)
+        networkButton.set_relief(gtk.RELIEF_NONE)
+#        mouseButton.connect("clicked", self.keyboardClicked)
+
+        self.defaultsTable.attach(icon, 0, 1, 2, 3, gtk.SHRINK)
+        self.defaultsTable.attach(label, 1, 2, 2, 3, gtk.SHRINK|gtk.FILL)
+        self.defaultsTable.attach(self.networkLabel, 2, 3, 2, 3, gtk.SHRINK|gtk.FILL)
+        self.defaultsTable.attach(networkButton, 3, 4, 2, 3,  gtk.SHRINK, gtk.SHRINK)    
+
         icon = self.ics.readPixmap("timezone.png")
         label = gtk.Label("")
         label.set_markup("<span foreground='#000000' size='large' font_family='Helvetica'><b>%s:</b></span>" % _("Timezone"))
@@ -141,29 +160,10 @@ class DefaultsWindow(InstallWindow):
         timezoneButton.set_relief(gtk.RELIEF_NONE)
 #        mouseButton.connect("clicked", self.keyboardClicked)
 
-        self.defaultsTable.attach(icon, 0, 1, 2, 3, gtk.SHRINK)
-        self.defaultsTable.attach(label, 1, 2, 2, 3, gtk.SHRINK|gtk.FILL)
-        self.defaultsTable.attach(self.timezoneLabel, 2, 3, 2, 3, gtk.SHRINK|gtk.FILL)
-        self.defaultsTable.attach(timezoneButton, 3, 4, 2, 3,  gtk.SHRINK, gtk.SHRINK)    
-
-        icon = self.ics.readPixmap("timezone.png")
-        label = gtk.Label("")
-        label.set_markup("<span foreground='#000000' size='large' font_family='Helvetica'><b>%s:</b></span>" % _("Timezone"))
-        label.set_alignment(0.0, 0.5)
-        self.timezoneLabel = gtk.Label(defaultLang.getDefaultTimeZone())
-        self.timezoneLabel.set_alignment(0.0, 0.5)
-        timezoneButton = gtk.Button()
-        buttonLabel = gtk.Label("")
-        buttonLabel.set_markup('<span foreground="#3030c0"><u>'
-                                    '%s</u></span>' % (_('Change'),))
-        timezoneButton.add(buttonLabel)
-        timezoneButton.set_relief(gtk.RELIEF_NONE)
-#        mouseButton.connect("clicked", self.keyboardClicked)
-
-        self.defaultsTable.attach(icon, 0, 1, 2, 3, gtk.SHRINK)
-        self.defaultsTable.attach(label, 1, 2, 2, 3, gtk.SHRINK|gtk.FILL)
-        self.defaultsTable.attach(self.timezoneLabel, 2, 3, 2, 3, gtk.SHRINK|gtk.FILL)
-        self.defaultsTable.attach(timezoneButton, 3, 4, 2, 3,  gtk.SHRINK, gtk.SHRINK)    
+        self.defaultsTable.attach(icon, 0, 1, 3, 4, gtk.SHRINK)
+        self.defaultsTable.attach(label, 1, 2, 3, 4, gtk.SHRINK|gtk.FILL)
+        self.defaultsTable.attach(self.timezoneLabel, 2, 3, 3, 4, gtk.SHRINK|gtk.FILL)
+        self.defaultsTable.attach(timezoneButton, 3, 4, 3, 4,  gtk.SHRINK, gtk.SHRINK)    
 
 
 
@@ -177,14 +177,10 @@ class DefaultsWindow(InstallWindow):
         return mainBox
 
     def keyboardClicked(self, *args):
-        print "keyboard clicked", keyboard_gui
-        print dir(keyboard_gui)
         app = keyboard_gui.childWindow()
         app.anacondaScreen(self.keyboardLabel, self.keyboard, self.keyboard)
 
     def mouseClicked(self, *args):
-        print "mouse clicked", mouse_gui, self.mouse
-        
 #        print dir(self.mouse)
         app = mouse_gui.childWindow()
         app.anacondaScreen(self.mouse, self.mouseLabel)
