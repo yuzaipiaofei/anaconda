@@ -1737,7 +1737,6 @@ msgid "Custom System"
 msgstr "カスタムシステム"
 
 #: ../installclasses/server.py:8
-#, fuzzy
 msgid "Server System"
 msgstr "サーバシステム"
 
@@ -3031,7 +3030,6 @@ msgid "DNS Name Server"
 msgstr "DNS ネームサーバ"
 
 # ../comps/comps-master:570
-#, fuzzy
 msgid "Postgres (SQL) Server"
 msgstr "SQL サーバ"
 
