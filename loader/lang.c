@@ -74,7 +74,7 @@ struct langInfo {
 static const struct langInfo languages[] = {
         { "Czech", 	"cs", 	"lat2-sun16", 	"iso02",	"cs_CZ" },
         { "English",	"en",	NULL,		NULL,		"en_US" },
-	{ "French",	"fr",	"lat0-sun16",	"iso15"		"fr_FR" },
+	{ "French",	"fr",	"lat0-sun16",	"iso15",	"fr_FR" },
 	{ "German",	"de",	"lat0-sun16",	"iso15",	"de_DE" },
 	{ "Hungarian",  "hu",   "lat2-sun16",   "iso02",	"hu_HU" },
 	{ "Icelandic",	"is",	"lat0-sun16",	"iso15",	"is_IS" },
