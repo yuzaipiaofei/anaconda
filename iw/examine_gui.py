@@ -49,7 +49,7 @@ class UpgradeExamineWindow (InstallWindow):
                 self.dispatch.skipStep("indivpackage")
             self.dispatch.skipStep("installtype", skip = 1)
         else:
-            self.dispatch.skipStep("installtype", skip = 0)
+            self.dispatch.skipStep("installtype", skip = 1)
 
         return None
 
