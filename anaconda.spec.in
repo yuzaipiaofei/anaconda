@@ -80,6 +80,9 @@ fi
 * %{date} Anaconda team <bugzilla@redhat.com>
 - built new version from CVS
 
+* Wed Oct 18 2000 Adrian Havill <havill@redhat.com>
+- added dbcs, fixed ja wordwrap with kon and text mode
+
 * Thu Aug 10 2000 Matt Wilson <msw@redhat.com>
 - build on alpha again now that I've fixed the stubs
 
