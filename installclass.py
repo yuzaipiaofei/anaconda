@@ -328,15 +328,19 @@ fi
 
 COUNT=`/bin/grep -c "See man hosts.allow for more details" /etc/hosts.allow`
 if [ "$COUNT" = "0" ]; then
+	echo "" >> /etc/hosts.allow
 	echo "# Please replace 'myhost.mydomain.org' and IP address with your" >> /etc/hosts.allow 
 	echo "# other participating cluster node." >> /etc/hosts.allow
 	echo "# Don't forget to remove the leading # to enable!" >> /etc/hosts.allow
 	echo "# See man hosts.allow for more details" >> /etc/hosts.allow
-
+	echo "" >> /etc/hosts.allow
 	echo "# in.telnetd: myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
 	echo "# in.ftp:     myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
 	echo "# in.rshd:    myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
 	echo "# in.rlogind: myhost.mydomain.org 127.0.0.1" >> /etc/hosts.allow
+	echo "" >> /etc/hosts.allow
+	echo "# LVS (private, non routed network)" >> /etc/hosts.allow
+	echo "# all:		192.168.1." >> /etc/hosts.allow
 fi
 
 # Example rhost file for root
