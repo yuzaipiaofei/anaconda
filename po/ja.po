@@ -1316,7 +1316,7 @@ msgstr "X 設定のカスタマイズ"
 
 #: ../iw/xconfig_gui.py:90
 msgid "Bits per Pixel"
-msgstr "1 ピクセルあたりのビット数"
+msgstr " bpp"
 
 #: ../iw/xconfig_gui.py:101 ../iw/xconfig_gui.py:438
 msgid "Test this configuration"
