@@ -24,7 +24,11 @@ from flags import flags
 import upgradeclass
 UpgradeClass = upgradeclass.InstallClass
 
+import migrateclass
+MigrateClass = migrateclass.InstallClass
+
 UPGRADE_STR = "upgrade"
+MIGRATE_STR = "migrate"
 REINSTALL_STR = "reinstall"
 
 class UpgradeExamineWindow (InstallWindow):		
@@ -48,6 +52,15 @@ class UpgradeExamineWindow (InstallWindow):
             else:
                 self.dispatch.skipStep("indivpackage")
             self.dispatch.skipStep("installtype", skip = 1)
+	elif self.domigrate:
+            # set the install class to be an migration
+            c = MigrateClass(flags.expert)
+            c.setSteps(self.dispatch)
+            c.setInstallData(self.id)
+
+	    rootfs = self.parts[self.upgradeoption.get_history()]
+            self.id.upgradeRoot = [(rootfs[0], rootfs[1])]
+            self.id.rootParts = self.parts
         else:
             self.dispatch.skipStep("installtype", skip = 0)
 
@@ -62,7 +75,16 @@ class UpgradeExamineWindow (InstallWindow):
                            "to upgrade your existing %s system.  "
                            "This option will preserve the "
                            "existing data on your drives.") %(productName,))
+	
+        r.addEntry(MIGRATE_STR,
+                   _("_Migrate an existing installation"),
+		   pixmap=self.ics.readPixmap("upgrade.png"),
+		   descr=_("Choose this option if you would like "
+                           "to reinstall your existing %s system.  "
+                           "This option will preserve the "
+                           "existing configuration data on your drives.") %(productName,))
         
+
 	r.addEntry(REINSTALL_STR,
                    _("_Install %s") %(productName,),
 		   pixmap=self.ics.readPixmap("install.png"),
@@ -79,8 +101,9 @@ class UpgradeExamineWindow (InstallWindow):
     def optionToggled(self, widget, name):
 	if name == UPGRADE_STR:
 	    self.upgradeOptionsSetSensitivity(widget.get_active())
-
 	    self.doupgrade = widget.get_active()
+	if name == MIGRATE_STR:
+	    self.domigrate = widget.get_active()
 
     #UpgradeExamineWindow tag = "upgrade"
     def getScreen (self, dispatch, intf, id, chroot):

@@ -37,6 +37,7 @@ from flags import flags
 from upgrade import upgradeFindPackages, upgradeMountFilesystems
 from upgrade import upgradeSwapSuggestion, upgradeMigrateFind
 from upgrade import findRootParts
+from migrate import findConfig
 from network import networkDeviceCheck
 from installmethod import doMethodComplete
 
@@ -64,6 +65,7 @@ installSteps = [
     ("setsanex", setSaneXSettings, ("id.xsetup",)),
     ("findrootparts", findRootParts, ("intf", "id", "dispatch", "dir", "instPath")),
     ("findinstall", ("dispatch", "intf", "id", "instPath")),
+    ("findconfig", findConfig, ("intf", "id", "instPath", "dir")),
     ("installtype", ("dispatch", "id", "method", "intf")),
     ("partitionmethod", ("id.partitions", "id.instClass")),
     ("partitionobjinit", partitionObjectsInitialize, ("id.diskset",
