@@ -403,7 +403,7 @@ def makeDriveDeviceNodes():
         if drive.startswith("hd"):
             num = 32
         elif drive.startswith("dasd"):
-            num = 3
+            num = 4
         else:
             num = 15
 
