@@ -112,8 +112,7 @@ class DefaultsWindow(InstallWindow):
         self.installTypeLabel.set_alignment(0.0, 0.5)
         installTypeButton = gtk.Button()
         buttonLabel = gtk.Label("")
-        buttonLabel.set_markup('<span foreground="#3030c0"><u>'
-                                    '%s</u></span>' % (_('Change'),))
+        buttonLabel.set_markup('<span foreground="#3030c0"><u>%s</u></span>' % (_('Change'),))
         installTypeButton.add(buttonLabel)
         installTypeButton.set_relief(gtk.RELIEF_NONE)
         installTypeButton.connect("clicked", self.installTypeClicked)
@@ -131,8 +130,7 @@ class DefaultsWindow(InstallWindow):
         self.keyboardLabel.set_alignment(0.0, 0.5)
         keyboardButton = gtk.Button()
         buttonLabel = gtk.Label("")
-        buttonLabel.set_markup('<span foreground="#3030c0"><u>'
-                                    '%s</u></span>' % (_('Change'),))
+        buttonLabel.set_markup('<span foreground="#3030c0"><u>%s</u></span>' % (_('Change'),))
         keyboardButton.add(buttonLabel)
         keyboardButton.set_relief(gtk.RELIEF_NONE)
         keyboardButton.connect("clicked", self.keyboardClicked)
@@ -150,8 +148,7 @@ class DefaultsWindow(InstallWindow):
         self.mouseLabel.set_alignment(0.0, 0.5)
         mouseButton = gtk.Button()
         buttonLabel = gtk.Label("")
-        buttonLabel.set_markup('<span foreground="#3030c0"><u>'
-                                    '%s</u></span>' % (_('Change'),))
+        buttonLabel.set_markup('<span foreground="#3030c0"><u>%s</u></span>' % (_('Change'),))
         mouseButton.add(buttonLabel)
         mouseButton.set_relief(gtk.RELIEF_NONE)
         mouseButton.connect("clicked", self.mouseClicked)
@@ -170,8 +167,7 @@ class DefaultsWindow(InstallWindow):
         self.networkLabel.set_alignment(0.0, 0.5)
         networkButton = gtk.Button()
         buttonLabel = gtk.Label("")
-        buttonLabel.set_markup('<span foreground="#3030c0"><u>'
-                                    '%s</u></span>' % (_('Change'),))
+        buttonLabel.set_markup('<span foreground="#3030c0"><u>%s</u></span>' % (_('Change'),))
         networkButton.add(buttonLabel)
         networkButton.set_relief(gtk.RELIEF_NONE)
         networkButton.connect("clicked", self.networkClicked)
@@ -181,18 +177,16 @@ class DefaultsWindow(InstallWindow):
         self.defaultsTable.attach(self.networkLabel, 2, 3, 3, 4, gtk.SHRINK|gtk.FILL)
         self.defaultsTable.attach(networkButton, 3, 4, 3, 4,  gtk.SHRINK, gtk.SHRINK)    
 
-
         icon = self.ics.readPixmap("gnome-globe.png")
         label = gtk.Label("")
         label.set_markup("<span foreground='#000000' size='large' font_family='Helvetica'><b>%s:</b></span>" % _("Language \nSupport"))
         label.set_alignment(0.0, 0.5)
 
-        self.langSupportLabel = gtk.Label(_("Automatically configured"))
+        self.langSupportLabel = gtk.Label(self.langSupport.getDefault())
         self.langSupportLabel.set_alignment(0.0, 0.5)
         langSupportButton = gtk.Button()
         buttonLabel = gtk.Label("")
-        buttonLabel.set_markup('<span foreground="#3030c0"><u>'
-                                    '%s</u></span>' % (_('Change'),))
+        buttonLabel.set_markup('<span foreground="#3030c0"><u>%s</u></span>' % (_('Change'),))
         langSupportButton.add(buttonLabel)
         langSupportButton.set_relief(gtk.RELIEF_NONE)
         langSupportButton.connect("clicked", self.langSupportClicked)
