@@ -6,13 +6,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-03-19 15:10+0100\n"
+"POT-Creation-Date: 2002-05-13 14:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Transfer-Encoding: 8bit\n"
 
 #: ../anaconda:320
 msgid ""
@@ -27,25 +27,25 @@ msgstr ""
 #: ../loader/devices.c:266 ../loader/devices.c:335 ../loader/devices.c:435
 #: ../loader/devices.c:480 ../loader/devices.c:500 ../loader/devices.c:532
 #: ../loader/kickstart.c:58 ../loader/kickstart.c:68 ../loader/kickstart.c:107
-#: ../loader/lang.c:102 ../loader/lang.c:299 ../loader/lang.c:611
-#: ../loader/loader.c:331 ../loader/loader.c:486 ../loader/loader.c:543
-#: ../loader/loader.c:911 ../loader/loader.c:973 ../loader/loader.c:1031
-#: ../loader/loader.c:1125 ../loader/loader.c:1217 ../loader/loader.c:1222
-#: ../loader/loader.c:1262 ../loader/loader.c:1289 ../loader/loader.c:1320
-#: ../loader/loader.c:1583 ../loader/loader.c:2306 ../loader/loader.c:2336
-#: ../loader/loader.c:2399 ../loader/loader.c:2414 ../loader/loader.c:2627
-#: ../loader/net.c:189 ../loader/net.c:276 ../loader/net.c:364
-#: ../loader/net.c:755 ../loader/net.c:788 ../loader/pcmcia.c:104
-#: ../loader/pcmcia.c:114 ../loader/pcmcia.c:131 ../loader/urls.c:79
-#: ../loader/urls.c:89 ../loader/urls.c:97 ../loader/urls.c:193
-#: ../loader/urls.c:271 ../loader/urls.c:276 ../loader/urls.c:282
-#: ../loader/urls.c:422 ../mouse.py:281 ../rescue.py:34 ../rescue.py:130
-#: ../rescue.py:151 ../rescue.py:167 ../rescue.py:173 ../text.py:289
-#: ../text.py:407 ../textw/bootdisk_text.py:66 ../textw/bootdisk_text.py:68
-#: ../textw/complete_text.py:51 ../textw/complete_text.py:66
-#: ../textw/complete_text.py:99 ../textw/confirm_text.py:24
-#: ../textw/confirm_text.py:36 ../textw/constants_text.py:20
-#: ../textw/fdasd_text.py:32 ../textw/fdisk_text.py:41
+#: ../loader/lang.c:27 ../loader/lang.c:102 ../loader/lang.c:299
+#: ../loader/lang.c:611 ../loader/loader.c:331 ../loader/loader.c:486
+#: ../loader/loader.c:543 ../loader/loader.c:911 ../loader/loader.c:973
+#: ../loader/loader.c:1031 ../loader/loader.c:1125 ../loader/loader.c:1217
+#: ../loader/loader.c:1222 ../loader/loader.c:1262 ../loader/loader.c:1289
+#: ../loader/loader.c:1320 ../loader/loader.c:1583 ../loader/loader.c:2306
+#: ../loader/loader.c:2336 ../loader/loader.c:2399 ../loader/loader.c:2414
+#: ../loader/loader.c:2627 ../loader/net.c:189 ../loader/net.c:276
+#: ../loader/net.c:364 ../loader/net.c:755 ../loader/net.c:788
+#: ../loader/pcmcia.c:104 ../loader/pcmcia.c:114 ../loader/pcmcia.c:131
+#: ../loader/urls.c:79 ../loader/urls.c:89 ../loader/urls.c:97
+#: ../loader/urls.c:193 ../loader/urls.c:271 ../loader/urls.c:276
+#: ../loader/urls.c:282 ../loader/urls.c:422 ../mouse.py:281 ../rescue.py:34
+#: ../rescue.py:130 ../rescue.py:151 ../rescue.py:167 ../rescue.py:173
+#: ../text.py:296 ../text.py:414 ../textw/bootdisk_text.py:66
+#: ../textw/bootdisk_text.py:68 ../textw/complete_text.py:51
+#: ../textw/complete_text.py:66 ../textw/complete_text.py:99
+#: ../textw/confirm_text.py:24 ../textw/confirm_text.py:36
+#: ../textw/constants_text.py:20 ../textw/fdisk_text.py:41
 #: ../textw/firewall_text.py:201 ../textw/network_text.py:148
 #: ../textw/silo_text.py:110 ../textw/silo_text.py:147
 #: ../textw/silo_text.py:160 ../xserver.py:51
@@ -166,7 +166,7 @@ msgid ""
 "%s.%s"
 msgstr ""
 
-#: ../autopart.py:976 ../bootloader.py:285 ../harddrive.py:236
+#: ../autopart.py:976 ../bootloader.py:294 ../harddrive.py:236
 #: ../iw/bootloader_gui.py:57 ../iw/bootloaderpassword_gui.py:29
 #: ../iw/fdasd_gui.py:92 ../iw/partition_gui.py:1295
 #: ../iw/partition_gui.py:1634 ../iw/upgrade_swap_gui.py:171
@@ -230,17 +230,17 @@ msgid ""
 "Are you sure you want to do this?"
 msgstr ""
 
-#: ../bootloader.py:286
+#: ../bootloader.py:295
 msgid ""
 "No kernel packages were installed on your system.  Your boot loader "
 "configuration will not be changed."
 msgstr ""
 
-#: ../bootloader.py:922
+#: ../bootloader.py:928
 msgid "Bootloader"
 msgstr ""
 
-#: ../bootloader.py:922
+#: ../bootloader.py:928
 msgid "Installing bootloader..."
 msgstr ""
 
@@ -271,15 +271,15 @@ msgstr ""
 #: ../fsset.py:968 ../harddrive.py:171 ../image.py:65 ../image.py:142
 #: ../iw/partition_gui.py:1254 ../iw/partition_gui.py:1331
 #: ../loader/devices.c:259 ../loader/devices.c:266 ../loader/devices.c:435
-#: ../loader/devices.c:480 ../loader/devices.c:500 ../loader/lang.c:102
-#: ../loader/loader.c:486 ../loader/loader.c:543 ../loader/loader.c:973
-#: ../loader/loader.c:1031 ../loader/loader.c:1217 ../loader/loader.c:1222
-#: ../loader/loader.c:1262 ../loader/loader.c:1320 ../loader/loader.c:2306
-#: ../loader/loader.c:2336 ../loader/loader.c:2414 ../loader/loader.c:2627
-#: ../loader/pcmcia.c:114 ../loader/pcmcia.c:131 ../loader/urls.c:79
-#: ../loader/urls.c:89 ../loader/urls.c:97 ../loader/urls.c:271
-#: ../loader/urls.c:276 ../packages.py:240 ../partitioning.py:1276
-#: ../partitioning.py:1307 ../textw/fdasd_text.py:73
+#: ../loader/devices.c:480 ../loader/devices.c:500 ../loader/lang.c:27
+#: ../loader/lang.c:102 ../loader/loader.c:486 ../loader/loader.c:543
+#: ../loader/loader.c:973 ../loader/loader.c:1031 ../loader/loader.c:1217
+#: ../loader/loader.c:1222 ../loader/loader.c:1262 ../loader/loader.c:1320
+#: ../loader/loader.c:2306 ../loader/loader.c:2336 ../loader/loader.c:2414
+#: ../loader/loader.c:2627 ../loader/pcmcia.c:114 ../loader/pcmcia.c:131
+#: ../loader/urls.c:79 ../loader/urls.c:89 ../loader/urls.c:97
+#: ../loader/urls.c:271 ../loader/urls.c:276 ../packages.py:240
+#: ../partitioning.py:1276 ../partitioning.py:1307 ../textw/fdasd_text.py:73
 #: ../textw/partition_text.py:947 ../textw/partition_text.py:959
 #: ../textw/upgrade_text.py:160 ../textw/upgrade_text.py:167
 #: ../textw/upgrade_text.py:190 ../textw/xconfig_text.py:422 ../upgrade.py:305
@@ -414,13 +414,13 @@ msgstr ""
 msgid "Formatting %s filesystem..."
 msgstr ""
 
-#: ../gui.py:111 ../text.py:286
+#: ../gui.py:111 ../text.py:293
 msgid "Fix"
 msgstr ""
 
 #: ../gui.py:112 ../iw/partition_gui.py:501 ../iw/partition_gui.py:658
 #: ../iw/partition_gui.py:723 ../iw/welcome_gui.py:97 ../loader/devices.c:230
-#: ../loader/loader.c:837 ../loader/net.c:922 ../text.py:287
+#: ../loader/loader.c:837 ../loader/net.c:922 ../text.py:294
 #: ../textw/bootdisk_text.py:26 ../textw/bootloader_text.py:78
 #: ../textw/constants_text.py:32 ../textw/upgrade_text.py:252
 msgid "Yes"
@@ -428,18 +428,18 @@ msgstr ""
 
 #: ../gui.py:113 ../iw/partition_gui.py:502 ../iw/partition_gui.py:660
 #: ../iw/partition_gui.py:725 ../iw/welcome_gui.py:100 ../loader/devices.c:231
-#: ../loader/net.c:922 ../text.py:288 ../textw/bootdisk_text.py:26
+#: ../loader/net.c:922 ../text.py:295 ../textw/bootdisk_text.py:26
 #: ../textw/bootdisk_text.py:55 ../textw/bootloader_text.py:78
 #: ../textw/constants_text.py:36 ../textw/upgrade_text.py:252
 #: ../textw/upgrade_text.py:259
 msgid "No"
 msgstr ""
 
-#: ../gui.py:115 ../loader/net.c:281 ../loader/net.c:409 ../text.py:290
+#: ../gui.py:115 ../loader/net.c:281 ../loader/net.c:409 ../text.py:297
 msgid "Retry"
 msgstr ""
 
-#: ../gui.py:116 ../text.py:291
+#: ../gui.py:116 ../text.py:298
 msgid "Ignore"
 msgstr ""
 
@@ -447,52 +447,59 @@ msgstr ""
 #: ../iw/partition_gui.py:854 ../iw/partition_gui.py:1346
 #: ../loader/devices.c:238 ../loader/devices.c:532 ../loader/loader.c:2399
 #: ../loader/pcmcia.c:104 ../text.py:117 ../text.py:118 ../text.py:256
-#: ../text.py:258 ../text.py:292 ../textw/bootloader_text.py:202
+#: ../text.py:258 ../text.py:299 ../textw/bootloader_text.py:202
 #: ../textw/constants_text.py:24 ../textw/silo_text.py:147
 #: ../textw/silo_text.py:165 ../textw/userauth_text.py:76
 #: ../textw/welcome_text.py:48 ../textw/welcome_text.py:51
 msgid "Cancel"
 msgstr ""
 
-#: ../gui.py:199 ../text.py:264
+#: ../gui.py:200 ../text.py:265
+msgid ""
+"An unhandled exception has occured.  This is most likely a bug.  Please copy "
+"the full text of this exception and file a detailed bug report against "
+"anaconda at http://bugzilla.redhat.com/bugzilla/"
+msgstr ""
+
+#: ../gui.py:206 ../text.py:271
 msgid ""
 "An unhandled exception has occured.  This is most likely a bug.  Please copy "
 "the full text of this exception or save the crash dump to a floppy then file "
-"a detailed bug report against anaconda at "
-"http://bugzilla.redhat.com/bugzilla/"
+"a detailed bug report against anaconda at http://bugzilla.redhat.com/"
+"bugzilla/"
 msgstr ""
 
-#: ../gui.py:320 ../text.py:254
+#: ../gui.py:327 ../text.py:254
 msgid ""
 "Please insert a floppy now. All contents of the disk will be erased, so "
 "please choose your diskette carefully."
 msgstr ""
 
-#: ../gui.py:387 ../gui.py:754
+#: ../gui.py:394 ../gui.py:761
 msgid "Online Help"
 msgstr ""
 
-#: ../gui.py:388 ../iw/language_gui.py:20 ../textw/language_text.py:38
+#: ../gui.py:395 ../iw/language_gui.py:20 ../textw/language_text.py:38
 msgid "Language Selection"
 msgstr ""
 
-#: ../gui.py:446 ../iw/firewall_gui.py:135
+#: ../gui.py:453 ../iw/firewall_gui.py:135
 msgid "Close"
 msgstr ""
 
-#: ../gui.py:451 ../gui.py:613
+#: ../gui.py:458 ../gui.py:620
 msgid "Release Notes"
 msgstr ""
 
-#: ../gui.py:482
+#: ../gui.py:489
 msgid "Unable to load file!"
 msgstr ""
 
-#: ../gui.py:503
+#: ../gui.py:510
 msgid "Release notes are missing.\n"
 msgstr ""
 
-#: ../gui.py:609 ../loader/cdrom.c:34 ../loader/devices.c:93
+#: ../gui.py:616 ../loader/cdrom.c:34 ../loader/devices.c:93
 #: ../loader/devices.c:238 ../loader/devices.c:335 ../loader/lang.c:611
 #: ../loader/loader.c:331 ../loader/loader.c:837 ../loader/loader.c:911
 #: ../loader/loader.c:1031 ../loader/loader.c:1125 ../loader/loader.c:1583
@@ -504,32 +511,32 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
-#: ../gui.py:611
+#: ../gui.py:618 ../textw/fdasd_text.py:32
 msgid "Next"
 msgstr ""
 
-#: ../gui.py:615
+#: ../gui.py:622
 msgid "Show Help"
 msgstr ""
 
-#: ../gui.py:617
+#: ../gui.py:624
 msgid "Hide Help"
 msgstr ""
 
-#: ../gui.py:659
+#: ../gui.py:666
 msgid "Red Hat Linux Installer"
 msgstr ""
 
-#: ../gui.py:674
+#: ../gui.py:681
 #, c-format
 msgid "Red Hat Linux Installer on %s"
 msgstr ""
 
-#: ../gui.py:717
+#: ../gui.py:724
 msgid "Unable to load title bar"
 msgstr ""
 
-#: ../gui.py:802
+#: ../gui.py:809
 msgid "Install Window"
 msgstr ""
 
@@ -1175,34 +1182,34 @@ msgstr ""
 msgid "Save Crash Dump"
 msgstr ""
 
-#: ../text.py:272 ../text.py:275
+#: ../text.py:279 ../text.py:282
 msgid "Save"
 msgstr ""
 
-#: ../text.py:272 ../text.py:273
+#: ../text.py:279 ../text.py:280
 msgid "Debug"
 msgstr ""
 
-#: ../text.py:307
+#: ../text.py:314
 msgid "Red Hat Linux (C) 2001 Red Hat, Inc."
 msgstr ""
 
-#: ../text.py:310
+#: ../text.py:317
 msgid ""
 " <F1> for help | <Tab> between elements | <Space> selects | <F12> next screen"
 msgstr ""
 
-#: ../text.py:312
+#: ../text.py:319
 msgid ""
 "  <Tab>/<Alt-Tab> between elements   |  <Space> selects   |  <F12> next "
 "screen"
 msgstr ""
 
-#: ../text.py:403
+#: ../text.py:410
 msgid "Cancelled"
 msgstr ""
 
-#: ../text.py:404
+#: ../text.py:411
 msgid "I can't go to the previous step from here. You will have to try again."
 msgstr ""
 
@@ -1434,9 +1441,9 @@ msgstr ""
 #: ../iw/account_gui.py:358
 msgid ""
 "Additional accounts can be created for other users of this system. Such "
-"accounts could be for a personal login account, or for other "
-"non-administrative users who need to use this system. Use the <Add> button "
-"to enter additional user accounts."
+"accounts could be for a personal login account, or for other non-"
+"administrative users who need to use this system. Use the <Add> button to "
+"enter additional user accounts."
 msgstr ""
 
 #: ../iw/auth_gui.py:21 ../textw/userauth_text.py:319
@@ -1581,7 +1588,7 @@ msgstr ""
 msgid "Install Boot Loader record on:"
 msgstr ""
 
-#: ../iw/bootloader_gui.py:325 ../iw/zipl_gui.py:101 ../textw/zipl_text.py:54
+#: ../iw/bootloader_gui.py:325 ../iw/zipl_gui.py:101 ../textw/zipl_text.py:52
 msgid "Kernel Parameters"
 msgstr ""
 
@@ -1691,8 +1698,8 @@ msgstr ""
 
 #: ../iw/confirm_gui.py:62
 msgid ""
-"A kickstart file representing the choices you have made will be in "
-"/root/anaconda-ks.cfg."
+"A kickstart file representing the choices you have made will be in /root/"
+"anaconda-ks.cfg."
 msgstr ""
 
 #: ../iw/confirm_gui.py:66 ../iw/confirm_gui.py:70
@@ -1732,8 +1739,8 @@ msgid ""
 "Remove any floppy diskettes you used during the installation process and "
 "press <Enter> to reboot your system. \n"
 "\n"
-"%sFor information on errata (updates and bug fixes), visit "
-"http://www.redhat.com/errata.\n"
+"%sFor information on errata (updates and bug fixes), visit http://www.redhat."
+"com/errata.\n"
 "\n"
 "Information on using and configuring your system is available in the Red Hat "
 "Linux manuals at http://www.redhat.com/support/manuals."
@@ -1745,8 +1752,8 @@ msgid ""
 "\n"
 "Press <Enter> to reboot your system. \n"
 "\n"
-"For information on errata (updates and bug fixes), visit "
-"http://www.redhat.com/errata.\n"
+"For information on errata (updates and bug fixes), visit http://www.redhat."
+"com/errata.\n"
 "\n"
 "Information on using and configuring your system is available in the Red Hat "
 "Linux manuals at http://www.redhat.com/support/manuals."
@@ -1756,8 +1763,8 @@ msgstr ""
 msgid ""
 "Congratulations, configuration is complete.\n"
 "\n"
-"For information on errata (updates and bug fixes), visit "
-"http://www.redhat.com/errata.\n"
+"For information on errata (updates and bug fixes), visit http://www.redhat."
+"com/errata.\n"
 "\n"
 "Information on using and configuring your system is available in the Red Hat "
 "Linux manuals at http://www.redhat.com/support/manuals."
@@ -2711,7 +2718,7 @@ msgstr ""
 msgid "z/IPL Boot Loader Configuration"
 msgstr ""
 
-#: ../iw/zipl_gui.py:74 ../textw/zipl_text.py:22
+#: ../iw/zipl_gui.py:74
 msgid ""
 "The z/IPL Boot Loader will now be installed on your system.\n"
 "\n"
@@ -2855,8 +2862,8 @@ msgid ""
 "Remove any floppy diskettes you used during the installation process and "
 "press <Enter> to reboot your system. \n"
 "\n"
-"%sFor information on errata (updates and bug fixes), visit "
-"http://www.redhat.com/errata.\n"
+"%sFor information on errata (updates and bug fixes), visit http://www.redhat."
+"com/errata.\n"
 "\n"
 "Information on using your system is available in the Red Hat Linux manuals "
 "at http://www.redhat.com/support/manuals."
@@ -2884,8 +2891,8 @@ msgstr ""
 msgid ""
 "Congratulations, configuration is complete.\n"
 "\n"
-"For information on errata (updates and bug fixes), visit "
-"http://www.redhat.com/errata.\n"
+"For information on errata (updates and bug fixes), visit http://www.redhat."
+"com/errata.\n"
 "\n"
 "Information on using your system is available in the Red Hat Linux manuals "
 "at http://www.redhat.com/support/manuals."
@@ -3473,8 +3480,8 @@ msgstr ""
 
 #: ../textw/userauth_text.py:116
 msgid ""
-"User IDs must be less than 8 characters and contain only characters A-Z, "
-"a-z, and 0-9."
+"User IDs must be less than 8 characters and contain only characters A-Z, a-"
+"z, and 0-9."
 msgstr ""
 
 #: ../textw/userauth_text.py:123
@@ -3726,9 +3733,8 @@ msgstr ""
 #: ../textw/xconfig_text.py:496
 #, c-format
 msgid ""
-"Please select the amount of video RAM present on your video card. Choose "
-"'%s' to reset the selection to the amount the installer detected on your "
-"card."
+"Please select the amount of video RAM present on your video card. Choose '%"
+"s' to reset the selection to the amount the installer detected on your card."
 msgstr ""
 
 #: ../textw/xconfig_text.py:569
@@ -3751,8 +3757,19 @@ msgstr ""
 msgid "Video RAM:"
 msgstr ""
 
-#: ../textw/zipl_text.py:50
+#: ../textw/zipl_text.py:23
+msgid ""
+"The z/IPL Boot Loader will be installed on your system after installations "
+"is complete. You can now enter any additional kernel and chandev parameters "
+"which your machine or your setup may require."
+msgstr ""
+
+#: ../textw/zipl_text.py:48
 msgid "z/IPL Configuration"
+msgstr ""
+
+#: ../textw/zipl_text.py:56 ../textw/zipl_text.py:60
+msgid "Chandev line "
 msgstr ""
 
 #: ../installclasses/custom.py:12
