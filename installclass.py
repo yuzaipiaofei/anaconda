@@ -116,31 +116,30 @@ class BaseInstallClass:
 	    #dispatch.skipStep("language")
 	    dispatch.skipStep("keyboard", permanent = 1)
 	    dispatch.skipStep("mouse", permanent = 1)
-	    dispatch.skipStep("network", permanent = 1)
-	    dispatch.skipStep("monitor", permanent = 1)
-	    dispatch.skipStep("xcustom", permanent = 1)
-	    dispatch.skipStep("videocard", permanent = 1)
-	    dispatch.skipStep("writexconfig", permanent = 1)
-            dispatch.skipStep("makebootdisk", permanent = 1) 
-	    dispatch.skipStep("partition", permanent = 1)
+
             dispatch.skipStep("partitionmethod", permanent = 1)
             dispatch.skipStep("partitionobjinit", permanent = 1)
             dispatch.skipStep("partitionmethodsetup", permanent = 1)
             dispatch.skipStep("autopartition", permanent = 1)
             dispatch.skipStep("autopartitionexecute", permanent = 1)
-            dispatch.skipStep("fdisk", permanent = 1)
+            #dispatch.skipStep("fdisk", permanent = 1)
             dispatch.skipStep("partition", permanent = 1)
             dispatch.skipStep("partitiondone", permanent = 1)
-            #id.partitions.useAutopartitioning = 0
-            #id.partitions.useFdisk = 1
+
+	    #dispatch.skipStep("network", permanent = 1)
+
+	    dispatch.skipStep("monitor", permanent = 1)
+	    dispatch.skipStep("xcustom", permanent = 1)
+	    dispatch.skipStep("videocard", permanent = 1)
+	    dispatch.skipStep("writexconfig", permanent = 1)
             
-	    #dispatch.skipStep("instbootloader")
-	    #dispatch.skipStep("format")
-	    #dispatch.skipStep("firewall")
-	    #dispatch.skipStep("authentication")
-	    # dispatch.skipStep("accounts")
-	    #dispatch.skipStep("xconfig")
-	    #dispatch.skipStep("lba32warning")
+	    dispatch.skipStep("partition", permanent = 1)
+            
+            dispatch.skipStep("bootloadersetup", permanent = 1)    
+            #dispatch.skipStep("bootloader", permanent = 1)
+            #dispatch.skipStep("bootloaderpassword", permanent = 1)
+
+            dispatch.skipStep("bootdisk", permanent = 1)
 
     # This is called after the hdlist is read in.
     def setPackageSelection(self, hdlist):
