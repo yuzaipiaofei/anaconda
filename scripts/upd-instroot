@@ -105,6 +105,10 @@ if [ $ARCH = ia64 ]; then
     PACKAGES="$PACKAGES elilo slang"
 fi
 
+if [ $ARCH = s390 -o $ARCH = s390x ]; then
+    PACKAGES="$PACKAGES s390utils oco-utils binutils"
+fi
+
 # xpm is missing
 
 # Some packages are listed twice, but that's okay
@@ -151,6 +155,10 @@ fi
 
 if [ $ARCH = ia64 ]; then
     PACKAGESGR="$PACKAGESGR elilo slang"
+fi
+
+if [ $ARCH = s390 -o $ARCH = s390x ]; then
+    PACKAGESGR="$PACKAGESGR s390utils oco-utils"
 fi
 
 KEEPFILE=/tmp/keepfile.$$
@@ -692,7 +700,7 @@ fi
 echo "Cleaning ramdisk install images..."
     rm -rf $DEST/usr/lib/anaconda-runtime
 
-if [ -n "$NEEDGR" ]; then
+if [ -n "$NEEDGR" -a "$ARCH" != "s390" -o "$ARCH" != "s390x" ]; then
     cd $ORIGDIR
     $DESTGR/usr/lib/anaconda-runtime/checkcards.py $DESTGR/usr/share/kudzu/pcitable $DESTGR/usr/X11R6/lib/X11/Cards
 fi
