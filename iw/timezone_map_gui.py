@@ -103,7 +103,7 @@ class TimezoneMap(gtk.VBox):
         self.listStore.set_sort_column_id(self.columns.TZ, gtk.SORT_ASCENDING)
 
         self.listView = gtk.TreeView(self.listStore)
-        self.exposeId = self.listView.connect("expose-event",
+        self.exposeId = self.listView.connect("event-after",
                                               self.listExposeEvent)
         selection = self.listView.get_selection()
         selection.connect("changed", self.selectionChanged)

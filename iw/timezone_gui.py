@@ -64,7 +64,6 @@ class TimezoneWindow (InstallWindow):
         
         if self.old_page == 0:
             newzone = self.tz.getCurrent().tz
-            print "newzone", newzone
             self.timezone.setTimezoneInfo (newzone, self.systemUTC.get_active ())
         else:
             timezone = self.timeZones[self.ulist.selection[0]][1]

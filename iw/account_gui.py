@@ -54,7 +54,8 @@ class AccountWindow (InstallWindow):
             else:
                 self.rootStatus.set_text (_("Root passwords do not match."))
                 
-            self.ics.setNextEnabled (gtk.FALSE)
+#            self.ics.setNextEnabled (gtk.FALSE)
+            self.ics.setNextEnabled (gtk.TRUE)
 
     def userOkay(self, *args):
 	accountName = self.accountName.get_text()
@@ -203,15 +204,15 @@ class AccountWindow (InstallWindow):
 
         #entry boxes
         self.accountName = gtk.Entry (8)
-        userTable.attach(self.accountName, 1, 2, 0, 1, SHRINK, SHRINK)
+        userTable.attach(self.accountName, 1, 2, 0, 1, gtk.SHRINK, gtk.SHRINK)
         self.fullName = gtk.Entry ()
-        userTable.attach(self.fullName, 1, 2, 1, 2, SHRINK, SHRINK)
+        userTable.attach(self.fullName, 1, 2, 1, 2, gtk.SHRINK, gtk.SHRINK)
         self.userPass1 = gtk.Entry ()
         self.userPass1.set_visibility(gtk.FALSE)
-        userTable.attach(self.userPass1, 1, 2, 2, 3, SHRINK, SHRINK)
+        userTable.attach(self.userPass1, 1, 2, 2, 3, gtk.SHRINK, gtk.SHRINK)
         self.userPass2 = gtk.Entry ()
         self.userPass2.set_visibility(gtk.FALSE)
-        userTable.attach (self.userPass2, 1, 2, 3, 4, SHRINK, SHRINK)
+        userTable.attach (self.userPass2, 1, 2, 3, 4, gtk.SHRINK, gtk.SHRINK)
 
         if data:
             index, account, password, password, name = data
@@ -221,11 +222,11 @@ class AccountWindow (InstallWindow):
             self.userPass2.set_text(password)
             
         self.accountName.grab_focus()
-        self.accountName.connect("changed", self.userOkay)
-        self.accountName.connect("insert-text", self.filter)
-        self.accountName.connect("activate", self.forward)
-        self.userPass1.connect("changed", self.userOkay)
-        self.userPass2.connect("changed", self.userOkay)
+#        self.accountName.connect("changed", self.userOkay)
+#        self.accountName.connect("insert-text", self.filter)
+#        self.accountName.connect("activate", self.forward)
+#        self.userPass1.connect("changed", self.userOkay)
+#        self.userPass2.connect("changed", self.userOkay)
         
         return userWin
         
@@ -289,7 +290,7 @@ class AccountWindow (InstallWindow):
         hbox.pack_start(a, gtk.FALSE, 20)
         box.pack_start(hbox, gtk.FALSE)
        
-        self.forward = lambda widget, box=box: box.focus (DIR_TAB_FORWARD)
+        self.forward = lambda widget, box=box: box.focus (gtk.DIR_TAB_FORWARD)
 
         table = gtk.Table (2, 2)
         table.set_row_spacings (5)
@@ -302,14 +303,15 @@ class AccountWindow (InstallWindow):
         pass2.set_alignment (0.0, 0.5)
         table.attach (pass2, 0, 1, 1, 2, gtk.FILL, 0, 10)
         self.pw = gtk.Entry (128)
-        self.pw.connect ("activate", self.forward)
-        self.pw.connect ("changed", self.rootPasswordsMatch)
-        self.pw.connect ("draw", self.setFocus)
+        
+#        self.pw.connect ("activate", self.forward)
+#        self.pw.connect ("changed", self.rootPasswordsMatch)
+#        self.pw.connect ("expose-event", self.setFocus)
         self.pw.set_visibility (gtk.FALSE)
         self.confirm = gtk.Entry (128)
-        self.confirm.connect ("activate", self.forward)
+#        self.confirm.connect ("activate", self.forward)
         self.confirm.set_visibility (gtk.FALSE)
-        self.confirm.connect ("changed", self.rootPasswordsMatch)
+#        self.confirm.connect ("changed", self.rootPasswordsMatch)
         table.attach (self.pw,      1, 2, 0, 1, gtk.FILL|gtk.EXPAND, 5)
         table.attach (self.confirm, 1, 2, 1, 2, gtk.FILL|gtk.EXPAND, 5)
 
@@ -350,7 +352,7 @@ class AccountWindow (InstallWindow):
 
         bb = gtk.VButtonBox ()
         bb.set_border_width (5)
-        bb.set_layout_default(BUTTONBOX_START)
+        bb.set_layout(gtk.BUTTONBOX_START)
         bb.pack_start (self.add)
         bb.pack_start (self.edit)
         bb.pack_start (self.delete)

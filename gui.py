@@ -75,9 +75,8 @@ else:
 # setup globals
 
 def processEvents():
-    gdk_flush()
-    while events_pending ():
-        mainiteration (gtk.FALSE)
+    while gtk.events_pending ():
+        gtk.mainiteration (gtk.FALSE)
 
 def partedExceptionWindow(exc):
     # if our only option is to cancel, let us handle the exception
