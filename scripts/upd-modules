@@ -17,7 +17,7 @@ EXCLUDENETMODULES="acenic"
 NOTBOOTMODULES="cpqarray DAC960 gdth ips pcd imm ppa eata_dma"
 
 PCMCIAMODULES="8390"
-BLOCKMODULES="raid0 raid1 raid5"
+BLOCKMODULES="raid0 raid1 raid5 vfat msdos"
 
 ARCH=$(uname -m | sed 's/i.86/i386/')
 
