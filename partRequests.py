@@ -204,8 +204,8 @@ class RequestSpec:
                         '/mnt', 'lost+found', '/proc']
         mustbeonlinuxfs = ['/', '/boot', '/var', '/tmp', '/usr', '/home']
 
-        # these are symlinks so you cant make them mount points
-        otherexcept = ['/var/mail', '/usr/bin/X11', '/usr/lib/X11', '/usr/tmp']
+	# these are symlinks so you cant make them mount points
+	otherexcept = ['/var/mail', '/usr/bin/X11', '/usr/lib/X11', '/usr/tmp']
 
         if not self.mountpoint:
             return None
