@@ -48,8 +48,11 @@ class DefaultsWindow(InstallWindow):
     
         
     # MouseWindow tag="mouse"
-    def getScreen(self, defaultKeyboard, defaultLang, keyboard, mouse):
-        print "in defaults getScreen", defaultKeyboard, keyboard
+    def getScreen(self, defaultLang, keyboard, mouse):
+        print "in defaults getScreen", keyboard
+
+        print keyboard.get()
+
 #        print dir(defaultLang)
 #        print defaultLang.getCurrent()
 #        print defaultLang.current
@@ -58,7 +61,6 @@ class DefaultsWindow(InstallWindow):
 #        print dir(timezone)
 #        print timezone.getTimezoneInfo()
         
-        self.defaultKeyboard = defaultKeyboard
         self.keyboard = keyboard
 	self.mouse = mouse
 
@@ -91,7 +93,7 @@ class DefaultsWindow(InstallWindow):
         label = gtk.Label("")
         label.set_markup("<span foreground='#000000' size='large' font_family='Helvetica'><b>%s:</b></span>" % _("Keyboard"))
         label.set_alignment(0.0, 0.5)
-        self.keyboardLabel = gtk.Label(self.keyboard.modelDict[self.defaultKeyboard][0])
+        self.keyboardLabel = gtk.Label(self.keyboard.modelDict[self.keyboard.get()][0])
         self.keyboardLabel.set_alignment(0.0, 0.5)
         keyboardButton = gtk.Button()
         buttonLabel = gtk.Label("")
@@ -178,7 +180,7 @@ class DefaultsWindow(InstallWindow):
         print "keyboard clicked", keyboard_gui
         print dir(keyboard_gui)
         app = keyboard_gui.childWindow()
-        app.anacondaScreen(self.defaultKeyboard, self.keyboardLabel, self.keyboard, self.keyboard)
+        app.anacondaScreen(self.keyboardLabel, self.keyboard, self.keyboard)
 
     def mouseClicked(self, *args):
         print "mouse clicked", mouse_gui, self.mouse
