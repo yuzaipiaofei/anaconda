@@ -935,8 +935,7 @@ class PartitionWindow(InstallWindow):
     def deleteCb(self, widget):
         curselection = self.tree.getCurrentPartition()
 
-        if (iutil.getArch() == "s390":
-            and type(partition) != type("RAID"):
+        if iutil.getArch() == "s390" and type(partition) != type("RAID"):
             self.intf.messageWindow(_("Error"),
                                     _("DASD partitions can only be deleted with fdasd"))
             return

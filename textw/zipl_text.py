@@ -41,16 +41,16 @@ class ZiplWindow:
             if len(cdevs) > 1:
                 chandeventry2.set(string.join(cdevs[1:],';'))
 
-	     buttons = ButtonBar(screen, [TEXT_OK_BUTTON,
-			     TEXT_BACK_BUTTON ] )
+        buttons = ButtonBar(screen, [TEXT_OK_BUTTON,
+                            TEXT_BACK_BUTTON ] )
 
-	     grid = GridFormHelp(screen, _("z/IPL Configuration"), 
-			    "zipl-s390", 1, 5)
-	     grid.add(t, 0, 0)
-             sg = Grid(2, 1)
-	     sg.setField(Label(_("Kernel Parameters") + ": "), 0, 0, anchorLeft=1)
-	     sg.setField(kernelentry, 1, 0, anchorLeft=1)
-	     grid.add(sg, 0, 1, padding = (0, 1, 0, 1))
+        grid = GridFormHelp(screen, _("z/IPL Configuration"), 
+                            "zipl-s390", 1, 5)
+        grid.add(t, 0, 0)
+        sg = Grid(2, 1)
+        sg.setField(Label(_("Kernel Parameters") + ": "), 0, 0, anchorLeft=1)
+        sg.setField(kernelentry, 1, 0, anchorLeft=1)
+        grid.add(sg, 0, 1, padding = (0, 1, 0, 1))
         sg.setField(Label(_("Chandev line ") + "1: "), 0, 0, anchorLeft=1)
         sg.setField(chandeventry1, 1, 0, anchorLeft=1)
         sg = Grid(2, 1)
@@ -58,7 +58,7 @@ class ZiplWindow:
         sg.setField(chandeventry2, 1, 0, anchorLeft=1)
         grid.add(sg, 0, 3, padding = (0, 1, 0, 1))
         grid.add(buttons, 0, 4, growx = 1)
-	     sg = Grid(2, 1)
+        sg = Grid(2, 1)
 
         result = grid.runOnce ()
         button = buttons.buttonPressed(result)
@@ -66,9 +66,9 @@ class ZiplWindow:
         if button == TEXT_BACK_CHECK:
             return INSTALL_BACK
 
-	     if kernelentry.value():
+        if kernelentry.value():
             bl.args.set(string.strip(kernelentry.value()))
-	     else:
+        else:
             bl.args.set("")
 
         cdevs = []

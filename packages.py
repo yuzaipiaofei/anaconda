@@ -890,43 +890,44 @@ def doPostInstall(method, id, intf, instPath):
 		# we need to unmount usbdevfs before mounting it
 		usbWasMounted = iutil.isUSBDevFSMounted()
 		if usbWasMounted:
-			isys.umount('/proc/bus/usb', removeDir = 0)
+		    isys.umount('/proc/bus/usb', removeDir = 0)
 
 		    # see if unmount suceeded, if not pretent it isnt mounted
 		    # because we're screwed anywyas if system is going to
 		    # lock up
 		    if iutil.isUSBDevFSMounted():
-				usbWasMounted = 0
-                unmountUSB = 0
-                try:
-                    isys.mount('/usbdevfs', instPath+'/proc/bus/usb', 'usbdevfs')
-                    unmountUSB = 1
-                except:
-                    log("Mount of /proc/bus/usb in chroot failed")
-                    pass
+		        usbWasMounted = 0
 
-                argv = [ "/usr/sbin/kudzu", "-q" ]
-                devnull = os.open("/dev/null", os.O_RDWR)
-                iutil.execWithRedirect(argv[0], argv, root = instPath,
-                                       stdout = devnull)
-                # turn it back on            
-                if mousedev:
-                    try:
-                        os.rename ("/dev/disablemouse", mousedev)
-                    except OSError:
-                        pass
-                    try:
-                        xmouse.reopen()
-                    except RuntimeError:
-                        pass
+		unmountUSB = 0
+		try:
+		    isys.mount('/usbdevfs', instPath+'/proc/bus/usb', 'usbdevfs')
+		    unmountUSB = 1
+		except:
+		    log("Mount of /proc/bus/usb in chroot failed")
+		    pass
 
-                if unmountUSB:
-                    isys.umount(instPath + '/proc/bus/usb', removeDir = 0)
+		argv = [ "/usr/sbin/kudzu", "-q" ]
+		devnull = os.open("/dev/null", os.O_RDWR)
+		iutil.execWithRedirect(argv[0], argv, root = instPath,
+		                       stdout = devnull)
+		# turn it back on            
+		if mousedev:
+		    try:
+		        os.rename ("/dev/disablemouse", mousedev)
+		    except OSError:
+		        pass
+		    try:
+		        xmouse.reopen()
+		    except RuntimeError:
+		        pass
 
-        else:         # S390
-            securetty = open(instPath + '/etc/securetty','a+')
-            securetty.write("console\n")
-            securetty.close()
+		if unmountUSB:
+		    isys.umount(instPath + '/proc/bus/usb', removeDir = 0)
+
+	    else:         # S390
+		securetty = open(instPath + '/etc/securetty','a+')
+		securetty.write("console\n")
+		securetty.close()
 
 		if usbWasMounted:
 		    isys.mount('/usbdevfs', '/proc/bus/usb', 'usbdevfs')

@@ -22,6 +22,7 @@ from rhpl.translate import _, N_
 import network
 import checklist
 import ipwidget
+import iutil
 
 global_options = [_("Gateway"), _("Primary DNS"),
 		  _("Secondary DNS"), _("Tertiary DNS")]

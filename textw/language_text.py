@@ -67,7 +67,7 @@ class LanguageWindow:
             os.environ["LANG"] = "ja_JP.eucJP"
             os.environ["LC_ALL"] = "ja_JP.eucJP"
             os.environ["LC_NUMERIC"] = "C"
-            if (iutil.getArch() != "s390":
+            if iutil.getArch() != "s390":
                 if os.access("/tmp/updates/anaconda", os.X_OK):
                     prog = "/tmp/updates/anaconda"
                 else:
