@@ -1206,8 +1206,8 @@ static int loadSingleUrlImage(struct iurlinfo * ui, char * file, int flags,
 static int loadUrlImages(struct iurlinfo * ui, int flags) {
     setupRamdisk();
 
-    if (loadSingleUrlImage(ui, "RedHat/base/netstg1b.img", flags, 
-			   "/tmp/ramfs/netstg1b.img",
+    if (loadSingleUrlImage(ui, "RedHat/base/netstg1.img", flags, 
+			   "/tmp/ramfs/netstg1.img",
 			   "/mnt/runtime", "loop0")) {
 	newtWinMessage(ui->protocol == URL_METHOD_FTP ?
 			_("FTP") : _("HTTP"), _("Ok"), 
