@@ -49,6 +49,7 @@ class EliloConfiguration:
 	bootpart = fstab.getBootDevice()
 	boothd = fstab.getMbrDevice()
 
+	elilo.addEntry("prompt", replace = 0)
 	elilo.addEntry("timeout", "50", replace = 0)
 
 	smpInstalled = (hdList.has_key('kernel-smp') and 
