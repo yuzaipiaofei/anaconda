@@ -350,7 +350,7 @@ class PackageDepWindow:
         result = g.runOnce ()
 
         rc = bb.buttonPressed (result)
-        if rc == string.lower (_("Back")):
+        if rc == string.lower (_("back")):
             todo.comps.setSelectionState(origSelection)
             return INSTALL_BACK
 
