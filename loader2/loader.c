@@ -945,6 +945,7 @@ int main(int argc, char ** argv) {
      * in future tables rather than replace the initial one */
     pciReadDrivers("/modules/pcitable");
 
+#if !defined (__s390__) && !defined (__s390x__)
     if ((access("/proc/bus/pci/devices", R_OK) &&
          access("/proc/openprom", R_OK) &&
          access("/proc/iSeries", R_OK)) || FL_MODDISK(flags)) {
@@ -953,6 +954,7 @@ int main(int argc, char ** argv) {
         loadDriverDisks(CLASS_UNSPEC, modLoaded, &modDeps, 
                         modInfo, &kd, flags);
     }
+#endif
 
     busProbe(modInfo, modLoaded, modDeps, 0, &kd, flags);
 
@@ -1013,11 +1015,11 @@ int main(int argc, char ** argv) {
     /* we might have already loaded these, but trying again doesn't hurt */
     ideSetup(modLoaded, modDeps, modInfo, flags, &kd);
     scsiSetup(modLoaded, modDeps, modInfo, flags, &kd);
-    dasdSetup(modLoaded, modDeps, modInfo, flags, &kd);
     busProbe(modInfo, modLoaded, modDeps, 0, &kd, flags);
 
     checkForHardDrives(&kd, &flags);
 
+#if !defined(__s390__) && !defined(__s390x__)
     if (((access("/proc/bus/pci/devices", R_OK) &&
           access("/proc/openprom", R_OK) &&
           access("/proc/iSeries", R_OK)) ||
@@ -1025,6 +1027,7 @@ int main(int argc, char ** argv) {
         startNewt(flags);
         manualDeviceCheck(modInfo, modLoaded, &modDeps, &kd, flags);
     }
+#endif
     
 
     if (FL_UPDATES(flags)) 
