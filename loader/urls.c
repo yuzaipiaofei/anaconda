@@ -116,7 +116,7 @@ int urlinstFinishTransfer(struct iurlinfo * ui, int fd) {
 }
 
 int setupRemote(struct iurlinfo * ui) {
-    char *env, *d;
+    char *env, *d, *e;
      
     if (!(env = getenv("RPMSERVER")))
 	return 0;
@@ -126,9 +126,18 @@ int setupRemote(struct iurlinfo * ui) {
     else if (!strncmp(env, "http://",7))
 	env += 7;
 
-    if (!(d = index (env, '/')))
+    if (!(d = index (env, '/'))) {
 	d = "";
-    ui->prefix = strdup(d);
+        ui->prefix = strdup(d);
+    }
+    else   /* make sure the path either starts with a / or a ~ */
+	if(*d != '/') {
+		ui->prefix = (char *)malloc(strlen(d)+2);
+		*ui->prefix = '/';
+		strcat(ui->prefix, d);
+	}
+	else ui->prefix = strdup(d);
+
     ui->address = strdup(env);
     if (ui->address && (d = index (ui->address, '/')))
 	*d = '\0';
