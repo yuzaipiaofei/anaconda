@@ -562,7 +562,7 @@ class ToDo:
                 # correctly, but MILO is _such_ a pain to build
                 # that I don't want to deal with it right now.
                 if arch == "alpha" and mntpoint == kernelPart:
-                    args = args + ["-b", "1024", '-r', '0']
+                    args = args + ["-b", "1024", '-r', '-O', 'none']
                 # set up raid options for md devices.
                 if device[:2] == 'md':
                     for (rmnt, rdevice, fsType, raidType, start, size, makeup) in raid:
