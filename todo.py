@@ -16,7 +16,6 @@ import socket
 import crypt
 import sys
 import whrandom
-import pcmcia
 import _balkan
 import kudzu
 from simpleconfig import SimpleConfigFile
@@ -33,13 +32,6 @@ import os.path
 import upgrade
 from translate import _
 from log import log
-
-class Desktop (SimpleConfigFile):
-    def __init__ (self):
-        SimpleConfigFile.__init__ (self)
-
-    def set (self, desktop):
-        self.info ['DESKTOP'] = desktop
 
 class ToDo:
     def __init__(self, intf, method, rootPath, setupFilesystems = 1,
@@ -180,13 +172,6 @@ class ToDo:
 	if self.serial: return
 	# XXX
 	#self.mouse.writeConfig(self.instPath)
-
-    def writeDesktop(self):
-        desktop = Desktop ()
-        desktop.set (self.instClass.getDesktop())
-	f = open(self.instPath + "/etc/sysconfig/desktop", "w")
-	f.write(str (desktop))
-	f.close()
 
     def needBootdisk (self):
 	if self.bootdisk or self.fstab.rootOnLoop(): return 1
