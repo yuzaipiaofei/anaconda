@@ -119,7 +119,7 @@ class BaseInstallClass:
             dispatch.skipStep("bootloaderpassword")
             dispatch.skipStep("fdasd", permanent = 1)
         elif iutil.getArch() == "s390" or iutil.getArch() == "s390x":
-	    dispatch.skipStep("language")
+	    #dispatch.skipStep("language")
 	    dispatch.skipStep("keyboard", permanent = 1)
 	    dispatch.skipStep("mouse", permanent = 1)
 
