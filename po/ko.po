@@ -3011,8 +3011,8 @@ msgstr ""
 
 #: ../libfdisk/fsedit.c:986
 #, c-format
-msgid "On this platform, /boot must be on a DOS-compatible filesystem %x."
-msgstr "이 플랫폼에서는, '/boot' 가 DOS-호환 파일시스템 %x 에 위치해야 합니다."
+msgid "On this platform, /boot/efi must be on a DOS-compatible filesystem %x."
+msgstr "이 플랫폼에서는, '/boot/efi' 가 DOS-호환 파일시스템 %x 에 위치해야 합니다."
 
 #: ../libfdisk/fsedit.c:996
 #, c-format

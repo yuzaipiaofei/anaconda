@@ -3015,9 +3015,9 @@ msgstr ""
 
 #: ../libfdisk/fsedit.c:986
 #, c-format
-msgid "On this platform, /boot must be on a DOS-compatible filesystem %x."
+msgid "On this platform, /boot/efi must be on a DOS-compatible filesystem %x."
 msgstr ""
-"Pe acest sistem directorul /boot trebuie sã fie asignat unei partiþii de tip "
+"Pe acest sistem directorul /boot/efi trebuie sã fie asignat unei partiþii de tip "
 "DOS sau compatibilã DOS %x."
 
 #: ../libfdisk/fsedit.c:996

@@ -3091,9 +3091,9 @@ msgstr ""
 
 #: ../libfdisk/fsedit.c:986
 #, c-format
-msgid "On this platform, /boot must be on a DOS-compatible filesystem %x."
+msgid "On this platform, /boot/efi must be on a DOS-compatible filesystem %x."
 msgstr ""
-"Auf dieser Plattform muss sich /boot in einem DOS-kompatiblen Dateisystem %x "
+"Auf dieser Plattform muss sich /boot/efi in einem DOS-kompatiblen Dateisystem %x "
 "befinden."
 
 #: ../libfdisk/fsedit.c:996

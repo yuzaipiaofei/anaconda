@@ -138,6 +138,7 @@ int dospReadTable(int fd, struct partitionTable * table) {
 	      case 0x0b:
 	      case 0x0c:
 	      case 0x0e:
+	      case 0xef:
 		table->parts[i].type = BALKAN_PART_DOS;
 		break;
 

@@ -3002,9 +3002,9 @@ msgstr ""
 
 #: ../libfdisk/fsedit.c:986
 #, c-format
-msgid "On this platform, /boot must be on a DOS-compatible filesystem %x."
+msgid "On this platform, /boot/efi must be on a DOS-compatible filesystem %x."
 msgstr ""
-"На ц╕й платформ╕ розд╕л /boot ма╓ знаходитися на розд╕л╕ з файловою "
+"На ц╕й платформ╕ розд╕л /boot/efi ма╓ знаходитися на розд╕л╕ з файловою "
 "системою, яка сум╕сна з DOS: %x."
 
 #: ../libfdisk/fsedit.c:996
