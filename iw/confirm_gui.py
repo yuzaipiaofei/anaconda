@@ -54,13 +54,13 @@ class ConfirmWindow (InstallWindow):
 class InstallConfirmWindow (ConfirmWindow):
     windowTitle = N_("About to Install")
     htmlTag = "aboutinstall"
-    text = _("A complete log of your installation will be in "
-	     "/tmp/install.log after rebooting your system. You "
-	     "may want to keep this file for later reference. ")
-    kstext = _("A kickstart file representing the choices you have made "
-             "will be in /root/anaconda-ks.cfg.")
 
     def getScreen(self):
+        text = _("A complete log of your installation will be in "
+	     "/tmp/install.log after rebooting your system. You "
+	     "may want to keep this file for later reference. ")
+        kstext = _("A kickstart file representing the choices you have made "
+             "will be in /root/anaconda-ks.cfg.")
         if iutil.getArch() == "s390" or iutil.getArch() == "s390x":
 	    return ConfirmWindow.getScreen(self,
 	        _("Click next to begin installation of Red Hat Linux."),
