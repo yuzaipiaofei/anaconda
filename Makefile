@@ -118,3 +118,6 @@ pycheck:
 
 pycheck-file:
 	PYTHONPATH=.:isys:balkan:textw:iw:installclasses:gnome-map:iconvmodule:booty:booty/edd pychecker $(CHECK) | grep -v "__init__() not called" 
+
+check:
+	@cvs status 2>/dev/null | grep File: | grep -v Up-to

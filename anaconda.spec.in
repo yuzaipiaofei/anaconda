@@ -1,4 +1,4 @@
-ExclusiveArch: i386 
+ExclusiveArch: i386 s390 s390x
 Name: anaconda
 Version: @@VERSION@@
 Release: @@RELEASE@@
