@@ -29,7 +29,10 @@ global_options = [_("Gateway"), _("Primary DNS"),
 class NetworkWindow(InstallWindow):		
 
     windowTitle = N_("Network Configuration")
-    htmlTag = "netconf"
+    if iutil.getArch() == "s390" or iutil.getArch() == "s390x":
+        htmlTag = "netconf-s390"
+    else:
+        htmlTag = "netconf"
 
     def __init__(self, ics):
 	InstallWindow.__init__(self, ics)

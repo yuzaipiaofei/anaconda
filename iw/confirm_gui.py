@@ -56,13 +56,19 @@ class InstallConfirmWindow (ConfirmWindow):
     htmlTag = "aboutinstall"
 
     def getScreen(self):
-	return ConfirmWindow.getScreen(self,
-	    _("Click next to begin installation of %s.") % (productName,),
-	    _("A complete log of your installation will be in "
-	      "/root/install.log after rebooting your system. You "
-	      "may want to keep this file for later reference. "
-              "A kickstart file representing the choices you have made "
-              "will be in /root/anaconda-ks.cfg."))
+        text = _("A complete log of your installation will be in "
+            "/tmp/install.log after rebooting your system. You "
+            "may want to keep this file for later reference. ")
+        kstext = _("A kickstart file representing the choices you have made "
+             "will be in /root/anaconda-ks.cfg.")
+        if iutil.getArch() == "s390" or iutil.getArch() == "s390x":
+           return ConfirmWindow.getScreen(self,
+               _("Click next to begin installation of Red Hat Linux."),
+                text)
+        else:
+           return ConfirmWindow.getScreen(self,
+              _("Click next to begin installation of Red Hat Linux."),
+               text + kstext)
 
 class UpgradeConfirmWindow (ConfirmWindow):
     windowTitle = N_("About to Upgrade")

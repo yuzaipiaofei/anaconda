@@ -157,13 +157,19 @@ class Catalog:
 				del f
 				break
 			except IOError:
-				pass
+				try:
+					f = os.open(catalog, os.O_RDONLY)
+					buffer = f.read()
+					f.close()
+					del f
+				except OSError:
+					pass
 		else:
 			return # assume C locale
 
 		if _StrToInt(buffer[:4]) != 0x950412de:
 			# magic number doesn't match
-			raise error, 'Bad magic number in %s' % (catalog,)
+			raise error, 'Bad magic number in %s / %lx' % (catalog,_StrToInt(buffer[:4]))
 
 		self.revision = _StrToInt(buffer[4:8])
 		nstrings = _StrToInt(buffer[8:12])

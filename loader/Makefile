@@ -36,6 +36,8 @@ ISYS = ../isys/libisys.a
 GUNZIP = ../isys/gzlib/libgunzip.a
 LOADERLIBS = -lpci
 
+LANGS = $(shell awk '{ print $$2 }' ../lang-table | egrep -v '(^en$$)')
+
 # XXX Japanese is i386 only at the moment
 ifeq (i386, $(ARCH))
 BINS += loader-local loader-network loader-pcmcia
@@ -58,13 +60,13 @@ endif
 
 ifeq (s390, $(ARCH))
 BINS += loader
-OBJS += stubs.o
+LANGS = $(shell awk '{ print $$2 }' ../lang-table | egrep -v '(^en$$)')
 S390FILES = load_anaconda
 endif
 
 ifeq (s390x, $(ARCH))
 BINS += loader
-OBJS += stubs.o
+LANGS = $(shell awk '{ print $$2 }' ../lang-table | egrep -v '(^en$$)')
 S390FILES = load_anaconda
 endif
 
@@ -105,8 +107,6 @@ STATIC=-static
 endif
 endif
 
-LANGS = $(shell awk '{ print $$2 }' ../lang-table | egrep -v '(^en$$)')
-
 TR = $(patsubst %,tr/%.tr,$(LANGS))
 TRFILES = $(patsubst %,%.tr,$(LANGS))
 
@@ -135,6 +135,9 @@ install: all
 	done
 	install -m 644 loader.tr $(DESTDIR)/$(RUNTIMEDIR)/loader
 	install -m 644 module-info $(DESTDIR)/$(RUNTIMEDIR)/loader
+	for n in $(S390FILES); do \
+	    install -m 755 s390/$$n $(DESTDIR)/$(RUNTIMEDIR)/loader; \
+	done
 	install -m 644 kon.cfg $(DESTDIR)/$(RUNTIMEDIR)/loader
 	install -m 644 minikon.fnt $(DESTDIR)/$(RUNTIMEDIR)/loader
 

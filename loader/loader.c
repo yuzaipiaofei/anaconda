@@ -500,6 +500,9 @@ char * validIsoImages(char * dirName) {
     while ((ent = readdir(dir))) {
 	sprintf(isoImage, "%s/%s", dirName, ent->d_name);
 
+        if(!strncmp(ent->d_name,".",strlen(ent->d_name))) continue;
+        if(!strncmp(ent->d_name,"..",strlen(ent->d_name))) continue;
+
 	if (fileIsIso(isoImage)) {
 	    errno = 0;
 	    continue;
@@ -953,6 +956,7 @@ static char * mountHardDrive(struct installMethod * method,
     static struct networkDeviceConfig netDev;
     struct iurlinfo ui;
     char * devName;
+    char c;
 #endif
     struct {
 	char name[20];
@@ -1525,6 +1529,9 @@ static char * mountNfsImage(struct installMethod * method,
 
 	  case NFS_STAGE_NFS:
 	    if (nfsGetSetup(&host, &dir) == LOADER_BACK)
+#if defined (__s390__) || defined (__s390x__)
+		return NULL;
+#endif
 		stage = NFS_STAGE_IP;
 	    else
 		stage = NFS_STAGE_MOUNT;
@@ -1728,6 +1735,9 @@ static char * mountUrlImage(struct installMethod * method,
 	  case URL_STAGE_MAIN:
 	    rc = urlMainSetupPanel(&ui, proto, &needsSecondary);
 	    if (rc) {
+#if defined (__s390__) || defined (__s390x__)
+		        return NULL;
+#endif
 			stage = URL_STAGE_IP;
 			dir = -1;
 	    } else {
@@ -1846,7 +1856,12 @@ static char * doMountImage(char * location,
 
 #if defined(__alpha__) || defined(__ia64__) \
     || defined(__s390__ ) || defined(__s390x__)
-    for (i = ; i < numMethods; i++) {
+#if defined (__s390__) || defined (__s390x__)
+    i = 1;  /* No CDROM */
+#else
+    i = 0;
+#endif
+    for (; i < numMethods; i++) {
 	installNames[numValidMethods] = _(installMethods[i].name);
 	validMethods[numValidMethods++] = i;
     }
@@ -1922,9 +1937,7 @@ static char * doMountImage(char * location,
     while (step != STEP_DONE) {
 	switch (step) {
 	case STEP_LANG:
-#if !defined (__s390__) && !defined (__s390x__)
 	    chooseLanguage(lang, flags);
-#endif
 	    defaultLang = 0;
 	    step = STEP_KBD;
             dir = 1;
@@ -2995,9 +3008,6 @@ static int usbInitialize(moduleList modLoaded, moduleDeps modDeps,
 static void usbInitializeMouse(moduleList modLoaded, moduleDeps modDeps,
 			      moduleInfoSet modInfo, int flags) {
 
-#if !defined (__s390__) && !defined (__s390x__)
-	return;
-#else
     if (FL_NOUSB(flags)) return;
 
     if (access("/proc/bus/usb/devices", R_OK)) return;
@@ -3010,7 +3020,6 @@ static void usbInitializeMouse(moduleList modLoaded, moduleDeps modDeps,
 	    return;
 	}
     }
-#endif
 }
 
 
@@ -3215,6 +3224,12 @@ int main(int argc, char ** argv) {
 	    flags |= LOADER_FLAGS_SERIAL;
     }
 
+#if defined (__s390__) || defined (__s390x__)
+    textdomain("anaconda");
+    /* modules.conf is already written on S/390 by linuxrc. There`s no
+     * parallel port on S/390
+     */
+#else
     /* don't start modules.conf if continuing as there could be modules 
        already loaded from a driver disk */
     if ((!FL_TESTING(flags)) && !continuing) {
@@ -3234,6 +3249,7 @@ int main(int argc, char ** argv) {
 	    close(fd);
 	}
     }
+#endif
     
     optCon = poptGetContext(NULL, argc, (const char **) argv, optionTable, 0);
 
@@ -3275,7 +3291,11 @@ int main(int argc, char ** argv) {
 	exit(1);
     }
 
-    openLog(FL_TESTING(flags));
+#if !defined (__s390__) && !defined (__s390x__)
+    openLog(FL_TESTING(flags)+1);
+#else
+    openLog(1);
+#endif
     if (!FL_TESTING(flags))
 		openlog("loader", 0, LOG_LOCAL0);
 
@@ -3286,12 +3306,8 @@ int main(int argc, char ** argv) {
     modDeps = mlNewDeps();
     mlLoadDeps(&modDeps, "/modules/modules.dep");
 
+#if !defined (__s390__) && !defined (__s390x__)
     mlLoadModuleSet("cramfs:vfat", modLoaded, modDeps, modInfo, flags);
-
-
-#if defined (__s390__) || defined (__s390x__)
-    mlLoadModule("loop", NULL, modLoaded, modDeps, NULL, modInfo, flags);
-#endif
 
     if (!continuing) {
 	ideSetup(modLoaded, modDeps, modInfo, flags, &kd);
@@ -3310,6 +3326,10 @@ int main(int argc, char ** argv) {
 	kickstartFromFloppy(ksFile, modLoaded, &modDeps, flags);
 	flags |= LOADER_FLAGS_KICKSTART;
     }
+#else
+    mlLoadModuleSet("cramfs:loop", modLoaded, modDeps, modInfo, flags);
+#endif
+
 
 #ifdef INCLUDE_KON
     if (continuing)
@@ -3340,6 +3360,7 @@ int main(int argc, char ** argv) {
     kdFindNetList(&kd, continuing ? 0 : CODE_PCMCIA);
 #endif
 
+#if !defined (__s390__) && !defined (__s390x__)
     /* we have to explicitly read this to let libkudzu know we want to
        merge in future tables rather then replace the initial one */
     pciReadDrivers("/modules/pcitable");
@@ -3355,6 +3376,7 @@ int main(int argc, char ** argv) {
 	busProbe(modInfo, modLoaded, modDeps, probeOnly, &kd, flags);
 	if (probeOnly) exit(0);
     }
+#endif
 
     if (FL_KSHD(flags)) {
 	ksFile = "/tmp/ks.cfg";
@@ -3430,8 +3452,19 @@ int main(int argc, char ** argv) {
      
 	unlink("/usr");
 	symlink("mnt/runtime/usr", "/usr");
+#if !defined (__s390__) && !defined (__s390x__)
 	unlink("/lib");
 	symlink("mnt/runtime/lib", "/lib");
+#else
+#define LD_SO_CONF_STR "/lib/\n/mnt/runtime/lib\n/usr/lib\n/usr/X11R6/lib\n"
+	fd = open("/etc/ld.so.conf", O_WRONLY|O_CREAT, 0644);
+	if (fd >= 0) {
+		const char *buf = LD_SO_CONF_STR;
+		write(fd, buf, sizeof(LD_SO_CONF_STR));
+		close(fd);
+	}
+	system("/sbin/ldconfig 2>/dev/null >/dev/null");
+#endif
 
 	unlink("/modules/modules.dep");
 	unlink("/modules/module-info");
@@ -3459,9 +3492,11 @@ int main(int argc, char ** argv) {
 #endif
     }
 
+#if !defined (__s390__) && !defined (__s390x__)
     logMessage("getting ready to spawn shell now");
 
     spawnShell(flags);			/* we can attach gdb now :-) */
+#endif
 
     verifyImagesMatched();
 
@@ -3469,8 +3504,10 @@ int main(int argc, char ** argv) {
     modDeps = mlNewDeps();
     mlLoadDeps(&modDeps, "/modules/modules.dep");
 
+#if !defined (__s390__) && !defined (__s390x__)
     /* merge in any new pci ids */
     pciReadDrivers("/modules/pcitable");
+#endif
 
     /* We reinit this from the beginning because we could have lost drivers
        when we switched media, and we don't want to list ones that don't
@@ -3485,6 +3522,7 @@ int main(int argc, char ** argv) {
 	exit(1);
     }
 
+#if !defined (__s390__) && !defined (__s390x__)
     /* merge in drivers we know about from a driver disk so we probe things
        properly */
     ddReadDriverDiskModInfo(modInfo);
@@ -3496,6 +3534,7 @@ int main(int argc, char ** argv) {
        hurt. */
     ideSetup(modLoaded, modDeps, modInfo, flags, &kd);
     scsiSetup(modLoaded, modDeps, modInfo, flags, &kd);
+#endif
 
     busProbe(modInfo, modLoaded, modDeps, 0, &kd, flags);
 
@@ -3515,13 +3554,14 @@ int main(int argc, char ** argv) {
 
 	if (rc != 2) flags |= LOADER_FLAGS_ISA;
     }
-
+#if !defined (__s390__) && !defined (__s390x__)
     if (((access("/proc/bus/pci/devices", R_OK) &&
 	  access("/proc/openprom", R_OK)) || 
 	  FL_ISA(flags) || FL_NOPROBE(flags)) && !ksFile) {
 	startNewt(flags);
 	manualDeviceCheck(modInfo, modLoaded, &modDeps, &kd, flags);
     }
+#endif
 
     if (FL_UPDATES(flags))
         loadUpdates(&kd, modLoaded, &modDeps, flags);
@@ -3531,8 +3571,13 @@ int main(int argc, char ** argv) {
     /* We must look for cards which require the agpgart module */
     agpgartInitialize(modLoaded, modDeps, modInfo, flags);
 
+#if !defined (__s390__) && !defined (__s390x__)
     mlLoadModuleSet("raid0:raid1:raid5:msdos:ext3:reiserfs:jfs:xfs:lvm-mod", 
 		    modLoaded, modDeps, modInfo, flags);
+#else
+    mlLoadModuleSet("raid0:raid1:raid5:ext3:jfs:xfs:lvm-mod", 
+		    modLoaded, modDeps, modInfo, flags);
+#endif
 
 
     usbInitializeMouse(modLoaded, modDeps, modInfo, flags);

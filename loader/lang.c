@@ -246,8 +246,10 @@ void setLanguage (char * key, int flags) {
 
     for (i = 0; i < numLanguages; i++) {
 	if (!strcmp(languages[i].key, key)) {
+#if !defined (__s390__) && !defined (__s390x__)
 	    if (!strcmp(languages[i].font, "Kon") && !haveKon)
 		break;
+#endif
 	    if (!strcmp(languages[i].font, "None"))
 		break;
 	    setenv("LANG", languages[i].lc_all, 1);
@@ -302,6 +304,9 @@ int chooseLanguage(char ** lang, int flags) {
     else
 	choice = english;
 
+#if defined (__s390__) || defined (__s390x__)
+    if(!choice)
+#endif
     newtWinMenu(_("Choose a Language"),
 		_("What language would you like to use during the "
 		  "installation process?"), 40, 5, 5, 8,
@@ -340,9 +345,12 @@ int chooseLanguage(char ** lang, int flags) {
 
     /* only set the environment variables when we actually have a way
        to display the language */
+#if !defined (__s390__) && !defined (__s390x__)
     if ((!strcmp(languages[choice].font, "Kon") && haveKon) ||
 	(strcmp(languages[choice].font, "None") &&
-	 strcmp(languages[choice].font, "Kon"))) {
+	 strcmp(languages[choice].font, "Kon"))) 
+#endif
+    {
 	setenv("LANG", languages[choice].lc_all, 1);
 	setenv("LANGKEY", languages[choice].key, 1);
 	setenv("LC_ALL", languages[choice].lc_all, 1);
@@ -371,8 +379,13 @@ int chooseLanguage(char ** lang, int flags) {
 	}
     }
 
+    /* S/390 is different because everything depends on the capabilities */
+    /* of the xterm/kterm... where anaconda will be started */
     /* load the language only if it is displayable */
     /* If we need kon and have it, or if it's not kon or none, load the lang */
+#if defined (__s390__) || defined (__s390x__)
+	loadLanguage (NULL, flags);
+#else
     if ((!strcmp(languages[choice].font, "None")) ||
 	((!strcmp(languages[choice].font, "Kon")) && (!haveKon))) {
 	newtWinMessage("Language Unavailable", "OK", 
@@ -383,6 +396,7 @@ int chooseLanguage(char ** lang, int flags) {
     } else {
 	loadLanguage (NULL, flags);
     }
+#endif
 
     if (languages[choice].map)
 	loadFont(languages[choice].map, flags);

@@ -438,7 +438,10 @@ class PartitionWindow(InstallWindow):
 	InstallWindow.__init__(self, ics)
         ics.setTitle(_("Disk Setup"))
         ics.setNextEnabled(gtk.TRUE)
-        ics.readHTML("partition")
+        if iutil.getArch() == "s390" or iutil.getArch() == "s390x":
+            ics.readHTML("dasd-s390")
+        else:
+            ics.readHTML("partition")
         self.parent = ics.getICW().window
 
     def quit(self):
@@ -771,6 +774,11 @@ class PartitionWindow(InstallWindow):
     def deleteCb(self, widget):
         curselection = self.tree.getCurrentPartition()
 
+        if (iutil.getArch() == "s390" or iutil.getArch() == "s390x") 
+            and type(partition) != type("RAID"):
+            self.intf.messageWindow(_("Error"),
+                                    _("DASD partitions can only be deleted with fdasd"))
+            return
         if doDeletePartitionByRequest(self.intf, self.partitions, curselection):
             self.refresh()
             
@@ -1006,7 +1014,7 @@ class PartitionWindow(InstallWindow):
         buttonBox = gtk.HButtonBox()
         buttonBox.set_layout(gtk.BUTTONBOX_SPREAD)
 
-        if iutil.getArch() == "s390":
+        if iutil.getArch() == "s390" or iutil.getArch() == "s390x":
             ops = ((_("_Edit"), self.editCb),
                    (_("_Delete"), self.deleteCb),
                    (_("_Reset"), self.resetCb),

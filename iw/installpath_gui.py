@@ -13,6 +13,7 @@
 
 import installclass
 import gtk
+import iutil
 from iw_gui import InstallWindow
 from flags import flags
 from rhpl.translate import _, N_
@@ -31,7 +32,10 @@ def D_(x):
 class InstallPathWindow (InstallWindow):		
 
     installTypes = installclass.availableClasses()
-    htmlTag = "instpath"
+    if iutil.getArch() == "s390" or iutil.getArch() == "s390x":
+        htmlTag = "instpath-s390"
+    else:
+        htmlTag = "instpath"
     windowTitle = N_("Installation Type")
 
     def getNext(self):
