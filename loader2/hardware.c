@@ -206,7 +206,7 @@ void ideSetup(moduleList modLoaded, moduleDeps modDeps,
 /* are visible to Linux. Otherwise load dasd modules probeonly, */
 /* then parse proc to find active DASDs */
 /* Reload dasd_mod with correct range o DASD ports */
-static void dasdSetup(moduleList modLoaded, moduleDeps modDeps,
+void dasdSetup(moduleList modLoaded, moduleDeps modDeps,
 		moduleInfoSet modInfo, int flags,
 		struct knownDevices * kd) {
 

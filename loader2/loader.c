@@ -974,7 +974,7 @@ int main(int argc, char ** argv) {
 
     if (!FL_TESTING(flags)) {
 	/* S390 is slighly different here because it has a full 
-	   blown environment /*
+	   blown environment */
 #if !defined (__s390__) && !defined (__s390x__)
         unlink("/usr");
         symlink("/mnt/runtime/usr", "/usr");
