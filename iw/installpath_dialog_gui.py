@@ -58,7 +58,8 @@ class InstallTypeWindow(FirstbootGuiWindow):
     shortMessage = N_("Need some text to go here.")
     installTypes = installclass.availableClasses()
 
-    def __init__(self, dispatch, ics, id):
+    def __init__(self, label, dispatch, ics, id):
+        self.installTypeLabel = label
         self.dispatch = dispatch
         self.ics = ics
         self.id = id
@@ -70,7 +71,8 @@ class InstallTypeWindow(FirstbootGuiWindow):
 	for (name, object, pixmap) in self.installTypes:
 	    if name == self.currentClassName:
 		selection = object
-
+                self.installTypeLabel.set_text(name)
+                        
 	if not isinstance (self.id.instClass, selection):
 	    c = selection(self.flags.expert)
 	    c.setSteps(self.dispatch)

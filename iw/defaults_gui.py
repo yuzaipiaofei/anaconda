@@ -24,6 +24,7 @@ import rhpl.keyboard
 from flags import flags
 
 import sys
+import installclass
 import installpath_dialog_gui
 import keyboard_gui
 import mouse_gui
@@ -33,6 +34,7 @@ import language_support_dialog_gui
 class DefaultsWindow(InstallWindow):
     windowTitle = N_("Defaults")
     htmlTag = "defaults"
+    installTypes = installclass.availableClasses()
 
     def __init__(self, ics):
         self.ics = ics
@@ -65,6 +67,17 @@ class DefaultsWindow(InstallWindow):
         self.network = id.network
         self.langSupport = id.langSupport
 
+        if "name" in dir(id.instClass):
+            #If the installClass has been selected before, restore the setting
+            #when re-entering this screen
+            installTypeName = id.instClass.name
+        else:
+            #This is the first time we've entered this screen.  Set a default
+            installTypeName, object, pixmap = self.installTypes[0]
+            c = object(flags.expert)
+            c.setSteps(self.dispatch)
+            c.setInstallData(self.id)
+
 	self.flags = flags
 
         mainBox = gtk.VBox (gtk.FALSE)
@@ -95,20 +108,20 @@ class DefaultsWindow(InstallWindow):
         label = gtk.Label("")
         label.set_markup("<span foreground='#000000' size='large' font_family='Helvetica'><b>%s:</b></span>" % _("Installation \nType"))
         label.set_alignment(0.0, 0.5)
-        self.keyboardLabel = gtk.Label(self.keyboard.modelDict[self.keyboard.get()][0])
-        self.keyboardLabel.set_alignment(0.0, 0.5)
-        keyboardButton = gtk.Button()
+        self.installTypeLabel = gtk.Label(installTypeName)
+        self.installTypeLabel.set_alignment(0.0, 0.5)
+        installTypeButton = gtk.Button()
         buttonLabel = gtk.Label("")
         buttonLabel.set_markup('<span foreground="#3030c0"><u>'
                                     '%s</u></span>' % (_('Change'),))
-        keyboardButton.add(buttonLabel)
-        keyboardButton.set_relief(gtk.RELIEF_NONE)
-        keyboardButton.connect("clicked", self.installTypeClicked)
+        installTypeButton.add(buttonLabel)
+        installTypeButton.set_relief(gtk.RELIEF_NONE)
+        installTypeButton.connect("clicked", self.installTypeClicked)
 
         self.defaultsTable.attach(icon, 0, 1, 0, 1, gtk.SHRINK)
         self.defaultsTable.attach(label, 1, 2, 0, 1, gtk.SHRINK|gtk.FILL)
-        self.defaultsTable.attach(self.keyboardLabel, 2, 3, 0, 1, gtk.SHRINK|gtk.FILL)
-        self.defaultsTable.attach(keyboardButton, 3, 4, 0, 1, gtk.SHRINK, gtk.SHRINK)
+        self.defaultsTable.attach(self.installTypeLabel, 2, 3, 0, 1, gtk.SHRINK|gtk.FILL)
+        self.defaultsTable.attach(installTypeButton, 3, 4, 0, 1, gtk.SHRINK, gtk.SHRINK)
 
         icon = self.ics.readPixmap("gnome-keyboard.png")
         label = gtk.Label("")
@@ -202,7 +215,7 @@ class DefaultsWindow(InstallWindow):
         return mainBox
 
     def installTypeClicked(self, *args):
-        app = installpath_dialog_gui.childWindow(self.dispatch, self.ics, self.id)
+        app = installpath_dialog_gui.childWindow(self.installTypeLabel, self.dispatch, self.ics, self.id)
         app.anacondaScreen()
 
     def keyboardClicked(self, *args):
