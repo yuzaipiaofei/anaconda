@@ -23,6 +23,7 @@ clean:
 
 install:    libslang.so
 	install -s libslang.so $(DESTDIR)/$(RUNTIMEDIR)/libslang.so.1
+	ln -s libslang.so.1 $(DESTDIR)/$(RUNTIMEDIR)/libslang-j.so.1
 
 depend:
 	$(CPP) -M $(CFLAGS) *.c > .depend
