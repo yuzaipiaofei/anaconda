@@ -120,11 +120,6 @@ makeinitrd --initrdto $TOPDESTPATH/images/pxeboot/initrd.img \
 # XXX hack hack
 PCMCIAMODULES_EXCLUDED="
 	apa1480_cb
-	airo
-	airo_cs
-	aironet4500_core
-	aironet4500_proc
-	hermes
 	iflash2+_mtd
 	iflash2_mtd
 	memory_cb
