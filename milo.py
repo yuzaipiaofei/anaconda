@@ -31,7 +31,10 @@ def wholeDevice (path):
     i = len(path) - 1
     while path[i] in string.digits:
         i = i - 1
-    return path[:i]
+    extra = 1
+    if len(path) >= 7 and path[:7] == "/dev/rd":
+        extra = 0
+    return path[:i + extra]
 
 class MiloInstall:
     def __init__ (self, todo):
