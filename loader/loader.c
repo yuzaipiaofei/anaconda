@@ -3288,10 +3288,9 @@ static void dasdSetup(moduleList modLoaded, moduleDeps modDeps,
 	char **dasd_parms = NULL;
 	char *parms = NULL;
 
-	mlLoadModuleSet("dasd_eckd_mod:dasd_mod", modLoaded, modDeps, modInfo, flags);
+	mlLoadModuleSet("dasd_mod:dasd_eckd_mod", modLoaded, modDeps, modInfo, flags);
 	fd = fopen ("/proc/dasd/devices", "r");
 	if(!fd) {
-		fprintf(stderr, "Fehler: %s\n", strerror(errno));
 		return;
 	}
 	line = (char *)malloc(100*sizeof(char));
