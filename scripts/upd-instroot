@@ -95,7 +95,7 @@ if [ $ARCH = i386 ]; then
 fi
 
 if [ $ARCH = ia64 ]; then
-    PACKAGES="$PACKAGES elilo slang"
+    PACKAGES="$PACKAGES elilo slang parted"
 fi
 
 # xpm is missing
@@ -143,7 +143,7 @@ if [ $ARCH = alpha ]; then
 fi
 
 if [ $ARCH = ia64 ]; then
-    PACKAGESGR="$PACKAGESGR elilo slang"
+    PACKAGESGR="$PACKAGESGR elilo slang parted"
 fi
 
 KEEPFILE=/tmp/keepfile.$$
@@ -282,6 +282,7 @@ sbin/insmod
 sbin/lsmod
 sbin/lspci
 sbin/modprobe
+sbin/parted
 sbin/rmmod
 sbin/route
 sbin/silo
