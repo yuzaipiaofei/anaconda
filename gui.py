@@ -14,7 +14,6 @@
 #
 
 import os
-from gtk import GDK
 import iutil
 import string
 import isys
@@ -169,7 +168,7 @@ class ProgressWindow:
 class ExceptionWindow:
     def __init__ (self, text):
         win = gtk.Dialog ("Exception Occured")
-        win.connect ("clicked", self.quit)
+#        win.connect ("close", self.quit)
         win.append_button ("Debug")
         win.append_button ("Save to floppy")
         win.append_button_with_pixmap ("OK", 'gtk-ok')
@@ -617,9 +616,10 @@ class InstallControlWindow:
         self.handle = None
 
     def keyRelease (self, window, event):
-        if ((event.keyval == GDK.KP_Delete or event.keyval == GDK.Delete)
-            and (event.state & (GDK.CONTROL_MASK | GDK.MOD1_MASK))):
-            mainquit ()
+        if ((event.keyval == gtk.keysyms.KP_Delete
+             or event.keyval == gtk.keysyms.Delete)
+            and (event.state & (gtk.gdk.CONTROL_MASK | gtk.gdk.MOD1_MASK))):
+            gtk.mainquit ()
             os._exit (0)
 
     def buildStockButtons(self):
@@ -639,7 +639,7 @@ class InstallControlWindow:
 
     def setup_window (self, runres):
         self.window = gtk.Window ()
-        self.window.set_events (GDK.KEY_RELEASE_MASK)
+        self.window.set_events (gtk.gdk.KEY_RELEASE_MASK)
 
         if runres == '640x480':
             self.window.set_default_size (640, 480)
@@ -715,8 +715,8 @@ class InstallControlWindow:
 	self.buildStockButtons()
 
         group = gtk.AccelGroup()
-        self.nextButtonStock.add_accelerator ("clicked", group, GDK.F12,
-                                              GDK.RELEASE_MASK, 0);
+        self.nextButtonStock.add_accelerator ("clicked", group, gtk.keysyms.F12,
+                                              gtk.gdk.RELEASE_MASK, 0);
         self.window.add_accel_group (group)
         self.window.connect ("key-release-event", self.keyRelease)
 

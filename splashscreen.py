@@ -18,11 +18,9 @@ os.environ["PYGTK_DISABLE_THREADS"] = "1"
 os.environ["PYGTK_FATAL_EXCEPTIONS"] = "1"
 os.environ["GNOME_DISABLE_CRASH_DIALOG"] = "1"
 
-from gtk import *
+import gtk
 #from gtk import _root_window
 from flags import flags
-import gtk.GDK
-#import gdkpixbuf
 
 splashwindow = None
 
@@ -41,7 +39,7 @@ def splashScreenShow(configFileData):
             print __name__, "waitpid:", msg
 
 #    root = _root_window ()
-    cursor = gtk.gdk.Cursor (gtk.GDK.LEFT_PTR)
+    cursor = gtk.gdk.Cursor (gtk.gdk.LEFT_PTR)
 #    root.set_cursor (cursor)
 
     def load_image(file):
@@ -70,7 +68,7 @@ def splashScreenShow(configFileData):
                         
     if p:
         splashwindow = gtk.Window ()
-        splashwindow.set_position (WIN_POS_CENTER)
+        splashwindow.set_position (gtk.WIN_POS_CENTER)
         box = gtk.EventBox ()
         style = box.get_style ().copy ()
 ##         style.bg[STATE_NORMAL] = style.white
@@ -81,7 +79,7 @@ def splashScreenShow(configFileData):
         splashwindow.show_now()
 #        gdk_flush ()
         while gtk.events_pending ():
-            gtk.mainiteration (FALSE)
+            gtk.mainiteration (gtk.FALSE)
 
 def splashScreenPop():
     global splashwindow
