@@ -202,6 +202,7 @@ lib/ld-*
 lib/libc*
 lib/libcom_err*
 lib/libcrypt*
+usr/lib/libcrypt*
 lib/libdb-*
 lib/libdb-3.0
 lib/libdb.so.2
