@@ -297,8 +297,7 @@ class bootloaderInfo:
         args = []
 
         if self.args.get():
-            args.append("--append")
-            args.append(self.args.get())
+            args.append("--append=\"%s\"" %(self.args.get(),))
 
         return args
 
