@@ -10,6 +10,14 @@ ifeq (i386, $(ARCH))
 DIETLIB=libgunzip-diet.a($(DOBJS))
 endif
 
+ifeq ($(ARCH),s390)
+CFLAGS += -fPIC
+endif
+
+ifeq ($(ARCH),s390x)
+CFLAGS += -fPIC
+endif
+
 all: libgunzip.a($(OBJS)) $(DIETLIB) test
 
 test: libgunzip.a test.c

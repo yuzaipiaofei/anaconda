@@ -20,10 +20,9 @@ int ourInsmodCommand(int argc, char ** argv) {
     gzFile fd;
     int rc, rmObj = 0;
     int sparc64 = 0, i;
-    int force = 0, i;
+    int force = 0;
     char * ballPath = NULL;
     char fullName[100];
-    char fileName[100];
     FILE *fptr;
     struct utsname u;
 

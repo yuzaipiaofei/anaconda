@@ -28,6 +28,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <kudzu/kudzu.h>
+#include <kudzu/device.h>
 #include <net/if.h>
 #include <newt.h>
 #include <popt.h>
@@ -44,10 +45,7 @@
 #include <unistd.h>
 #include <sys/vt.h>
 #include <linux/fb.h>
-
-#if !defined(__s390__) && !defined(__s390x__)
 #include <linux/cdrom.h>
-#endif
 
 #include <popt.h>
 /* Need to tell loop.h what the actual dev_t type is. */
@@ -1083,6 +1081,9 @@ static char * mountHardDrive(struct installMethod * method,
     #ifdef __sparc__
     static int ufsloaded;
     #endif
+    #if defined (__s390__) || defined (__s390x__)
+    char c;
+    #endif
 
     while (!done) {
 	numPartitions = 0;
@@ -1177,7 +1178,7 @@ static char * mountHardDrive(struct installMethod * method,
 	    }
 	  }
         }
-	mlLoadModule("isofs", NULL, modLoaded, *modDepsPtr,
+	mlLoadModule("isofs", modLoaded, *modDepsPtr,
                  NULL, modInfo, flags);
 
 #endif
@@ -1645,11 +1646,13 @@ static char * mountNfsImage(struct installMethod * method,
 	  case NFS_STAGE_NFS:
 	    logMessage("going to do nfsGetSetup");
 	    if (nfsGetSetup(&host, &dir) == LOADER_BACK)
+            {
 #if defined (__s390__) || defined (__s390x__)
-      return NULL;
+                return NULL;
+                break;
 #endif
 		stage = NFS_STAGE_IP;
-	    else
+            } else
 		stage = NFS_STAGE_MOUNT;
 	    break;
 
@@ -3665,6 +3668,7 @@ int main(int argc, char ** argv) {
     }
 
     if (!FL_TESTING(flags)) {
+       int fd;
      
 	unlink("/usr");
 	symlink("mnt/runtime/usr", "/usr");

@@ -3,7 +3,7 @@ include ../Makefile.inc
 #PYTHONLIBDIR = $(DESTDIR)/usr/lib/python1.5/site-packages
 
 OBJECTS = rw.o dos.o sun.o bsdlabel.o
-CFLAGS=-I$(PYTHONINCLUDE) -Os
+CFLAGS=-I$(PYTHONINCLUDE) -Os -fPIC
 
 TARGET = libbalkan.a
 
@@ -18,7 +18,7 @@ everything: $(DEPTARGET)
 all: $(TARGET) _balkanmodule.so
 
 _balkanmodule.so: _balkanmodule.o libbalkan.a
-	gcc -shared -o $@ _balkanmodule.o libbalkan.a
+	gcc -shared -fPIC -o $@ _balkanmodule.o libbalkan.a
 
 _balkanmodule.o: _balkanmodule.c balkan.h
 	gcc $(CFLAGS) -c -fPIC -o $@ $< 

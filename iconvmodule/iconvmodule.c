@@ -51,6 +51,7 @@ Iconv_iconv(IconvObject *self, PyObject *args, PyObject* kwargs)
     PyObject *inbuf_obj;
     const char *inbuf, *inptr;
     char *outbuf, *outptr;
+    int tmp_inleft;
     size_t inleft, outleft, result;
     PyObject *ret;
     static char *kwarg_names[] = { "in", NULL };
@@ -61,9 +62,10 @@ Iconv_iconv(IconvObject *self, PyObject *args, PyObject* kwargs)
     
     if (inbuf_obj->ob_type->tp_as_buffer) {
 	if (PyObject_AsReadBuffer(inbuf_obj, (const void**) &inbuf, 
-				  &inleft) == -1)
+				  &tmp_inleft) == -1)
 	    return NULL;
 	inptr = inbuf;
+ 	inleft=tmp_inleft;
     } else {
 	PyErr_SetString(PyExc_TypeError, 
 			"iconv expects string as first argument");
