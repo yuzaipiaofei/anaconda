@@ -48,7 +48,7 @@ NETWORKMODULES="$COMMONMODULES nfs ctc netiucv"
 
 makeinitrd --initrdto $TOPDESTPATH/images/initrd.img \
 	   --initrdsize 2250 \
-	   --loaderbin loader-network \
+	   --loaderbin loader \
 	   --modules "$NETWORKMODULES"
 
 #for I in $BOOTDISKDIR; do

@@ -54,13 +54,16 @@ OBJS += stubs.o
 endif
 
 ifeq (s390, $(ARCH))
-BINS += loader loader-local
+BINS += loader
 OBJS += stubs.o
+DIRS += s390
+S390FILES = module-info.s390 linuxrc.s390 s390/dasdformat s390/mountpoint s390/netsetup s390/pkgselect s390/pkgsrc
 endif
 
 ifeq (s390x, $(ARCH))
-BINS += loader loader-local
+BINS += loader
 OBJS += stubs.o
+DIRS += s390
 endif
 
 ifeq (sparc, $(ARCH))
@@ -127,8 +130,10 @@ install: all
 	install -m 644 loader.tr $(DESTDIR)/$(RUNTIMEDIR)/loader
 	install -m 644 kon-loader.tr $(DESTDIR)/$(RUNTIMEDIR)/loader
 	install -m 644 module-info $(DESTDIR)/$(RUNTIMEDIR)/loader
-	install -m 644 module-info.s390 $(DESTDIR)/$(RUNTIMEDIR)/loader
-	install -m 755 linuxrc.s390 $(DESTDIR)/$(RUNTIMEDIR)/loader
+	for n in $(S390FILES); do \
+	   install -m 755 $$n $(DESTDIR)/$(RUNTIMEDIR)/loader \
+	    strip $(DESTDIR)/$(RUNTIMEDIR)/loader/$$n; \
+	done
 	install -m 644 kon.cfg $(DESTDIR)/$(RUNTIMEDIR)/loader
 	install -m 644 minikon.fnt $(DESTDIR)/$(RUNTIMEDIR)/loader
 

@@ -258,6 +258,11 @@ EOF
 if [ $ARCH = s390 -o $ARCH = s390x ]; then
     cat >> $KEEPFILE <<EOF
 /usr/lib/anaconda-runtime/loader/linuxrc.s390
+/usr/lib/anaconda-runtime/loader/dasdformat
+/usr/lib/anaconda-runtime/loader/mountpoint
+/usr/lib/anaconda-runtime/loader/netsetup
+/usr/lib/anaconda-runtime/loader/pkgselect
+/usr/lib/anaconda-runtime/loader/pkgsrc
 usr/share/terminfo/a/ansi
 usr/share/terminfo/d/dumb
 usr/share/terminfo/s/screen
