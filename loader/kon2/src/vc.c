@@ -146,6 +146,7 @@ static inline bool	IsKanji2(u_int x, u_int y)
     return(*(flagBuff + TextAddress(x, y)) & CODEIS_2);
 }
 
+#if 0
 void    euctosjis(ch, cl)
 u_char  *ch, *cl;
 {
@@ -161,6 +162,7 @@ u_char  *ch, *cl;
     *cl = nl;
     *ch = nh;
 }
+#endif
 
 void	TextDeleteChar(int n)
 {
