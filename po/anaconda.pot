@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-11-08 11:03-0500\n"
+"POT-Creation-Date: 1999-11-11 14:17-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,8 +34,8 @@ msgstr ""
 #: ../textw/lilo.py:159 ../textw/packages.py:20 ../textw/packages.py:85
 #: ../textw/packages.py:136 ../textw/packages.py:145
 #: ../textw/partitioning.py:25 ../textw/partitioning.py:64
-#: ../textw/partitioning.py:202 ../textw/silo.py:22 ../textw/silo.py:77
-#: ../textw/silo.py:176 ../textw/userauth.py:29 ../textw/userauth.py:141
+#: ../textw/partitioning.py:202 ../textw/silo.py:26 ../textw/silo.py:86
+#: ../textw/silo.py:185 ../textw/userauth.py:29 ../textw/userauth.py:141
 #: ../textw/userauth.py:172 ../textw/userauth.py:244
 msgid "Back"
 msgstr ""
@@ -107,9 +107,9 @@ msgstr ""
 #: ../text.py:160 ../text.py:205 ../text.py:248 ../text.py:293 ../text.py:384
 #: ../text.py:404 ../text.py:435 ../text.py:496 ../text.py:528 ../text.py:598
 #: ../text.py:619 ../text.py:631 ../text.py:643 ../text.py:821 ../text.py:893
-#: ../text.py:897 ../text.py:1052 ../textw/lilo.py:26 ../textw/lilo.py:77
+#: ../text.py:897 ../text.py:1054 ../textw/lilo.py:26 ../textw/lilo.py:77
 #: ../textw/packages.py:20 ../textw/packages.py:85 ../textw/packages.py:136
-#: ../textw/partitioning.py:202 ../textw/silo.py:21 ../textw/silo.py:77
+#: ../textw/partitioning.py:202 ../textw/silo.py:25 ../textw/silo.py:86
 #: ../textw/userauth.py:29 ../textw/userauth.py:43 ../textw/userauth.py:48
 #: ../textw/userauth.py:82 ../textw/userauth.py:94 ../textw/userauth.py:102
 #: ../textw/userauth.py:111 ../textw/userauth.py:172 ../textw/userauth.py:244
@@ -132,8 +132,8 @@ msgstr ""
 msgid "/dev/ttyS3 (COM4 under DOS)"
 msgstr ""
 
-#: ../iw/lilo.py:180 ../iw/silo.py:242 ../text.py:85 ../textw/lilo.py:90
-#: ../textw/lilo.py:149 ../textw/silo.py:109 ../textw/silo.py:166
+#: ../iw/lilo.py:180 ../iw/silo.py:245 ../text.py:85 ../textw/lilo.py:90
+#: ../textw/lilo.py:149 ../textw/silo.py:118 ../textw/silo.py:175
 msgid "Device"
 msgstr ""
 
@@ -143,9 +143,9 @@ msgid "What device is your mouse located on? %s %i"
 msgstr ""
 
 #. code to create dialog in gtk+
-#: ../libfdisk/fsedit.c:615 ../libfdisk/fsedit.c:622 ../libfdisk/fsedit.c:629
-#: ../libfdisk/fsedit.c:638 ../libfdisk/fsedit.c:650 ../libfdisk/fsedit.c:660
-#: ../libfdisk/fsedit.c:689 ../libfdisk/fsedit.c:705 ../libfdisk/fsedit.c:1063
+#: ../libfdisk/fsedit.c:621 ../libfdisk/fsedit.c:628 ../libfdisk/fsedit.c:635
+#: ../libfdisk/fsedit.c:644 ../libfdisk/fsedit.c:656 ../libfdisk/fsedit.c:666
+#: ../libfdisk/fsedit.c:695 ../libfdisk/fsedit.c:711 ../libfdisk/fsedit.c:1069
 #: ../libfdisk/gnomefsedit.c:679 ../libfdisk/gnomefsedit.c:1049
 #: ../libfdisk/gnomefsedit.c:1075 ../libfdisk/gnomefsedit.c:1093
 #: ../libfdisk/gnomefsedit.c:1298 ../libfdisk/gnomefsedit.c:1392
@@ -161,8 +161,8 @@ msgstr ""
 #: ../libfdisk/newtfsedit.c:1424 ../libfdisk/newtfsedit.c:1445
 #: ../libfdisk/newtfsedit.c:1539 ../text.py:87 ../text.py:540
 #: ../textw/constants.py:10 ../textw/lilo.py:95 ../textw/lilo.py:108
-#: ../textw/lilo.py:158 ../textw/silo.py:114 ../textw/silo.py:127
-#: ../textw/silo.py:175
+#: ../textw/lilo.py:158 ../textw/silo.py:123 ../textw/silo.py:136
+#: ../textw/silo.py:184
 msgid "Ok"
 msgstr ""
 
@@ -411,7 +411,7 @@ msgid ""
 msgstr ""
 
 #: ../text.py:631 ../text.py:632 ../text.py:643 ../text.py:644
-#: ../textw/lilo.py:26 ../textw/silo.py:21
+#: ../textw/lilo.py:26 ../textw/silo.py:25
 msgid "Skip"
 msgstr ""
 
@@ -491,116 +491,116 @@ msgstr ""
 msgid "Welcome"
 msgstr ""
 
-#: ../text.py:943 ../textw/silo.py:24 ../textw/silo.py:79 ../textw/silo.py:183
+#: ../text.py:943 ../textw/silo.py:28 ../textw/silo.py:88 ../textw/silo.py:192
 msgid "SILO Configuration"
 msgstr ""
 
-#: ../text.py:948 ../textw/lilo.py:29 ../textw/lilo.py:74 ../textw/lilo.py:167
+#: ../text.py:949 ../textw/lilo.py:29 ../textw/lilo.py:74 ../textw/lilo.py:167
 msgid "LILO Configuration"
 msgstr ""
 
-#: ../iw/lilo.py:97 ../iw/lilo.py:202 ../iw/silo.py:124 ../iw/silo.py:265
-#: ../text.py:951 ../text.py:957
+#: ../iw/lilo.py:97 ../iw/lilo.py:202 ../iw/silo.py:125 ../iw/silo.py:268
+#: ../text.py:953 ../text.py:959
 msgid "Partition"
 msgstr ""
 
-#: ../text.py:953
+#: ../text.py:955
 msgid "Manually Partition"
 msgstr ""
 
-#: ../text.py:955
+#: ../text.py:957
 msgid "Automatic Partition"
 msgstr ""
 
-#: ../text.py:959
+#: ../text.py:961
 msgid "Swap"
 msgstr ""
 
-#: ../text.py:961
+#: ../text.py:963
 msgid "Filesystem Formatting"
 msgstr ""
 
-#: ../text.py:969
+#: ../text.py:971
 msgid "Hostname Setup"
 msgstr ""
 
-#: ../text.py:971
+#: ../text.py:973
 msgid "Network Setup"
 msgstr ""
 
-#: ../iw/mouse.py:55 ../text.py:973 ../text.py:975
+#: ../iw/mouse.py:55 ../text.py:975 ../text.py:977
 msgid "Mouse Configuration"
 msgstr ""
 
-#: ../text.py:977
+#: ../text.py:979
 msgid "Time Zone Setup"
 msgstr ""
 
-#: ../text.py:979 ../textw/userauth.py:8
+#: ../text.py:981 ../textw/userauth.py:8
 msgid "Root Password"
 msgstr ""
 
-#: ../text.py:981 ../textw/userauth.py:148
+#: ../text.py:983 ../textw/userauth.py:148
 msgid "User Account Setup"
 msgstr ""
 
-#: ../text.py:983
+#: ../text.py:985
 msgid "Authentication"
 msgstr ""
 
-#: ../text.py:985
+#: ../text.py:987
 msgid "Package Groups"
 msgstr ""
 
-#: ../text.py:987 ../text.py:1014
+#: ../text.py:989 ../text.py:1016
 msgid "Individual Packages"
 msgstr ""
 
-#: ../text.py:989 ../textw/packages.py:114
+#: ../text.py:991 ../textw/packages.py:114
 msgid "Package Dependencies"
 msgstr ""
 
-#: ../iw/xconfig.py:120 ../text.py:991 ../text.py:999
+#: ../iw/xconfig.py:120 ../text.py:993 ../text.py:1001
 msgid "X Configuration"
 msgstr ""
 
-#: ../text.py:993 ../text.py:998 ../text.py:1015 ../text.py:1018
+#: ../text.py:995 ../text.py:1000 ../text.py:1017 ../text.py:1020
 msgid "Boot Disk"
 msgstr ""
 
-#: ../text.py:995
+#: ../text.py:997
 msgid "Installation Begins"
 msgstr ""
 
-#: ../text.py:997
+#: ../text.py:999
 msgid "Install System"
 msgstr ""
 
-#: ../text.py:1001
+#: ../text.py:1003
 msgid "Installation Complete"
 msgstr ""
 
-#: ../text.py:1006
+#: ../text.py:1008
 msgid "Examine System"
 msgstr ""
 
-#: ../text.py:1013
+#: ../text.py:1015
 msgid "Customize Upgrade"
 msgstr ""
 
-#: ../text.py:1017
+#: ../text.py:1019
 msgid "Upgrade System"
 msgstr ""
 
-#: ../text.py:1019
+#: ../text.py:1021
 msgid "Upgrade Complete"
 msgstr ""
 
-#: ../text.py:1049
+#: ../text.py:1051
 msgid "Cancelled"
 msgstr ""
 
-#: ../text.py:1050
+#: ../text.py:1052
 msgid "I can't go to the previous step from here. You will have to try again."
 msgstr ""
 
@@ -792,7 +792,7 @@ msgstr ""
 
 #: ../iw/account.py:207 ../libfdisk/newtfsedit.c:1290
 #: ../libfdisk/newtfsedit.c:1298 ../textw/lilo.py:158 ../textw/lilo.py:180
-#: ../textw/partitioning.py:63 ../textw/silo.py:175 ../textw/silo.py:197
+#: ../textw/partitioning.py:63 ../textw/silo.py:184 ../textw/silo.py:206
 #: ../textw/userauth.py:172
 msgid "Edit"
 msgstr ""
@@ -921,19 +921,19 @@ msgstr ""
 msgid "Custom"
 msgstr ""
 
-#: ../iw/installpath.py:90
+#: ../iw/installpath.py:92
 msgid "Install Type"
 msgstr ""
 
-#: ../iw/installpath.py:159
+#: ../iw/installpath.py:161
 msgid "Install"
 msgstr ""
 
-#: ../iw/installpath.py:161
+#: ../iw/installpath.py:163
 msgid "Upgrade"
 msgstr ""
 
-#: ../iw/installpath.py:215
+#: ../iw/installpath.py:217
 msgid "Use fdisk"
 msgstr ""
 
@@ -965,7 +965,7 @@ msgstr ""
 msgid "Lilo Configuration"
 msgstr ""
 
-#: ../iw/lilo.py:102 ../iw/lilo.py:203 ../iw/silo.py:129 ../iw/silo.py:266
+#: ../iw/lilo.py:102 ../iw/lilo.py:203 ../iw/silo.py:130 ../iw/silo.py:269
 msgid "Type"
 msgstr ""
 
@@ -973,11 +973,11 @@ msgstr ""
 msgid "Install LILO boot record on:"
 msgstr ""
 
-#: ../iw/lilo.py:136 ../iw/silo.py:165 ../textw/silo.py:51
+#: ../iw/lilo.py:136 ../iw/silo.py:166 ../textw/silo.py:60
 msgid "Master Boot Record (MBR)"
 msgstr ""
 
-#: ../iw/lilo.py:140 ../iw/silo.py:168 ../textw/silo.py:52
+#: ../iw/lilo.py:140 ../iw/silo.py:169 ../textw/silo.py:61
 msgid "First sector of boot partition"
 msgstr ""
 
@@ -985,11 +985,11 @@ msgstr ""
 msgid "Use linear mode (needed for some SCSI drives)"
 msgstr ""
 
-#: ../iw/lilo.py:148 ../iw/silo.py:195
+#: ../iw/lilo.py:148 ../iw/silo.py:196
 msgid "Kernel parameters"
 msgstr ""
 
-#: ../iw/lilo.py:165 ../iw/silo.py:211
+#: ../iw/lilo.py:165 ../iw/silo.py:214
 msgid "Create boot disk"
 msgstr ""
 
@@ -997,19 +997,19 @@ msgstr ""
 msgid "Do not install LILO"
 msgstr ""
 
-#: ../iw/lilo.py:180 ../iw/silo.py:242 ../textw/lilo.py:149
-#: ../textw/silo.py:166
+#: ../iw/lilo.py:180 ../iw/silo.py:245 ../textw/lilo.py:149
+#: ../textw/silo.py:175
 msgid "Default"
 msgstr ""
 
-#: ../iw/lilo.py:180 ../iw/silo.py:242 ../textw/lilo.py:149
-#: ../textw/silo.py:166
+#: ../iw/lilo.py:180 ../iw/silo.py:245 ../textw/lilo.py:149
+#: ../textw/silo.py:175
 msgid "Partition type"
 msgstr ""
 
-#: ../iw/lilo.py:180 ../iw/lilo.py:214 ../iw/silo.py:242 ../iw/silo.py:277
-#: ../textw/lilo.py:91 ../textw/lilo.py:149 ../textw/silo.py:110
-#: ../textw/silo.py:166
+#: ../iw/lilo.py:180 ../iw/lilo.py:214 ../iw/silo.py:245 ../iw/silo.py:280
+#: ../textw/lilo.py:91 ../textw/lilo.py:149 ../textw/silo.py:119
+#: ../textw/silo.py:175
 msgid "Boot label"
 msgstr ""
 
@@ -1170,19 +1170,19 @@ msgstr ""
 msgid "Silo Configuration"
 msgstr ""
 
-#: ../iw/silo.py:160
+#: ../iw/silo.py:161
 msgid "Install SILO boot record on:"
 msgstr ""
 
-#: ../iw/silo.py:173
+#: ../iw/silo.py:174
 msgid "Create PROM alias"
 msgstr ""
 
-#: ../iw/silo.py:191
+#: ../iw/silo.py:192
 msgid "Set default PROM boot device to linux"
 msgstr ""
 
-#: ../iw/silo.py:221
+#: ../iw/silo.py:224
 msgid "Do not install SILO"
 msgstr ""
 
@@ -1261,12 +1261,12 @@ msgid ""
 "blank."
 msgstr ""
 
-#: ../textw/lilo.py:75 ../textw/silo.py:81
+#: ../textw/lilo.py:75 ../textw/silo.py:90
 msgid "Where do you want to install the bootloader?"
 msgstr ""
 
-#: ../textw/lilo.py:95 ../textw/lilo.py:116 ../textw/silo.py:114
-#: ../textw/silo.py:135
+#: ../textw/lilo.py:95 ../textw/lilo.py:116 ../textw/silo.py:123
+#: ../textw/silo.py:144
 msgid "Clear"
 msgstr ""
 
@@ -1274,15 +1274,15 @@ msgstr ""
 #: ../libfdisk/gnomefsedit.c:2147 ../libfdisk/newtfsedit.c:462
 #: ../libfdisk/newtfsedit.c:1495 ../loader/devices.c:168
 #: ../loader/loader.c:1721 ../textw/lilo.py:95 ../textw/lilo.py:113
-#: ../textw/silo.py:114 ../textw/silo.py:132 ../textw/userauth.py:62
+#: ../textw/silo.py:123 ../textw/silo.py:141 ../textw/userauth.py:62
 msgid "Cancel"
 msgstr ""
 
-#: ../textw/lilo.py:103 ../textw/silo.py:122
+#: ../textw/lilo.py:103 ../textw/silo.py:131
 msgid "Edit Boot Label"
 msgstr ""
 
-#: ../textw/lilo.py:162 ../textw/silo.py:178
+#: ../textw/lilo.py:162 ../textw/silo.py:187
 msgid ""
 "The boot manager Red Hat uses can boot other operating systems as well. You "
 "need to tell me what partitions you would like to be able to boot and what "
@@ -1341,11 +1341,11 @@ msgstr ""
 msgid "Choose Partitions to Format"
 msgstr ""
 
-#: ../textw/silo.py:53
+#: ../textw/silo.py:62
 msgid "Create PROM alias `linux'"
 msgstr ""
 
-#: ../textw/silo.py:54
+#: ../textw/silo.py:63
 msgid "Set default PROM boot device"
 msgstr ""
 
@@ -1454,17 +1454,17 @@ msgstr ""
 msgid "Request server via broadcast"
 msgstr ""
 
-#: ../libfdisk/fsedit.c:615 ../libfdisk/fsedit.c:622 ../libfdisk/fsedit.c:629
-#: ../libfdisk/fsedit.c:638 ../libfdisk/fsedit.c:650 ../libfdisk/fsedit.c:660
+#: ../libfdisk/fsedit.c:621 ../libfdisk/fsedit.c:628 ../libfdisk/fsedit.c:635
+#: ../libfdisk/fsedit.c:644 ../libfdisk/fsedit.c:656 ../libfdisk/fsedit.c:666
 msgid "Bad Mount Point"
 msgstr ""
 
-#: ../libfdisk/fsedit.c:616
+#: ../libfdisk/fsedit.c:622
 #, c-format
 msgid "The %s directory must be on the root filesystem."
 msgstr ""
 
-#: ../libfdisk/fsedit.c:623
+#: ../libfdisk/fsedit.c:629
 #, c-format
 msgid ""
 "The mount point %s is illegal.\n"
@@ -1472,7 +1472,7 @@ msgid ""
 "Mount points must begin with a leading /."
 msgstr ""
 
-#: ../libfdisk/fsedit.c:630
+#: ../libfdisk/fsedit.c:636
 #, c-format
 msgid ""
 "The mount point %s is illegal.\n"
@@ -1480,7 +1480,7 @@ msgid ""
 "Mount points may not end with a /."
 msgstr ""
 
-#: ../libfdisk/fsedit.c:639
+#: ../libfdisk/fsedit.c:645
 #, c-format
 msgid ""
 "The mount point %s is illegal.\n"
@@ -1488,7 +1488,7 @@ msgid ""
 "Mount points may only printable characters."
 msgstr ""
 
-#: ../libfdisk/fsedit.c:651
+#: ../libfdisk/fsedit.c:657
 #, c-format
 msgid ""
 "The mount point %s is illegal.\n"
@@ -1496,7 +1496,7 @@ msgid ""
 "System partitions must be on Linux Native partitions."
 msgstr ""
 
-#: ../libfdisk/fsedit.c:661
+#: ../libfdisk/fsedit.c:667
 #, c-format
 msgid ""
 "The mount point %s is illegal.\n"
@@ -1504,74 +1504,74 @@ msgid ""
 "/usr must be on a Linux Native partition or an NFS volume."
 msgstr ""
 
-#: ../libfdisk/fsedit.c:689
+#: ../libfdisk/fsedit.c:695
 msgid "Too Many Drives"
 msgstr ""
 
-#: ../libfdisk/fsedit.c:690
+#: ../libfdisk/fsedit.c:696
 msgid ""
 "You have more drives than this program supports. Please use the standard "
 "fdisk program to setup your drives and please notify Red Hat Software that "
 "you saw this message."
 msgstr ""
 
-#: ../libfdisk/fsedit.c:705
+#: ../libfdisk/fsedit.c:711
 msgid "No Drives Found"
 msgstr ""
 
-#: ../libfdisk/fsedit.c:706
+#: ../libfdisk/fsedit.c:712
 msgid ""
 "An error has occurred - no valid devices were found on which to create new "
 "filesystems.  Please check your hardware for the cause of this problem."
 msgstr ""
 
-#: ../libfdisk/fsedit.c:979 ../libfdisk/fsedit.c:1047
+#: ../libfdisk/fsedit.c:985 ../libfdisk/fsedit.c:1053
 #, c-format
 msgid ""
 "An error occurred reading the partition table for the block device %s.  The "
 "error was"
 msgstr ""
 
-#: ../libfdisk/fsedit.c:1020
+#: ../libfdisk/fsedit.c:1026
 #, c-format
 msgid ""
 "The partition table on device %s is corrupted.  To create new partitions it "
 "must be initialized, causing the loss of ALL DATA on this drive."
 msgstr ""
 
-#: ../libfdisk/fsedit.c:1025
+#: ../libfdisk/fsedit.c:1031
 msgid "Bad Partition Table"
 msgstr ""
 
-#: ../libfdisk/fsedit.c:1026
+#: ../libfdisk/fsedit.c:1032
 msgid "Initialize"
 msgstr ""
 
-#: ../libfdisk/fsedit.c:1026 ../libfdisk/fsedit.c:1051
+#: ../libfdisk/fsedit.c:1032 ../libfdisk/fsedit.c:1057
 msgid "Skip Drive"
 msgstr ""
 
-#: ../libfdisk/fsedit.c:1051 ../loader/net.c:329
+#: ../libfdisk/fsedit.c:1057 ../loader/net.c:329
 msgid "Retry"
 msgstr ""
 
-#: ../libfdisk/fsedit.c:1063
+#: ../libfdisk/fsedit.c:1069
 msgid "BSD Disklabel"
 msgstr ""
 
-#: ../libfdisk/fsedit.c:1063
+#: ../libfdisk/fsedit.c:1069
 msgid ""
 "A disk with a BSD disklabel has been found. The Red Hat installation only "
 "supports BSD Disklabels in read-only mode, so you must use a custom install "
 "and fdisk (instead of Disk Druid) for machines with BSD Disklabels."
 msgstr ""
 
-#: ../libfdisk/fsedit.c:1093
+#: ../libfdisk/fsedit.c:1099
 #, c-format
 msgid "System error %d"
 msgstr ""
 
-#: ../libfdisk/fsedit.c:1102 ../libfdisk/fsedit.c:1104
+#: ../libfdisk/fsedit.c:1108 ../libfdisk/fsedit.c:1110
 msgid "Fdisk Error"
 msgstr ""
 
