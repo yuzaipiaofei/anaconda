@@ -31,6 +31,9 @@ CHECK_CHAIN	= 0
 FORCE_SELECT	= 1
 FORCE_UNSELECT	= 2
 
+def D_(foo):
+    return foo
+
 class Package:
     def __getitem__(self, item):
 	return self.h[item]
@@ -427,7 +430,7 @@ class ComponentSet:
                     else:
                         comp.addPackage(packages[l])
 
-        everything = Component(_("Everything"), 0, 0)
+        everything = Component(D_("Everything"), 0, 0)
         for package in packages.keys ():
 	    if (packages[package][rpm.RPMTAG_NAME] != 'kernel' and
                 packages[package][rpm.RPMTAG_NAME] != 'kernel-BOOT' and
