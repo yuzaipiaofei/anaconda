@@ -118,6 +118,7 @@ else:
     sys.path.append('/usr/lib/booty')
 
 sys.path.append('/usr/share/redhat-config-keyboard')
+sys.path.append('/usr/share/redhat-config-mouse')
 
 try:
     import updates_disk_hook
