@@ -855,9 +855,9 @@ def doPostInstall(method, id, intf, instPath):
 		pcmcia.createPcmciaConfig(
 			instPath + "/etc/sysconfig/pcmcia")
 
-       if arch == "s390":
-          copyOCOModules(instPath)
-		       
+	    if arch == "s390":
+		copyOCOModules(instPath)
+
 	    w.set(3)
 
 	    # blah.  If we're on a serial mouse, and we have X, we need to
@@ -886,17 +886,17 @@ def doPostInstall(method, id, intf, instPath):
 		except RuntimeError:
 		    pass
 
-        if arch != "s390":
-            # we need to unmount usbdevfs before mounting it
-            usbWasMounted = iutil.isUSBDevFSMounted()
-            if usbWasMounted:
-                isys.umount('/proc/bus/usb', removeDir = 0)
+	    if arch != "s390":
+		# we need to unmount usbdevfs before mounting it
+		usbWasMounted = iutil.isUSBDevFSMounted()
+		if usbWasMounted:
+			isys.umount('/proc/bus/usb', removeDir = 0)
 
-            # see if unmount suceeded, if not pretent it isnt mounted
-            # because we're screwed anywyas if system is going to
-            # lock up
-            if iutil.isUSBDevFSMounted():
-                usbWasMounted = 0
+		    # see if unmount suceeded, if not pretent it isnt mounted
+		    # because we're screwed anywyas if system is going to
+		    # lock up
+		    if iutil.isUSBDevFSMounted():
+				usbWasMounted = 0
                 unmountUSB = 0
                 try:
                     isys.mount('/usbdevfs', instPath+'/proc/bus/usb', 'usbdevfs')
@@ -929,27 +929,27 @@ def doPostInstall(method, id, intf, instPath):
             securetty.close()
 
 		if usbWasMounted:
-                    isys.mount('/usbdevfs', '/proc/bus/usb', 'usbdevfs')
+		    isys.mount('/usbdevfs', '/proc/bus/usb', 'usbdevfs')
 
-	w.set(4)
+		w.set(4)
 
         if upgrade and id.dbpath is not None:
 	    # move the rebuilt db into place.
 	    try:
-		iutil.rmrf (instPath + "/var/lib/rpm.rpmsave")
+		    iutil.rmrf (instPath + "/var/lib/rpm.rpmsave")
 	    except OSError:
-		pass
-            try:
-                os.rename (instPath + "/var/lib/rpm",
-                           instPath + "/var/lib/rpm.rpmsave")
-            except OSError:
-                # XXX hack..., if the above move failed, we'll just stash it in
-                # a (hopefully) unique location. (#50339)
-                os.rename (instPath + "/var/lib/rpm",
-                           instPath + "/var/lib/rpm.rpmsave-%s" %
-                           (str(int(time.time())),))
-            os.rename (instPath + id.dbpath,
-		       instPath + "/var/lib/rpm")
+		    pass
+	    try:
+		    os.rename (instPath + "/var/lib/rpm",
+		    instPath + "/var/lib/rpm.rpmsave")
+	    except OSError:
+		    # XXX hack..., if the above move failed, we'll just stash it in
+		    # a (hopefully) unique location. (#50339)
+		    os.rename (instPath + "/var/lib/rpm",
+		               instPath + "/var/lib/rpm.rpmsave-%s" %
+		               (str(int(time.time())),))
+	    os.rename (instPath + id.dbpath,
+	               instPath + "/var/lib/rpm")
 
 	    # XXX - rpm 4.0.2 %post braindeadness support
 	    try:
@@ -1197,3 +1197,5 @@ def selectLanguageSupportGroups(comps, langSupport):
                         elif comp.depsDict.has_key(req):
                             comp.addDependencyPackage(pkg)
     comps.updateSelections()
+
+# vim:ts=4:sw=4

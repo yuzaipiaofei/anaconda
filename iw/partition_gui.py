@@ -529,7 +529,7 @@ class DiskTreeModel(gtk.TreeStore):
 
 class PartitionWindow(InstallWindow):
     def __init__(self, ics):
-	InstallWindow.__init__(self, ics)
+        InstallWindow.__init__(self, ics)
         ics.setTitle(_("Partitioning"))
         ics.setNextEnabled(gtk.TRUE)
         if iutil.getArch() == "s390":

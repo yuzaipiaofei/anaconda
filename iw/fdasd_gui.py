@@ -86,7 +86,7 @@ class FDasdWindow (InstallWindow):
         self.windowContainer.pack_start (zvt)
 
         self.ics.readHTML ("usefdasd-s390")
-	self.ics.setPrevEnabled (0)
+        self.ics.setPrevEnabled (0)
         self.ics.setNextEnabled (0)
 
    def dasdfmt_button_clicked (self, widget):

@@ -26,17 +26,11 @@ endif
 ifeq ($(ARCH),s390)
 LDFLAGS=-fPIC
 CFLAGS += -fPIC
-# Due to fPIC problems in libpump and libpci and because 
-# those aren't used on s390:
-LOADLIBES = -lresolv -lpopt -lext2fs -lz
 endif
 
 ifeq ($(ARCH),s390x)
 LDFLAGS=-fPIC
 CFLAGS += -fPIC
-# Due to fPIC problems in libpump and libpci and because 
-# those aren't used on s390:
-LOADLIBES = -lresolv -lpopt -lext2fs -lz
 endif
 
 ifeq ($(ARCH),sparc)
