@@ -35,29 +35,6 @@ import upgrade
 from translate import _
 from log import log
 
-class Password:
-    def __init__ (self):
-        self.crypt = None
-	self.pure = None
-
-    def getPure(self):
-	return self.pure
-
-    def set (self, password, isCrypted = 0):
-	if isCrypted:
-	    self.crypt = password
-	    self.pure = None
-	else:
-            salt = (whrandom.choice (string.letters +
-                                     string.digits + './') + 
-                    whrandom.choice (string.letters +
-                                     string.digits + './'))
-            self.crypt = crypt.crypt (password, salt)
-	    self.pure = password
-
-    def getCrypted(self):
-	return self.crypt
-
 class Desktop (SimpleConfigFile):
     def __init__ (self):
         SimpleConfigFile.__init__ (self)
@@ -120,7 +97,6 @@ class ToDo:
 	self.installSystem = installSystem
 	self.serial = serial
         self.reconfigOnly = reconfigOnly
-        self.rootpassword = Password ()
         self.extraModules = extraModules
         self.verifiedState = None
 
@@ -368,14 +344,6 @@ class ToDo:
 	    raise ValueError, str
 	self.hdList.packages[package].selected = 1
 
-    def writeRootPassword (self):
-	pure = self.rootpassword.getPure()
-	if pure:
-	    self.setPassword("root", pure)
-	else:
-	    self.setPassword("root", self.rootpassword.getCrypted (),
-			     alreadyCrypted = 1)
-	    
     def setupAuthentication (self):
         args = [ "/usr/sbin/authconfig", "--kickstart", "--nostart" ]
         if self.auth.useShadow:
@@ -787,11 +755,6 @@ class ToDo:
 	    todo.silo.setDevice(where)
 	    todo.silo.setAppend(append)
 
-	todo.users = []
-	if todo.instClass.rootPassword:
-	    todo.rootpassword.set(todo.instClass.rootPassword,
-			      isCrypted = todo.instClass.rootPasswordCrypted)
-
 	if (todo.instClass.x):
 	    todo.x = todo.instClass.x
 
@@ -807,53 +770,6 @@ class ToDo:
 
     def getPartitionWarningText(self):
 	return self.instClass.clearPartText
-
-    # List of (accountName, fullName, password) tupes
-    def setUserList(todo, users):
-	todo.users = users
-
-    def getUserList(todo):
-	return todo.users
-
-    def setPassword(self, account, password, alreadyCrypted = 0):
-	if not alreadyCrypted:
-	    if self.auth.useMD5:
-		salt = "$1$"
-		saltLen = 8
-	    else:
-		salt = ""
-		saltLen = 2
-
-	    for i in range(saltLen):
-		salt = salt + whrandom.choice (string.letters +
-					 string.digits + './')
-
-            password = crypt.crypt (password, salt)
-
-	devnull = os.open("/dev/null", os.O_RDWR)
-
-	argv = [ "/usr/sbin/usermod", "-p", password, account ]
-	iutil.execWithRedirect(argv[0], argv, root = self.instPath, 
-			       stdout = '/dev/null', stderr = None)
-	os.close(devnull)
-
-    def createAccounts(todo):
-	if not todo.users: return
-
-	for (account, name, password) in todo.users:
-	    devnull = os.open("/dev/null", os.O_RDWR)
-
-	    argv = [ "/usr/sbin/useradd", account ]
-	    iutil.execWithRedirect(argv[0], argv, root = todo.instPath,
-				   stdout = devnull)
-
-	    argv = [ "/usr/bin/chfn", "-f", name, account]
-	    iutil.execWithRedirect(argv[0], argv, root = todo.instPath,
-				   stdout = devnull)
-        
-	    todo.setPassword(account, password)
-
-	    os.close(devnull)
 
     def setDefaultRunlevel (self):
         try:
