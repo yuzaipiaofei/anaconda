@@ -66,7 +66,9 @@ class InstallPathWindow (InstallWindow):
 
 
     # InstallPathWindow tag="instpath"
-    def getScreen(self, dispatch, id, method, intf): 
+    def getScreen(self, dispatch, id, method, intf, keyboard, mouse): 
+        print keyboard, mouse
+
         self.id = id
         self.intf = intf
 	self.flags = flags
