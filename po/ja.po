@@ -1255,7 +1255,7 @@ msgstr "Disk Druid を使用して手動でパーティションを設定する"
 
 #: ../iw/rootpartition_gui.py:347
 msgid "Manually partition with fdisk [experts only]"
-msgstr "ftisk を使用して手動でパーティションを設定する [エクスパートのみ]"
+msgstr "fdisk を使用して手動でパーティションを設定する [エクスパートのみ]"
 
 #: ../iw/silo_gui.py:20
 msgid "Silo Configuration"
