@@ -366,7 +366,7 @@ msgstr "        時間"
 
 #: ../text.py:639
 msgid "Total    :"
-msgstr "合計   :"
+msgstr "合計:   "
 
 #: ../text.py:646
 msgid "Completed:   "
@@ -374,7 +374,7 @@ msgstr "完了:   "
 
 #: ../text.py:656
 msgid "Remaining:  "
-msgstr "残り:  "
+msgstr "残り:   "
 
 #: ../text.py:753
 msgid "Help not available"
