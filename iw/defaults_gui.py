@@ -42,7 +42,7 @@ class DefaultsWindow(InstallWindow):
     def getNext(self):
         self.dispatch.skipStep("keyboard")
         self.dispatch.skipStep("mouse")
-        self.dispatch.skipStep("network")
+#        self.dispatch.skipStep("network")
         self.dispatch.skipStep("languagesupport")
         return None
     
