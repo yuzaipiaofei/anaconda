@@ -35,7 +35,7 @@ if [ -z "$ARCH" ]; then
 	ARCH=`rpm -qp --qf "%{ARCH}" $PACKAGEDIR/anaconda-runtime*.rpm`
 fi
 
-if [ $ARCH = x86_64 ]; then
+if [ $ARCH = x86_64 -o $ARCH = s390x ]; then
     LIBDIR=lib64
 else
     LIBDIR=lib
@@ -122,7 +122,7 @@ mkdir -p $DESTGR
 PACKAGES="glibc glibc-common setup openssl python python2 newt slang
 	 libtermcap zlib ash e2fsprogs util-linux raidtools popt
 	 procps rpm XFree86 Xconfigurator anaconda
-	 anaconda-runtime kudzu-devel kudzu hwdata db3 bzip2
+	 anaconda-runtime kudzu-devel kudzu hwdata bzip2
 	 bzip2-libs dosfstools pciutils reiserfs-utils parted sed
 	 busybox-anaconda rpm-python anaconda-help booty hdparm lvm
 	 rhpl pyxf86config libxml2 libxml2-python rdate glib2
@@ -244,11 +244,6 @@ $LIBDIR/ld-*
 $LIBDIR/libc*
 $LIBDIR/libcom_err*
 $LIBDIR/libcrypt*
-$LIBDIR/libdb-*
-$LIBDIR/libdb-3.0
-$LIBDIR/libdb.so.2
-$LIBDIR/libdb.so.3
-$LIBDIR/libdb1*
 $LIBDIR/libdl*
 $LIBDIR/libe2p*
 $LIBDIR/libext2fs*
@@ -345,9 +340,6 @@ usr/$LIBDIR/libgthread*
 usr/$LIBDIR/libssl*
 usr/$LIBDIR/libcrypto*
 usr/$LIBDIR/libbz2*
-usr/$LIBDIR/libdb.so.2
-usr/$LIBDIR/libdb.so.3
-usr/$LIBDIR/libdb1*
 usr/$LIBDIR/libelf*
 usr/$LIBDIR/libnewt*
 usr/$LIBDIR/libparted*
@@ -360,7 +352,6 @@ usr/$LIBDIR/libxml2.so*
 usr/$LIBDIR/libz.*
 usr/$LIBDIR/python2.2/*
 usr/$LIBDIR/python2.2/site-packages/libxml2*
-usr/$LIBDIR/python2.2/site-packages/*vte*
 usr/$LIBDIR/python2.2/site-packages/*kudzu*
 usr/$LIBDIR/python2.2/site-packages/rpmmodule.so
 usr/$LIBDIR/python2.2/site-packages/partedmodule.so
