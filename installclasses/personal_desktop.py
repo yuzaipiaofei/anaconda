@@ -8,7 +8,7 @@ from fsset import *
 
 class InstallClass(BaseInstallClass):
     showLoginChoice = 0
-    name = N_("Personal Desktop - Express Install")
+    name = N_("Personal Desktop")
     pixmap = "workstation.png"
     description = N_("Perfect for personal computers or laptops, select this "
 		     "installation type to install a graphical desktop "
@@ -20,20 +20,8 @@ class InstallClass(BaseInstallClass):
     def setSteps(self, dispatch):
 	BaseInstallClass.setSteps(self, dispatch);
 	dispatch.skipStep("partition")
-        dispatch.skipStep("autopartition")
-#        dispatch.skipStep("partitionmethod")
-#        dispatch.skipStep("partitionmethodsetup")
-#        dispatch.skipStep("partitionobjinit")
-        dispatch.skipStep("keyboard")
-	dispatch.skipStep("mouse")
-#        dispatch.skipStep("bootloader")
-        dispatch.skipStep("bootloaderadvanced")
-        dispatch.skipStep("network")
-        dispatch.skipStep("firewall")
-        dispatch.skipStep("languagesupport")
-        dispatch.skipStep("desktopchoice")
-        dispatch.skipStep("confirminstall")
-        dispatch.skipStep("authentication")
+
+        dispatch.skipStep("desktopchoice", skip = 0)
         dispatch.skipStep("package-selection", skip = 1)
 
     def setGroupSelection(self, comps, intf):
