@@ -25,7 +25,7 @@ class ConfirmWindow (InstallWindow):
             a.set (0.5, 0.5, 1.0, 1.0)
             hbox.pack_start (a, FALSE)
         
-        label = GtkLabel (_("Click next to begin installation of Red Hat Linux."))
+        label = GtkLabel (_("Click next to begin installation of Red Hat High Availability Server."))
         label.set_line_wrap (TRUE)
         label.set_usize(190, -1)
 
