@@ -13,7 +13,7 @@ endif
 
 everything: $(TARGET)
 
-all:	libslang.so
+all:	libslang.so libslang.a($(OBJS))
 
 libslang.so:	$(OBJS)
 	gcc -o $@ -shared -Wl,-soname,libslang.so.1 $(OBJS)
