@@ -460,9 +460,7 @@ EOF
        cp -f $IMGPATH/usr/bin/formatmnt \
 	   $MBD_DIR/sbin/formatmnt
        cp -f $IMGPATH/usr/bin/wget $MBD_DIR/sbin/wget
-       cp -f $IMGPATH/usr/bin/head $MBD_DIR/sbin/head
        cp -f $IMGPATH/usr/bin/printf $MBD_DIR/sbin/printf
-       cp -f $IMGPATH/usr/bin/tee $MBD_DIR/sbin/tee
        cp -f $IMGPATH/usr/sbin/chroot $MBD_DIR/sbin/chroot
        cp -f $IMGPATH/usr/sbin/consoletype $MBD_DIR/sbin/consoletype
        cp -f $IMGPATH/usr/sbin/rhsetup $MBD_DIR/sbin/rhsetup
@@ -470,20 +468,12 @@ EOF
        cp -f $IMGPATH/usr/sbin/swapoff $MBD_DIR/sbin/swapoff
        cp -f $IMGPATH/usr/sbin/mkswap $MBD_DIR/sbin/mkswap
        cp -f $IMGPATH/usr/sbin/tune2fs $MBD_DIR/sbin/tune2fs
-       cp -f $IMGPATH/usr/bin/ls $MBD_DIR/sbin/ls
-       cp -f $IMGPATH/usr/bin/ln $MBD_DIR/sbin/ln
-       cp -f $IMGPATH/usr/bin/dd $MBD_DIR/sbin/dd
-       cp -f $IMGPATH/usr/bin/mv $MBD_DIR/sbin/mv
-       cp -f $IMGPATH/usr/bin/rm $MBD_DIR/sbin/rm
-       cp -f $IMGPATH/usr/bin/sort $MBD_DIR/sbin/sort
-       cp -f $IMGPATH/usr/bin/more $MBD_DIR/sbin/more
-       cp -f $IMGPATH/usr/bin/mkdir $MBD_DIR/sbin/mkdir
-       cp -f $IMGPATH/usr/bin/grep $MBD_DIR/sbin/grep
-       cp -f $IMGPATH/usr/bin/gzip $MBD_DIR/sbin/gzip
+       cp -f $IMGPATH/usr/bin/busybox $MBD_DIR/sbin/busybox
+       for i in uname tee sort sed rm ps mv more mkdir ls ln hostname head gzip grep dd chmod cat; do
+          ln -sf busybox $MBD_DIR/sbin/$i
+       done
        cp -f $IMGPATH/usr/bin/mount $MBD_DIR/sbin/mount
        cp -f $IMGPATH/usr/bin/umount $MBD_DIR/sbin/umount
-       cp -f $IMGPATH/usr/bin/uname $MBD_DIR/sbin/uname
-       cp -f $IMGPATH/usr/bin/ps $MBD_DIR/sbin/ps
        ln -s gzip $MBD_DIR/sbin/zcat
        cp -f $IMGPATH/usr/bin/ldd $MBD_DIR/sbin/ldd
        cp -f $IMGPATH/usr/bin/strace $MBD_DIR/sbin/strace
@@ -497,10 +487,6 @@ EOF
        cp -f $IMGPATH/usr/sbin/in.telnetd $MBD_DIR/sbin/in.telnetd
        cp -f $IMGPATH/usr/sbin/route $MBD_DIR/sbin/route
        cp -f $IMGPATH/usr/sbin/portmap $MBD_DIR/sbin/portmap
-       cp -f $IMGPATH/usr/bin/cat $MBD_DIR/sbin/cat
-       cp -f $IMGPATH/usr/bin/chmod $MBD_DIR/sbin/chmod
-       cp -f $IMGPATH/usr/bin/sed $MBD_DIR/sbin/sed
-       cp -f $IMGPATH/usr/bin/hostname $MBD_DIR/sbin/hostname
        cp -f $IMGPATH/etc/inetd.conf $MBD_DIR/etc/inetd.conf
        cp -pf $IMGPATH/etc/ssh/* $MBD_DIR/etc/ssh/
        cp -f $IMGPATH/etc/services $MBD_DIR/etc/
@@ -611,7 +597,7 @@ EOF
     done
 
     if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
-	dd if=/dev/zero of=$MBD_DIR/etc/ramfs.img.big bs=1k count=16000
+	dd if=/dev/zero of=$MBD_DIR/etc/ramfs.img.big bs=1k count=14000
     else
 	dd if=/dev/zero of=$MBD_DIR/etc/ramfs.img.big bs=1k count=12000
     fi
