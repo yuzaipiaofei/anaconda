@@ -158,16 +158,13 @@ instantiate (size_t inc, wide_enc enc, int rw) {
   DBCS_type *obj;
   wide_str *wcs;
 
-  wcs = wide_init_str(Py_Malloc(sizeof(wide_str)), inc, enc);
-  if (NULL == wcs) return NULL;
-  obj = PyObject_NEW(DBCS_type, rw ? &DBCSrw : &DBCSr);
-  if (NULL == obj) {
-    wide_alloc_str(wcs, 0);
-    Py_Free(wcs);
+  if (NULL == (wcs = malloc(sizeof(wide_str)))) return NULL;
+  if (NULL == (obj = PyObject_NEW(DBCS_type, rw ? &DBCSrw : &DBCSr))) {
+    free(wcs);
     return NULL;
   }
   obj->rw = rw;
-  obj->s = wcs;
+  obj->s = wide_init_str(wcs, inc, enc);
   return obj;
 }
 
@@ -429,7 +426,7 @@ cleanup:
 static void
 DBCSdealloc (DBCS_type *self) {
   wide_alloc_str(self->s, 0);
-  Py_Free(self->s);
+  free(self->s);
   PyMem_DEL(self);
 }
 
@@ -605,7 +602,7 @@ DBCSstr (DBCS_type *self) {
   s = wide_conv_wcs(NULL, self->s);
   if (NULL == s) return NULL;
   obj = PyString_FromString(s);
-  Py_Free(s);
+  free(s);
   return obj;
 }
 
