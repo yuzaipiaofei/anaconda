@@ -16,6 +16,7 @@ from iw_gui import *
 from translate import _, N_
 from package_gui import queryUpgradeContinue
 import gui
+import iutil
 
 class ConfirmWindow (InstallWindow):
 
