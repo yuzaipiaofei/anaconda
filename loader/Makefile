@@ -131,7 +131,7 @@ install: all
 	install -m 644 kon-loader.tr $(DESTDIR)/$(RUNTIMEDIR)/loader
 	install -m 644 module-info $(DESTDIR)/$(RUNTIMEDIR)/loader
 	for n in $(S390FILES); do \
-	   install -m 755 $$n $(DESTDIR)/$(RUNTIMEDIR)/loader \
+	   install -m 755 $$n $(DESTDIR)/$(RUNTIMEDIR)/loader; \
 	    strip $(DESTDIR)/$(RUNTIMEDIR)/loader/$$n; \
 	done
 	install -m 644 kon.cfg $(DESTDIR)/$(RUNTIMEDIR)/loader
