@@ -188,6 +188,7 @@ class UpgradeSwapWindow:
 	
 class UpgradeExamineWindow:
     def __call__ (self, screen, dispatch, intf, id, chroot):
+        dispatch.skipStep("defaults")
         parts = id.rootParts
 
         height = min(len(parts), 11) + 1
