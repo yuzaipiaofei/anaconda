@@ -103,12 +103,10 @@ class TimezoneMap(gtk.VBox):
         self.listStore.set_sort_column_id(self.columns.TZ, gtk.SORT_ASCENDING)
 
         self.listView = gtk.TreeView(self.listStore)
-        self.exposeId = self.listView.connect("event-after",
-                                              self.listExposeEvent)
+        self.listView.connect("map-event", self.listExposeEvent)
         selection = self.listView.get_selection()
         selection.connect("changed", self.selectionChanged)
         self.listView.set_property("headers-visible", gtk.FALSE)
-        renderer = gtk.CellRendererText()
         col = gtk.TreeViewColumn(None, gtk.CellRendererText(), text=0)
         self.listView.append_column(col)
         col = gtk.TreeViewColumn(None, gtk.CellRendererText(), text=1)
@@ -144,7 +142,6 @@ class TimezoneMap(gtk.VBox):
         path = self.listStore.get_path(iter)
         col = self.listView.get_column(0)
         self.listView.scroll_to_cell(path, col, gtk.TRUE, 0.5, 0.5)
-        widget.disconnect(self.exposeId)
         
     def mapEvent(self, widget, event=None):
         if event.type == gtk.gdk.MOTION_NOTIFY:
@@ -189,7 +186,6 @@ class TimezoneMap(gtk.VBox):
                 path = self.listStore.get_path(iter)
                 col = self.listView.get_column(0)
                 self.listView.scroll_to_cell(path, col, gtk.TRUE, 0.5, 0.5)
-                self.listView
                 break
             next = self.listStore.iter_next(iter)
         

@@ -465,8 +465,7 @@ class InstallControlWindow:
         self.buff = ""
 	langList = self.langSearchPath + [ "" ]
 	for lang in langList:
-#	    fn = "/mnt/source/RELEASE-NOTES"
-            fn = "/mnt/test/enigma-i386/i386/RELEASE-NOTES"
+	    fn = "/mnt/source/RELEASE-NOTES"
 	    if len(lang):
 		fn = fn + "." + lang
 

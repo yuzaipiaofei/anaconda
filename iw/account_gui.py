@@ -54,8 +54,7 @@ class AccountWindow (InstallWindow):
             else:
                 self.rootStatus.set_text (_("Root passwords do not match."))
                 
-#            self.ics.setNextEnabled (gtk.FALSE)
-            self.ics.setNextEnabled (gtk.TRUE)
+            self.ics.setNextEnabled (gtk.FALSE)
 
     def userOkay(self, *args):
 	accountName = self.accountName.get_text()
@@ -222,12 +221,12 @@ class AccountWindow (InstallWindow):
             self.userPass2.set_text(password)
             
         self.accountName.grab_focus()
-#        self.accountName.connect("changed", self.userOkay)
-#        self.accountName.connect("insert-text", self.filter)
-#        self.accountName.connect("activate", self.forward)
-#        self.userPass1.connect("changed", self.userOkay)
-#        self.userPass2.connect("changed", self.userOkay)
-        
+        self.accountName.connect("changed", self.userOkay)
+        self.accountName.connect("insert-text", self.filter)
+        self.accountName.connect("activate", self.forward)
+        self.userPass1.connect("changed", self.userOkay)
+        self.userPass2.connect("changed", self.userOkay)
+       
         return userWin
         
     def deleteUser(self, *args):
@@ -304,9 +303,9 @@ class AccountWindow (InstallWindow):
         table.attach (pass2, 0, 1, 1, 2, gtk.FILL, 0, 10)
         self.pw = gtk.Entry (128)
         
-#        self.pw.connect ("activate", self.forward)
-#        self.pw.connect ("changed", self.rootPasswordsMatch)
-#        self.pw.connect ("expose-event", self.setFocus)
+        self.pw.connect ("activate", self.forward)
+        self.pw.connect ("changed", self.rootPasswordsMatch)
+        self.pw.connect ("map-event", self.setFocus)
         self.pw.set_visibility (gtk.FALSE)
         self.confirm = gtk.Entry (128)
 #        self.confirm.connect ("activate", self.forward)

@@ -612,7 +612,7 @@ class MonitorWindow (InstallWindow):
             self.ignoreTreeChanges = 1
             self.ctree.select (select)
             self.ctree.expand (selParent)
-            self.ctree.connect ("event-after", self.moveto, select)
+            self.ctree.connect ("map-event", self.moveto, select)
             self.ignoreTreeChanges = 0
 
         sw = gtk.ScrolledWindow ()
@@ -945,7 +945,7 @@ class XConfigWindow (InstallWindow):
 
         #- Once ctree is realized then expand  branch and select selected item.
         self.ctree.connect ("tree_select_row", self.selectCb_tree)
-        self.ctree.connect ("event-after", self.movetree, self.selected_node)
+        self.ctree.connect ("map-event", self.movetree, self.selected_node)
 
         sw = gtk.ScrolledWindow ()
         sw.set_policy (gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
