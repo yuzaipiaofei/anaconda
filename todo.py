@@ -143,7 +143,6 @@ class ToDo:
             self.milo = MiloInstall (self)
         elif arch == "ia64":
             self.eli = EliConfiguration ()
-	self.timezone = None
         self.upgrade = 0
 	self.ddruidAlreadySaved = 0
         self.initlevel = 3
@@ -243,40 +242,6 @@ class ToDo:
 	    raise SystemError, "cannot determine floppy device for this arch"
 
 	log("anaconda floppy device is %s", self.fdDevice)
-
-    def writeTimezone(self):
-	if (self.timezone):
-	    (timezone, asUtc, asArc) = self.timezone
-	    fromFile = self.instPath + "/usr/share/zoneinfo/" + timezone
-
-            try:
-                iutil.copyFile(fromFile, self.instPath + "/etc/localtime")
-            except OSError, (errno, msg):
-                log ("Error copying timezone (from %s): %s" % (fromFile, msg))
-	else:
-	    asUtc = 0
-	    asArc = 0
-
-	f = open(self.instPath + "/etc/sysconfig/clock", "w")
-	f.write('ZONE="%s"\n' % timezone)
-	f.write("UTC=")
-	if (asUtc):
-	    f.write("true\n")
-	else:
-	    f.write("false\n")
-
-	f.write("ARC=")
-	if (asArc):
-	    f.write("true\n")
-	else:
-	    f.write("false\n")
-	f.close()
-
-    def getTimezoneInfo(self):
-	return self.timezone
-
-    def setTimezoneInfo(self, timezone, asUtc = 0, asArc = 0):
-	self.timezone = (timezone, asUtc, asArc)
 
     def writeMouse(self):
 	if self.serial: return
@@ -809,8 +774,6 @@ class ToDo:
         todo.auth.useHesiod = useHesiod
         todo.auth.hesiodLhs = hesiodLhs
         todo.auth.hesiodRhs = hesiodRhs
-
-	todo.timezone = instClass.getTimezoneInfo()
 	todo.bootdisk = todo.instClass.getMakeBootdisk()
 	todo.zeroMbr = todo.instClass.zeroMbr
 	(where, linear, append) = todo.instClass.getLiloInformation()
