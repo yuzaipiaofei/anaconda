@@ -128,7 +128,7 @@ install: all
 	install -m 644 kon-loader.tr $(DESTDIR)/$(RUNTIMEDIR)/loader
 	install -m 644 module-info $(DESTDIR)/$(RUNTIMEDIR)/loader
 	install -m 644 module-info.s390 $(DESTDIR)/$(RUNTIMEDIR)/loader
-	install -m 755 linuxrc-s390 $(DESTDIR)/$(RUNTIMEDIR)/loader
+	install -m 755 linuxrc.s390 $(DESTDIR)/$(RUNTIMEDIR)/loader
 	install -m 644 kon.cfg $(DESTDIR)/$(RUNTIMEDIR)/loader
 	install -m 644 minikon.fnt $(DESTDIR)/$(RUNTIMEDIR)/loader
 
