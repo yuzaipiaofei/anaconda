@@ -24,9 +24,11 @@ import rhpl.keyboard
 from flags import flags
 
 import sys
+import installpath_dialog_gui
 import keyboard_gui
 import mouse_gui
 import network_dialog_gui
+import language_support_dialog_gui
 
 class DefaultsWindow(InstallWindow):
     windowTitle = N_("Defaults")
@@ -59,9 +61,11 @@ class DefaultsWindow(InstallWindow):
         print "in defaults getScreen"
 
         self.dispatch = dispatch
+        self.id = id
         self.keyboard = id.keyboard
 	self.mouse = id.mouse
         self.network = id.network
+        self.langSupport = id.langSupport
         print self.network.available()
         print dir(self.network)
 
@@ -89,6 +93,26 @@ class DefaultsWindow(InstallWindow):
         self.defaultsTable = gtk.Table(3, 5)
         self.defaultsTable.set_border_width(15)
         self.defaultsTable.set_col_spacings(10)
+        self.defaultsTable.set_row_spacings(10)
+
+        icon = self.ics.readPixmap("install.png")
+        label = gtk.Label("")
+        label.set_markup("<span foreground='#000000' size='large' font_family='Helvetica'><b>%s:</b></span>" % _("Installation \nType"))
+        label.set_alignment(0.0, 0.5)
+        self.keyboardLabel = gtk.Label(self.keyboard.modelDict[self.keyboard.get()][0])
+        self.keyboardLabel.set_alignment(0.0, 0.5)
+        keyboardButton = gtk.Button()
+        buttonLabel = gtk.Label("")
+        buttonLabel.set_markup('<span foreground="#3030c0"><u>'
+                                    '%s</u></span>' % (_('Change'),))
+        keyboardButton.add(buttonLabel)
+        keyboardButton.set_relief(gtk.RELIEF_NONE)
+        keyboardButton.connect("clicked", self.installTypeClicked)
+
+        self.defaultsTable.attach(icon, 0, 1, 0, 1, gtk.SHRINK)
+        self.defaultsTable.attach(label, 1, 2, 0, 1, gtk.SHRINK|gtk.FILL)
+        self.defaultsTable.attach(self.keyboardLabel, 2, 3, 0, 1, gtk.SHRINK|gtk.FILL)
+        self.defaultsTable.attach(keyboardButton, 3, 4, 0, 1, gtk.SHRINK, gtk.SHRINK)
 
         icon = self.ics.readPixmap("gnome-keyboard.png")
         label = gtk.Label("")
@@ -104,11 +128,11 @@ class DefaultsWindow(InstallWindow):
         keyboardButton.set_relief(gtk.RELIEF_NONE)
         keyboardButton.connect("clicked", self.keyboardClicked)
 
-        self.defaultsTable.attach(icon, 0, 1, 0, 1, gtk.SHRINK)
-        self.defaultsTable.attach(label, 1, 2, 0, 1, gtk.SHRINK|gtk.FILL)
-        self.defaultsTable.attach(self.keyboardLabel, 2, 3, 0, 1, gtk.SHRINK|gtk.FILL)
-        self.defaultsTable.attach(keyboardButton, 3, 4, 0, 1, gtk.SHRINK, gtk.SHRINK)
-        
+        self.defaultsTable.attach(icon, 0, 1, 1, 2, gtk.SHRINK)
+        self.defaultsTable.attach(label, 1, 2, 1, 2, gtk.SHRINK|gtk.FILL)
+        self.defaultsTable.attach(self.keyboardLabel, 2, 3, 1, 2, gtk.SHRINK|gtk.FILL)
+        self.defaultsTable.attach(keyboardButton, 3, 4, 1, 2, gtk.SHRINK, gtk.SHRINK)
+
         icon = self.ics.readPixmap("gnome-mouse.png")
         label = gtk.Label("")
         label.set_markup("<span foreground='#000000' size='large' font_family='Helvetica'><b>%s:</b></span>" % _("Mouse"))
@@ -123,20 +147,17 @@ class DefaultsWindow(InstallWindow):
         mouseButton.set_relief(gtk.RELIEF_NONE)
         mouseButton.connect("clicked", self.mouseClicked)
 
-        self.defaultsTable.attach(icon, 0, 1, 1, 2, gtk.SHRINK)
-        self.defaultsTable.attach(label, 1, 2, 1, 2, gtk.SHRINK|gtk.FILL)
-        self.defaultsTable.attach(self.mouseLabel, 2, 3, 1, 2, gtk.SHRINK|gtk.FILL)
-        self.defaultsTable.attach(mouseButton, 3, 4, 1, 2,  gtk.SHRINK, gtk.SHRINK)    
+        self.defaultsTable.attach(icon, 0, 1, 2, 3, gtk.SHRINK)
+        self.defaultsTable.attach(label, 1, 2, 2, 3, gtk.SHRINK|gtk.FILL)
+        self.defaultsTable.attach(self.mouseLabel, 2, 3, 2, 3, gtk.SHRINK|gtk.FILL)
+        self.defaultsTable.attach(mouseButton, 3, 4, 2, 3,  gtk.SHRINK, gtk.SHRINK)    
 
         icon = self.ics.readPixmap("network.png")
         label = gtk.Label("")
         label.set_markup("<span foreground='#000000' size='large' font_family='Helvetica'><b>%s:</b></span>" % _("Network"))
         label.set_alignment(0.0, 0.5)
 
-        devices = self.network.available().keys()
-        devices.sort()
-#        self.networkLabel = gtk.Label("%s : %s " % (devices[0], devices[0].)
-        self.networkLabel = gtk.Label("")
+        self.networkLabel = gtk.Label(_("Automatically configured"))
         self.networkLabel.set_alignment(0.0, 0.5)
         networkButton = gtk.Button()
         buttonLabel = gtk.Label("")
@@ -146,10 +167,33 @@ class DefaultsWindow(InstallWindow):
         networkButton.set_relief(gtk.RELIEF_NONE)
         networkButton.connect("clicked", self.networkClicked)
 
-        self.defaultsTable.attach(icon, 0, 1, 2, 3, gtk.SHRINK)
-        self.defaultsTable.attach(label, 1, 2, 2, 3, gtk.SHRINK|gtk.FILL)
-        self.defaultsTable.attach(self.networkLabel, 2, 3, 2, 3, gtk.SHRINK|gtk.FILL)
-        self.defaultsTable.attach(networkButton, 3, 4, 2, 3,  gtk.SHRINK, gtk.SHRINK)    
+        self.defaultsTable.attach(icon, 0, 1, 3, 4, gtk.SHRINK)
+        self.defaultsTable.attach(label, 1, 2, 3, 4, gtk.SHRINK|gtk.FILL)
+        self.defaultsTable.attach(self.networkLabel, 2, 3, 3, 4, gtk.SHRINK|gtk.FILL)
+        self.defaultsTable.attach(networkButton, 3, 4, 3, 4,  gtk.SHRINK, gtk.SHRINK)    
+
+
+        icon = self.ics.readPixmap("gnome-globe.png")
+        label = gtk.Label("")
+        label.set_markup("<span foreground='#000000' size='large' font_family='Helvetica'><b>%s:</b></span>" % _("Language \nSupport"))
+        label.set_alignment(0.0, 0.5)
+
+        self.langSupportLabel = gtk.Label(_("Automatically configured"))
+        self.langSupportLabel.set_alignment(0.0, 0.5)
+        langSupportButton = gtk.Button()
+        buttonLabel = gtk.Label("")
+        buttonLabel.set_markup('<span foreground="#3030c0"><u>'
+                                    '%s</u></span>' % (_('Change'),))
+        langSupportButton.add(buttonLabel)
+        langSupportButton.set_relief(gtk.RELIEF_NONE)
+        langSupportButton.connect("clicked", self.langSupportClicked)
+
+        self.defaultsTable.attach(icon, 0, 1, 4, 5, gtk.SHRINK)
+        self.defaultsTable.attach(label, 1, 2, 4, 5, gtk.SHRINK|gtk.FILL)
+        self.defaultsTable.attach(self.langSupportLabel, 2, 3, 4, 5, gtk.SHRINK|gtk.FILL)
+        self.defaultsTable.attach(langSupportButton, 3, 4, 4, 5,  gtk.SHRINK, gtk.SHRINK)    
+
+
 
 
         lowerVBox = gtk.VBox()
@@ -161,15 +205,22 @@ class DefaultsWindow(InstallWindow):
         mainBox.pack_start(lowerVBox, gtk.FALSE)
         return mainBox
 
+    def installTypeClicked(self, *args):
+        app = installpath_dialog_gui.childWindow(self.dispatch, self.ics, self.id)
+        app.anacondaScreen()
+
     def keyboardClicked(self, *args):
         app = keyboard_gui.childWindow()
         app.anacondaScreen(self.keyboardLabel, self.keyboard, self.keyboard)
 
     def mouseClicked(self, *args):
-#        print dir(self.mouse)
         app = mouse_gui.childWindow()
         app.anacondaScreen(self.mouse, self.mouseLabel)
 
     def networkClicked(self, *args):
         app = network_dialog_gui.childWindow(self.ics)
         app.anacondaScreen(self.networkLabel, self.network)
+
+    def langSupportClicked(self, *args):
+        app = language_support_dialog_gui.childWindow(self.ics)
+        app.anacondaScreen(self.langSupportLabel, self.langSupport)
