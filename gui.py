@@ -222,16 +222,6 @@ class ExceptionWindow:
             return 0
 
 class MessageWindow:
-    def quit (self, dialog, button=None):
-        if button != None:
-            self.rc = button
-
-    def okcancelquit (self, button):
-        self.rc = button
-
-    def questionquit (self, button):
-        self.rc = not button
-
     def getrc (self):
         return self.rc
     
@@ -242,30 +232,24 @@ class MessageWindow:
             return
         self.rc = None
         self.window = gtk.Dialog()
-        self.window.vbox.pack_start(_(text), gtk.FALSE)
+        self.window.vbox.pack_start(gtk.Label(_(text)), gtk.FALSE)
         if type == "ok":
-            self.window.add_button('gtk-ok', gtk.RESPONSE_ACCEPT)
+            self.window.add_button('gtk-ok', 1)
         if type == "okcancel":
-            self.window.add_button('gtk-ok', gtk.RESPONSE_ACCEPT)
-            self.window.add_button('gtk-cancel', gtk.RESPONSE_REJECT)
+            self.window.add_button('gtk-ok', 1)
+            self.window.add_button('gtk-cancel', 2)
         if type == "yesno":
-            self.window.add_button('gtk-yes', gtk.RESPONSE_ACCEPT)
-            self.window.add_button('gtk-no', gtk.RESPONSE_ACCEPT)
+            self.window.add_button('gtk-yes', 1)
+            self.window.add_button('gtk-no', 2)
         # this is the pixmap + the label
-        hbox = self.window.vbox.children ()[0]
-        label = hbox.children ()[1]
-        label.set_line_wrap (gtk.TRUE)
         self.window.set_position (gtk.WIN_POS_CENTER)
-        win = self.window.get_window()
-        win.keyboard_grab(0)
+#        win = self.window.get_window()
+#        win.keyboard_grab(0)
         self.window.show_all ()
         self.rc = self.window.run ()
-
-        # invert result from yes/no dialog for some reason
-        if type == "yesno":
-            self.rc = not self.rc
+        self.window.destroy()
         
-        win.keyboard_ungrab()
+#        win.keyboard_ungrab()
     
 class InstallInterface:
     def __init__ (self):
