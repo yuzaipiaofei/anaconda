@@ -1364,7 +1364,10 @@ class ToDo:
 
 		if (os.access(fromFile, os.R_OK)):
 		    log("copying %s to %s" % (fromFile, to))
-		    os.rename(fromFile, to)
+		    try:
+			os.rename(fromFile, to)
+		    except:
+			pass
 		else:
 		    log("missing DD module %s (this may be okay)" % 
 				fromFile)
