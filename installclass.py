@@ -115,16 +115,22 @@ class BaseInstallClass:
 	if iutil.getArch() == "s390" or iutil.getArch() == "s390x":
 	    #dispatch.skipStep("language")
 	    dispatch.skipStep("keyboard", permanent = 1)
-	    dispatch.skipStep("mouse")
-	    dispatch.skipStep("partition")
-	    dispatch.skipStep("network")
-	    dispatch.skipStep("monitor")
-	    dispatch.skipStep("xcustom")
-	    dispatch.skipStep("videocard")
-	    dispatch.skipStep("writexconfig")
-            dispatch.skipStep("makebootdisk")
-            
-            dispatch.skipStep("partitionmethod")
+	    dispatch.skipStep("mouse", permanent = 1)
+	    dispatch.skipStep("network", permanent = 1)
+	    dispatch.skipStep("monitor", permanent = 1)
+	    dispatch.skipStep("xcustom", permanent = 1)
+	    dispatch.skipStep("videocard", permanent = 1)
+	    dispatch.skipStep("writexconfig", permanent = 1)
+            dispatch.skipStep("makebootdisk", permanent = 1) 
+	    dispatch.skipStep("partition", permanent = 1)
+            dispatch.skipStep("partitionmethod", permanent = 1)
+            dispatch.skipStep("partitionobjinit", permanent = 1)
+            dispatch.skipStep("partitionmethodsetup", permanent = 1)
+            dispatch.skipStep("autopartition", permanent = 1)
+            dispatch.skipStep("autopartitionexecute", permanent = 1)
+            dispatch.skipStep("fdisk", permanent = 1)
+            dispatch.skipStep("partition", permanent = 1)
+            dispatch.skipStep("partitiondone", permanent = 1)
             #id.partitions.useAutopartitioning = 0
             #id.partitions.useFdisk = 1
             
