@@ -80,6 +80,9 @@ fi
 * %{date} Anaconda team <bugzilla@redhat.com>
 - built new version from CVS
 
+* Wed Oct 18 2000 Akira Tagoh <tagoh@redhat.com>
+- changed a default timezone from English/NewYork to Asia/Tokyo.
+
 * Wed Oct 18 2000 Adrian Havill <havill@redhat.com>
 - added dbcs, fixed ja wordwrap with kon and text mode
 
