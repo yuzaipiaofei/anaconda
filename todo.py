@@ -944,7 +944,7 @@ class ToDo:
         f.write (localline)
         for dev in self.network.netdevices.values ():
             ip = dev.get ("ipaddr")
-            if dev.hostname and ip:
+            if dev.hostname and ip and dev.hostname != "localhost.localdomain":
                 f.write ("%s\t\t%s\n" % (ip, dev.hostname))
         f.close ()
 
