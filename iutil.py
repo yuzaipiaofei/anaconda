@@ -389,6 +389,9 @@ def copyDeviceNode(src, dest):
 # make the device nodes for all of the drives on the system
 def makeDriveDeviceNodes():
     import raid
+
+    if not os.path.exists("/dev/emdctl"):
+        isys.mknod("/dev/emdctl", 0644 | stat.S_IFCHR, isys.makedev(10, 202))
     
     hardDrives = isys.hardDriveDict()
     for drive in hardDrives.keys():

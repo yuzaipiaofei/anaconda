@@ -1228,7 +1228,9 @@ class FileSystemSet:
 
     def labelEntry(self, entry, chroot):
         if entry.device.doLabel is not None:
-            entry.fsystem.labelDevice(entry, chroot)
+            # FIXME: this is a hack
+            if not entry.device.getDevice().startswith("emd"):
+                entry.fsystem.labelDevice(entry, chroot)
     
     def formatEntry(self, entry, chroot):
         entry.fsystem.formatDevice(entry, self.progressWindow, chroot)

@@ -734,9 +734,12 @@ static int ProcPartitionsGetDevices(struct knownDevices * devices) {
 	if (!strncmp("i2o/", start, 4))
 	   model = "I2O Block Device";
 
+        if (!strncmp("emd", start, 3))
+            model = "Enhanced MD Device";
+
 	if (model) {
 	    i = 0;
-	    while(!(isspace(*start))) {
+	    while(!(isspace(*start)) && *start) {
 		ctl[i] = *start;
 		i++;
 		start++;

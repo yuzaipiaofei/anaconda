@@ -109,6 +109,7 @@ static PyObject * py_isUsableDasd(PyObject * s, PyObject * args);
 static PyObject * py_isLdlDasd(PyObject * s, PyObject * args);
 static PyObject * doGetMacAddress(PyObject * s, PyObject * args);
 static PyObject * doGetIPAddress(PyObject * s, PyObject * args);
+static PyObject * isInEMDDevice(PyObject * s, PyObject * args);
 
 static PyMethodDef isysModuleMethods[] = {
     { "ejectcdrom", (PyCFunction) doEjectCdrom, METH_VARARGS, NULL },
@@ -165,6 +166,7 @@ static PyMethodDef isysModuleMethods[] = {
     { "isLdlDasd", (PyCFunction) py_isLdlDasd, METH_VARARGS, NULL},
     { "getMacAddress", (PyCFunction) doGetMacAddress, METH_VARARGS, NULL},
     { "getIPAddress", (PyCFunction) doGetIPAddress, METH_VARARGS, NULL},
+    { "inEMDDevice", (PyCFunction) isInEMDDevice, METH_VARARGS, NULL},
     { NULL }
 } ;
 
@@ -1439,6 +1441,70 @@ static PyObject * doGetIPAddress(PyObject * s, PyObject * args) {
     ret = getIPAddr(dev);
 
     return Py_BuildValue("s", ret);
+}
+
+typedef struct mdu_major_minor_s {
+    unsigned int major;
+    unsigned int minor;
+} mdu_major_minor_t;
+
+typedef struct mdu_cookie_info_s {
+    /*
+     * cookie info of one device or array
+     */
+    mdu_major_minor_t major_minor;
+    unsigned long   parent_cookie;
+    unsigned long   cookie;
+    int             type;
+    int             subtype;
+    unsigned long   gencount;
+} mdu_cookie_info_t;
+
+#define EMD_MAJOR 153
+#define EMD_GET_DEVICE_INFO _IOW (EMD_MAJOR, 0x40, mdu_cookie_info_t)
+
+static PyObject * isInEMDDevice(PyObject * o, PyObject * args) {
+    char * devname, * path;
+    int fd, rc;
+    struct stat sb;
+    mdu_cookie_info_t cookie_info;
+
+    memset (&cookie_info, 0, sizeof(mdu_cookie_info_t));
+
+    if (!PyArg_ParseTuple(args, "s", &devname))
+        return NULL;
+
+    path = malloc((strlen(devname) + 10) * sizeof(char *));
+    sprintf(path, "/tmp/%s", devname);
+    if (devMakeInode(devname, path)) return Py_None;
+
+    if (stat(path, &sb) < 0) {
+        free(path);
+	PyErr_SetFromErrno(PyExc_SystemError);
+        return NULL;
+    }
+    free(path);
+
+    cookie_info.major_minor.major = major(sb.st_rdev);
+    cookie_info.major_minor.minor = minor(sb.st_rdev);
+
+    fd = open("/dev/emdctl", O_RDWR);
+    if (ioctl(fd, EMD_GET_DEVICE_INFO, &cookie_info) < 0) {
+        close(fd);
+	PyErr_SetFromErrno(PyExc_SystemError);
+        return NULL;
+    }
+
+    close(fd);
+    fprintf(stderr, "cookie is %ld, parent is %ld\n", cookie_info.cookie,
+            cookie_info.parent_cookie);
+    if (cookie_info.cookie && !cookie_info.parent_cookie) {
+        rc = 1;
+    } else {
+        rc = 0;
+    }
+
+    return Py_BuildValue("i", rc);
 }
 
 static PyObject * py_getDasdPorts(PyObject * o, PyObject * args) {

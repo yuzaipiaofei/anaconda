@@ -248,6 +248,15 @@ def driveDict(klassArg):
 	    dict[dev] = descr
     return dict
 
+def isEMDLoaded():
+    f = open("/proc/modules")
+    lines = f.readlines()
+    f.close()
+    for l in lines:
+        if l.startswith("emd"):
+            return 1
+    return 0
+
 def hardDriveDict():
     import parted
 
@@ -255,6 +264,17 @@ def hardDriveDict():
 
     # this is kind of ugly, but it's much easier to do this from python
     for (dev, descr) in dict.items():
+        # emd ddf/adaptec raid stuff
+        if isEMDLoaded():
+            try:
+                if _isys.inEMDDevice(dev):
+                    log("%s is in EMD device, ignoring" %(dev,))
+                    del dict[dev]
+                    continue
+            except Exception, e:
+                log("error checking if %s is emd: %s" %(dev, e))
+                pass
+        
         # the only raid devs like this are ide, so only worry about them
         if not dev.startswith("hd"):
             continue
@@ -294,7 +314,7 @@ def hardDriveDict():
         else:
             log("%s has a %s raid signature but no windows parts" %(dev, ret))
         
-    return driveDict("disk")
+    return dict
 
 def floppyDriveDict():
     return driveDict("floppy")
