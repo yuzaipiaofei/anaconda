@@ -1438,7 +1438,7 @@ class FileSystemSet:
             for disk in ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
                          'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'):
                 for part in range(1, 16):
-                    dev = "%s%s" %(disk, part)
+                    dev = "emd%s%s" %(disk, part)
                     if not os.access("%s/dev/%s" %(instPath, dev), os.R_OK):
                         isys.makeDevInode(dev, "%s/dev/%s" %(instPath, dev))
 
