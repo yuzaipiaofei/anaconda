@@ -1,30 +1,37 @@
-Name: anaconda
+Name: anaconda-ia64
 Version: @@VERSION@@
 Release: @@RELEASE@@
 Copyright: GPL
-Summary: The Red Hat Linux installer.
-Group: Applications/System
 Source: anaconda-%{PACKAGE_VERSION}.tar.gz
-Obsoletes: anaconda-reconfig
 BuildPreReq: pump-devel, kudzu-devel, pciutils-devel, bzip2-devel, e2fsprogs-devel, python-devel
-Prereq: chkconfig /etc/init.d
-Requires: rpm-python
-ExcludeArch: sparc
+ExclusiveArch: ia64
 
 BuildRoot: /var/tmp/anaconda-%{PACKAGE_VERSION}
+
+%package -n anaconda
+Summary: The Red Hat Linux installer.
+Group: Applications/System
+Obsoletes: anaconda-reconfig
+Prereq: chkconfig /etc/init.d
+Requires: rpm-python
 
 %description
 The anaconda package contains portions of the Red Hat Linux installer which
 may be run be the user for reconfiguration and advanced installation
 options.
 
-%package runtime
+%description -n anaconda
+The anaconda package contains portions of the Red Hat Linux installer which
+may be run be the user for reconfiguration and advanced installation
+options.
+
+%package -n anaconda-runtime
 Summary: Portions of the Red Hat Linux installer only needed for fresh installations.
 Group: Applications/System
 AutoReqProv: false
 Requires: anaconda = %{version}-%{release}
 
-%description runtime
+%description -n anaconda-runtime
 The anaconda-runtime package contains parts of the Red Hat Linux install
 which are needed for installing new systems. It is used to build Red Hat
 Linux media sets, but the files it contains are not meant for us on
@@ -32,7 +39,7 @@ already installed systems.
 
 %prep
 
-%setup -q
+%setup -q -n anaconda-%{version}
 
 %build
 make depend
@@ -48,15 +55,15 @@ strip $RPM_BUILD_ROOT/usr/lib/anaconda/*.so
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post
+%post -n anaconda
 chkconfig --add reconfig
 
-%preun
+%preun -n anaconda
 if [ $1 = 0 ]; then
 	chkconfig --del reconfig
 fi
 
-%files
+%files -n anaconda
 %defattr(-,root,root)
 %doc COPYING
 /usr/sbin/anaconda
@@ -70,7 +77,7 @@ fi
 
 %config /etc/rc.d/init.d/reconfig
 
-%files runtime
+%files -n anaconda-runtime
 %defattr(-,root,root)
 /usr/lib/anaconda-runtime
 
