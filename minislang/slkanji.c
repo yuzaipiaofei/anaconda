@@ -108,6 +108,7 @@ int kSLfind_code_data(unsigned char *name, char *pre)
    return -1;
 }
 
+#if 0
 void kSLget_code_data_member(int i)
 {
    
@@ -118,6 +119,7 @@ void kSLget_code_data_member(int i)
    SLang_push_integer(kSLcode_data[i].mode);
 
 }
+#endif
 
 /*
 int convert_function(void (unsigned char *buf, int bufsize, *get_func)(void))
@@ -1329,10 +1331,12 @@ static SLang_Intrin_Var_Type SLKanji_Vars[] =  /*{{{*/
 int kSLinit_kanji(void)  /*{{{*/
 {
    int ret;
-   
+
+#if 0
    if (-1 == SLadd_intrin_fun_table(SLKanji_ITable, NULL)
        || (-1 == SLadd_intrin_var_table (SLKanji_Vars, NULL)))
      return -1;
+#endif
    
    return 0;
 }
