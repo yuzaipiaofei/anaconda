@@ -1,3 +1,4 @@
+from installclass import BaseInstallClass
 import personal_desktop
 from rhpl.translate import N_
 import os
@@ -11,6 +12,9 @@ class InstallClass(personal_desktop.InstallClass):
 		     "development and system administration. ")
 
     sortPriority = 2
+
+    def setSteps(self, dispatch):
+	BaseInstallClass.setSteps(self, dispatch);
 
     def setGroupSelection(self, comps, intf):
         personal_desktop.InstallClass.setGroupSelection(self, comps, intf)
