@@ -189,11 +189,12 @@ class InstallPathWindow:
 	    else:
 		default = 0
 
-	choices = [ _("Install GNOME Workstation"), 
-		    _("Install KDE Workstation"),
-		    _("Install Server System"),
-		    _("Install Custom System"),
-		    _("Upgrade Existing Installation") ]
+	choices = [ _("Server and GNOME Administration Environment"), 
+		    _("Server and KDE Administration Environment"),
+                    #_("Install Server System"),
+		    _("Add individual packages"),
+		    #_("Upgrade Existing Installation")
+                    ]
 	(button, choice) = ListboxChoiceWindow(screen, _("Installation Type"),
 			_("What type of system would you like to install?"),
 			    choices, [(_("OK"), "ok"), (_("Back"), "back")],
@@ -211,9 +212,9 @@ class InstallPathWindow:
 		todo.setClass(installclass.GNOMEWorkstation())
 	    elif (choice == 1 and orig != 1):
 		todo.setClass(installclass.KDEWorkstation())
+#	    elif (choice == 2 and orig != 2):
+#		todo.setClass(installclass.Server())
 	    elif (choice == 2 and orig != 2):
-		todo.setClass(installclass.Server())
-	    elif (choice == 3 and orig != 3):
 		todo.setClass(installclass.CustomInstall())
         return INSTALL_OK
 
