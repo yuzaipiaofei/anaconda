@@ -188,13 +188,6 @@ class ToDo:
 	f.write(str (desktop))
 	f.close()
 
-    # XXX
-    #def writeKeyboard(self):
-	#if self.serial: return
-	#f = open(self.instPath + "/etc/sysconfig/keyboard", "w")
-	#f.write(str (self.keyboard))
-	#f.close()
-
     def needBootdisk (self):
 	if self.bootdisk or self.fstab.rootOnLoop(): return 1
 
@@ -235,15 +228,6 @@ class ToDo:
 	    str = "package %s is not available" % (package,)
 	    raise ValueError, str
 	self.hdList.packages[package].selected = 1
-
-    def copyConfModules (self):
-        try:
-            inf = open ("/tmp/modules.conf", "r")
-        except:
-            pass
-        else:
-            out = open (self.instPath + "/etc/modules.conf", "a")
-            out.write (inf.read ())
 
     def upgradeFindRoot(self):
 	if not self.setupFilesystems: return [ (self.instPath, 'ext2') ]
@@ -443,25 +427,6 @@ class ToDo:
             inittab.write (line)
         inittab.close ()
 
-    def migrateXinetd(self):
-        if not os.access (self.instPath + "/usr/sbin/inetdconvert", os.X_OK):
-            log("did not find %s" % self.instPath + "/usr/sbin/inetdconvert")
-            return
-
-        if not os.access (self.instPath + "/etc/inetd.conf.rpmsave", os.R_OK):
-            log("did not run inetdconvert because no inetd.conf.rpmsave found")
-            return
-
-        argv = [ "/usr/sbin/inetdconvert", "--convertremaining",
-                 "--inetdfile", "/etc/inetd.conf.rpmsave" ]
-        
-        log("found inetdconvert, executing %s" % argv)
-
-        logfile = os.open (self.instLogName, os.O_APPEND)
-        iutil.execWithRedirect(argv[0], argv, root = self.instPath,
-                               stdout = logfile, stderr = logfile)
-        os.close(logfile)
-        
     def kernelVersionList(self):
 	kernelVersions = []
 
@@ -518,16 +483,4 @@ class ToDo:
 	    iutil.execWithRedirect ("/sbin/depmod",
                                     [ "/sbin/depmod", "-a", version ],
                                     root = self.instPath, stderr = '/dev/null')
-
-    def writeConfiguration(self):
-        self.writeLanguage ()
-        self.writeMouse ()
-        self.writeKeyboard ()
-        self.writeNetworkConfig ()
-        self.setupAuthentication ()
-	self.setupFirewall ()
-        self.writeRootPassword ()
-        self.createAccounts ()
-
-        self.writeTimezone()
 
