@@ -124,15 +124,14 @@ EOF
 
     install -s -m 755 $LOADERBINDIR/$LOADERBIN $MBD_DIR/sbin/loaderbin
     install -s -m 755 $LOADERBINDIR/load_anaconda $MBD_DIR/sbin/loader
-    install -m 644 $KEYMAPS $MBD_DIR/etc/keymaps.gz
-    install -m 644 $FONTS $MBD_DIR/etc/fonts.cgz
+    # install -m 644 $KEYMAPS $MBD_DIR/etc/keymaps.gz
+    # install -m 644 $FONTS $MBD_DIR/etc/fonts.cgz
     install -m 644 $MYLANGTABLE $MBD_DIR/etc/lang-table
 
     install -m 644 $LOADERBINDIR/$MYLOADERTR $MBD_DIR/etc/loader.tr
     for i in a/ansi d/dumb k/kterm l/linux s/screen v/vt100 v/vt102 x/xterm x/xterm-color; do
          install -m 644 $IMGPATH/usr/share/terminfo/$i $MBD_DIR/etc/terminfo/$i
-      done
-    fi
+    done
     rm -f $MBD_DIR/.buildstamp
     echo $IMAGEUUID > $MBD_DIR/.buildstamp
 
@@ -316,22 +315,19 @@ EOF
       ln -s console $MBD_DIR/dev/tty$i
     done
 
-    dd if=/dev/zero of=$MBD_DIR/etc/ramfs.img.big bs=1k count=16000
-    mke2fs -Fq $MBD_DIR/etc/ramfs.img.big
+    dd if=/dev/zero of=$MBD_DIR/etc/ramfs.img.big bs=1k count=17000
+    mke2fs -F -q $MBD_DIR/etc/ramfs.img.big
     gzip -9 < $MBD_DIR/etc/ramfs.img.big > $MBD_DIR/etc/ramfs.img
     rm -f $MBD_DIR/etc/ramfs.img.big
 
 cat > $MBD_DIR/.profile <<EOF
-PATH=/bin:/usr/bin:/usr/sbin:/usr/X11R6/bin:/mnt/sbin:/mnt/usr/sbin:/mnt/bin:/mn
-t/usr/bin
+PATH=/bin:/usr/bin:/usr/sbin:/usr/X11R6/bin:/mnt/sbin:/mnt/usr/sbin:/mnt/bin:/mnt/usr/bin
 export PATH
 EOF
 
     rm -f $MBD_FSIMAGE
     dd if=/dev/zero of=$MBD_FSIMAGE bs=1k count=$INITRDSIZE 2> /dev/null
-    echo y | /sbin/mke2fs -i 8096 -q $MBD_FSIMAGE $INITRDSIZE > /dev/null 2>/dev
-/null
-
+    /sbin/mke2fs -F -i 1024 -q $MBD_FSIMAGE $INITRDSIZE #> /dev/null 2>/dev
     rm -rf $MBD_MNTPOINT
     mkdir $MBD_MNTPOINT
     mount -o loop -t ext2 $MBD_FSIMAGE $MBD_MNTPOINT
@@ -378,7 +374,7 @@ NETWORKMODULES="$COMMONMODULES nfs ctc netiucv ipv6"
 echo "In mk-images.s390: kernelvers is $kernelvers"
 if [ "$kernelvers" = "BOOT" ]; then
     makeS390initrd --initrdto $TOPDESTPATH/images/initrd.img \
-	   --initrdsize 12000 \
+	   --initrdsize 16000 \
 	   --loaderbin loader \
 	   --modules "$NETWORKMODULES"
     cp -vf $KERNELROOT/boot/${KERNELNAME}-${version} $TOPDESTPATH/images/kernel.img
@@ -386,7 +382,7 @@ fi
 
 if [ "$kernelvers" = "BOOTtape" ]; then
     makeS390initrd --initrdto $TOPDESTPATH/images/tapeinrd.img \
-	   --initrdsize 12000 \
+	   --initrdsize 16000 \
 	   --loaderbin loader \
 	   --modules "$NETWORKMODULES"
     cp -vf $KERNELROOT/boot/${KERNELNAME}-${version} $TOPDESTPATH/images/tapekrnl.img
