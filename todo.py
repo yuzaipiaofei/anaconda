@@ -136,26 +136,25 @@ class Network:
 
 class Password:
     def __init__ (self):
-        self.crypt = None
+        self.crypt = ""
 	self.pure = None
 
     def getPure(self):
 	return self.pure
 
     def set (self, password, isCrypted = 0):
-	if isCrypted:
-	    self.crypt = password
-	    self.pure = None
-	else:
+        if not isCrypted:
             salt = (whrandom.choice (string.letters +
                                      string.digits + './') + 
                     whrandom.choice (string.letters +
                                      string.digits + './'))
             self.crypt = crypt.crypt (password, salt)
 	    self.pure = password
+        else:
+            self.crypt = password
 
-    def getCrypted(self):
-	return self.crypt
+    def get (self):
+        return self.crypt
 
 class Desktop (SimpleConfigFile):
     def __init__ (self):
@@ -170,6 +169,7 @@ class Language (SimpleConfigFile):
         self.langs = {
             "Czech"	 : "cs_CZ" ,
             "English"	 : "en_US" ,
+            "French"	 : "fr_FR" ,
             "German"	 : "de_DE" ,
             "Hungarian"	 : "hu_HU" ,
             "Icelandic"	 : "is_IS" ,
@@ -620,7 +620,6 @@ class ToDo:
 		except SystemError, (errno, msg):
 		    self.intf.messageWindow(_("Error"), 
 			_("Error mounting %s: %s") % (device, msg))
-                    continue
 
         try:
             os.mkdir (self.instPath + '/proc')
@@ -1049,25 +1048,20 @@ class ToDo:
         f.close ()
 
     def writeRootPassword (self):
-	pure = self.rootpassword.getPure()
-	if pure:
-	    self.setPassword("root", pure)
-	else:
-	    # we need to splice in an already crypted password for kickstart
-	    f = open (self.instPath + "/etc/passwd", "r")
-	    lines = f.readlines ()
-	    f.close ()
-	    index = 0
-	    for line in lines:
-		if line[0:4] == "root":
-		    entry = string.splitfields (line, ':')
-		    entry[1] = self.rootpassword.get ()
-		    lines[index] = string.joinfields (entry, ':')
-		    break
-		index = index + 1
-	    f = open (self.instPath + "/etc/passwd", "w")
-	    f.writelines (lines)
-	    f.close ()
+        f = open (self.instPath + "/etc/passwd", "r")
+        lines = f.readlines ()
+        f.close ()
+        index = 0
+        for line in lines:
+            if line[0:4] == "root":
+                entry = string.splitfields (line, ':')
+                entry[1] = self.rootpassword.get ()
+                lines[index] = string.joinfields (entry, ':')
+                break
+            index = index + 1
+        f = open (self.instPath + "/etc/passwd", "w")
+        f.writelines (lines)
+        f.close ()
 
     def setupAuthentication (self):
         args = [ "/usr/sbin/authconfig", "--kickstart", "--nostart" ]
@@ -1162,8 +1156,6 @@ class ToDo:
                         except SystemError, (errno, msg):
                             self.intf.messageWindow(_("Error"),
                                                     _("Error mounting ext2 filesystem on %s: %s") % (dev, msg))
-                            continue
-                        
                         if os.access ('/mnt/sysimage/etc/fstab', os.R_OK):
                             rootparts.append (dev)
                         isys.umount('/mnt/sysimage')
@@ -1311,19 +1303,6 @@ class ToDo:
     def getUserList(todo):
 	return todo.users
 
-    def setPassword(todo, account, password):
-	todo.log("in SetPassword for %s %s" % (account, password))
-	devnull = os.open("/dev/null", os.O_RDWR)
-
-	argv = [ "/usr/bin/passwd", "--stdin", account ]
-	p = os.pipe()
-	os.write(p[1], password + "\n")
-	iutil.execWithRedirect(argv[0], argv, root = todo.instPath, 
-			       stdin = p[0], stdout = devnull)
-	os.close(p[0])
-	os.close(p[1])
-	os.close(devnull)
-
     def createAccounts(todo):
 	if not todo.users: return
 
@@ -1338,8 +1317,13 @@ class ToDo:
 	    iutil.execWithRedirect(argv[0], argv, root = todo.instPath,
 				   stdout = devnull)
         
-	    todo.setPassword(account, password)
-
+	    argv = [ "/usr/bin/passwd", "--stdin", account ]
+	    p = os.pipe()
+	    os.write(p[1], password + "\n")
+	    iutil.execWithRedirect(argv[0], argv, root = todo.instPath, 
+				   stdin = p[0], stdout = devnull)
+	    os.close(p[0])
+	    os.close(p[1])
 	    os.close(devnull)
 
     def createCdrom(self):
@@ -1598,8 +1582,8 @@ class ToDo:
             self.writeMouse ()
             self.writeKeyboard ()
             self.writeNetworkConfig ()
-            self.setupAuthentication ()
             self.writeRootPassword ()
+            self.setupAuthentication ()
 	    self.createAccounts ()
 	    self.writeTimezone()
             self.writeDesktop ()
