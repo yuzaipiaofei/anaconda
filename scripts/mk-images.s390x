@@ -41,9 +41,9 @@ SECSTAGE="$IDEMODS $SCSIMODS raid0 raid1 raid5"
 
 COMMONMODULES="loop cramfs dasd_diag_mod dasd_eckd_mod dasd_fba_mod dasd_mod tape390 isofs ext3"
 LOCALMODULES="$COMMONMODULES tape390 $IDEMODS $SCSIMODS"
-NETWORKMODULES="$COMMONMODULES ctc netiucv"
+NETWORKMODULES="$COMMONMODULES ipv6 lcs ctc netiucv"
 
-echo "In mk-images.s390: kernelvers is $kernelvers"
+echo "In mk-images.s390x: kernelvers is $kernelvers"
 if [ "$kernelvers" = "BOOT" ]; then
     makeinitrd --initrdto $TOPDESTPATH/images/initrd.img \
 	   --initrdsize 12000 \

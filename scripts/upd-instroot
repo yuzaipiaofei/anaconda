@@ -358,6 +358,7 @@ usr/lib/locale/ja_JP*/*
 etc/motd
 etc/issue.net
 usr/X11R6/bin/xauth
+usr/share/anaconda/*
 EOF
 fi
       
