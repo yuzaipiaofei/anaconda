@@ -127,7 +127,7 @@ fi
 if [ $ARCH = s390 -o $ARCH = s390x ]; then
     PACKAGES="$PACKAGES s390utils oco binutils s390installer pdksh wget 
 	sed net-tools inetd openssh openssh-server fileutils modutils
-	initscripts mount gawk xauth gettext
+	initscripts mount gawk xauth gettext bash
 	portmap textutils sh-utils telnet-server login ssh_keys"
 fi
 
@@ -182,7 +182,7 @@ fi
 if [ $ARCH = s390 -o $ARCH = s390x ]; then
     PACKAGESGR="$PACKAGESGR s390utils oco binutils s390installer pdksh 
 	sed net-tools inetd openssh openssh-server fileutils login 
-	wget initscripts xauth
+	wget initscripts xauth bash
 	modutils portmap textutils openssl telnet-server strace ssh_keys"
 fi
 
@@ -251,7 +251,7 @@ usr/lib/anaconda/textw/*
 usr/lib/gtk/themes/engines/libraleigh.so
 usr/lib/libssl*
 usr/lib/libcrypto*
-usr/lib/libbz2*
+usr/lib/libbz2.so.*
 usr/lib/libdb.so.2
 usr/lib/libdb.so.3
 usr/lib/libdb1*
@@ -287,6 +287,8 @@ if [ $ARCH = s390 -o $ARCH = s390x ]; then
 linuxrc
 usr/share/terminfo/a/ansi
 usr/share/terminfo/d/dumb
+usr/share/terminfo/k/kterm
+usr/share/terminfo/k/kon
 usr/share/terminfo/s/screen
 usr/share/terminfo/v/vt100
 usr/share/terminfo/v/vt102
@@ -318,8 +320,9 @@ sbin/swapon
 sbin/swapoff
 sbin/mkswap
 sbin/tune2fs
+bin/bash
 bin/dd
-bin/gawk*
+bin/gawk-3.0.6
 bin/gettext
 bin/mknod
 bin/login
@@ -355,6 +358,10 @@ etc/locale/*
 usr/lib/locale/de_DE/*
 usr/lib/locale/en_US/*
 usr/lib/locale/ja_JP*/*
+usr/lib/gconv/ISO8859-15.so
+usr/lib/gconv/EUC-JP.so
+usr/lib/gconv/libJIS.so
+usr/lib/gconv/gconv-modules
 etc/motd
 etc/issue.net
 usr/X11R6/bin/xauth
@@ -638,7 +645,7 @@ chown -R root:root $DEST $DESTGR
 chmod -R a+rX-w $DEST $DESTGR
 if [ $ARCH = s390 -o $ARCH = s390x ]; then
     for i in $DEST $DESTGR; do
-	(cd $i/etc/ssh; chmod og-r ssh_host*key primes sshd_config)
+	(cd $i/etc/ssh; chmod og-r ssh_host*key sshd_config)
 	mv $i/bin/sed $i/bin/sed_save
 	mv $i/bin/mount $i/bin/mount_save
 	mv $i/bin/sort $i/bin/sort_save

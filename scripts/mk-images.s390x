@@ -1,0 +1,88 @@
+
+
+prepareBootImage() {
+        dd if=/dev/zero bs=1k count=$BOOTDISKSIZE of=/$MBD_TMPIMAGE 2>/dev/null
+	mount -o loop -t msdos $MBD_TMPIMAGE $MBD_BOOTTREE
+
+	(cd $BOOTDISKDIR; find . ! -name "*.msg" -maxdepth 1 ! -type d | cpio --quiet -p $MBD_BOOTTREE)
+	
+	cp $MBD_FSIMAGE $MBD_BOOTTREE/initrd.img
+	cp $KERNELROOT/boot/vmlinuz-* $MBD_BOOTTREE/vmlinuz
+	if [ -d $BOOTDISKDIR/$BOOTLANG ]; then
+	    # fb console and kon don't get along...
+	    for file in $BOOTDISKDIR/$BOOTLANG/*.msg; do
+		filename=`basename $file`
+		sed -e "s/@VERSION@/$VERSION/g" $file > $MBD_BOOTTREE/$filename
+	    done
+	    if [ $? != 0 ]; then
+		echo $0: Failed to copy messages from $BOOTDISKDIR/$BOOTLANG to $MBD_BOOTTREE.
+		umount $MBD_BOOTTREE
+		rm -rf $MBD_BOOTTREE $MBD_TMPIMAGE
+		exit 1
+	    fi
+	else
+	    for file in $BOOTDISKDIR/*.msg; do
+		filename=`basename $file`
+		sed -e "s/@VERSION@/$VERSION/g" $file > $MBD_BOOTTREE/$filename
+	    done
+	    if [ $? != 0 ]; then
+		echo $0: Failed to copy messages from $BOOTDISKDIR to $MBD_BOOTTREE.
+		umount $MBD_BOOTTREE
+		rm -rf $MBD_BOOTTREE $MBD_TMPIMAGE
+		exit 1
+	    fi
+	fi
+}
+
+IDEMODS=""
+SCSIMODS=""
+
+SECSTAGE="$IDEMODS $SCSIMODS raid0 raid1 raid5"
+
+COMMONMODULES="loop cramfs dasd_diag_mod dasd_eckd_mod dasd_fba_mod dasd_mod tape390 isofs ext3"
+LOCALMODULES="$COMMONMODULES tape390 $IDEMODS $SCSIMODS"
+NETWORKMODULES="$COMMONMODULES ipv6 lcs ctc netiucv"
+
+echo "In mk-images.s390x: kernelvers is $kernelvers"
+if [ "$kernelvers" = "BOOT" ]; then
+    makeinitrd --initrdto $TOPDESTPATH/images/initrd.img \
+	   --initrdsize 12000 \
+	   --loaderbin loader \
+	   --modules "$NETWORKMODULES"
+    cp -vf $KERNELROOT/boot/${KERNELNAME}-${version} $TOPDESTPATH/images/kernel.img
+fi
+
+if [ "$kernelvers" = "BOOTtape" ]; then
+    makeinitrd --initrdto $TOPDESTPATH/images/tapeinrd.img \
+	   --initrdsize 12000 \
+	   --loaderbin loader \
+	   --modules "$NETWORKMODULES"
+    cp -vf $KERNELROOT/boot/${KERNELNAME}-${version} $TOPDESTPATH/images/tapekrnl.img
+fi
+
+for I in `find $BOOTDISKDIR -type d`; do
+    BOOTLANG=`basename $I`
+    BOOTDIR=`basename $I | cut -d'_' -f1`
+
+    if [ $BOOTLANG = "boot" ]; then
+	BOOTLANG=""
+	BOOTDIR=""
+    fi
+done
+
+#makebootdisk --kernelto $TOPDESTPATH/boot/vmlinuz  \
+#	 --bootdisksize 1440 \
+#	 --imagename $BOOTDIR/kernel.img #\
+#	 #--initrd $TOPDESTPATH//autoboot/initrd.img
+
+unset BOOTLANG
+unset BOOTDIR
+
+if [ "$kernelvers" = "BOOT" ]; then
+makemainmodules "=scsi =net $SECSTAGE"
+
+makeinstimage "netstg" "=scsi $SECSTAGE"
+
+makeinstimage "hdstg" "=net $SECSTAGE"
+makemainimage "stage2" "cramfs"
+fi

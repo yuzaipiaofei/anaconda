@@ -409,7 +409,8 @@ makeinitrd() {
         makemoduleball --name $MODULEBALLNAME $MBD_DIR/modules "$MODSET"
     fi
 
-    echo "root::0:0:root:/:/bin/ksh" > $MBD_DIR/etc/passwd
+    #echo "root::0:0:root:/:/bin/ksh" > $MBD_DIR/etc/passwd
+    echo "root::0:0:root:/:/bin/bash" > $MBD_DIR/etc/passwd
 
     install -s -m 755 $LOADERBINDIR/$LOADERBIN $MBD_DIR/sbin/loaderbin
     install -s -m 755 $LOADERBINDIR/load_anaconda $MBD_DIR/sbin/loader
@@ -422,12 +423,12 @@ makeinitrd() {
     install -m 644 $LOADERBINDIR/$MYLOADERTR $MBD_DIR/etc/loader.tr
     install -m 644 $IMGPATH/usr/share/terminfo/l/linux $MBD_DIR/etc/terminfo/l/linux
     if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
-      mkdir -p $MBD_DIR/etc/terminfo/{a,d,s,v,x}
-      for i in a/ansi d/dumb s/screen v/vt100 v/vt102 x/xterm; do
+      mkdir -p $MBD_DIR/etc/terminfo/{a,d,k,s,v,x}
+      for i in a/ansi d/dumb k/kterm s/screen v/vt100 v/vt102 x/xterm; do
          install -m 644 $IMGPATH/usr/share/terminfo/$i $MBD_DIR/etc/terminfo/$i
       done
     fi
-    if [ -n "$JAPANESE" ]; then
+    if [ -n "$JAPANESE" -o "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
         mkdir -p $MBD_DIR/etc/terminfo/k
         install -m 644 $IMGPATH/usr/share/terminfo/k/kon $MBD_DIR/etc/terminfo/k/kon
 	install -m 644 $LOADERBINDIR/kon.cfg $MBD_DIR/etc
@@ -452,22 +453,21 @@ makeinitrd() {
 
     if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
        mkdir -p $MBD_DIR/lib $MBD_DIR/mnt1 \
-        $MBD_DIR/usr/lib/locale/{de_DE,en_US,ja_JP.eucjp} \
+        $MBD_DIR/usr/lib/locale/{de_DE,en_US,ja_JP.eucjp}/LC_MESSAGES \
 	$MBD_DIR/mnt/runtime $MBD_DIR/etc/ssh $MBD_DIR/mnt/source \
-	$MBD_DIR/etc/locale/{de,en,ja}/LC_MESSAGES
+	$MBD_DIR/etc/locale/{de,en,ja}/LC_MESSAGES \
+	$MBD_DIR/usr/lib/gconv/
        for links in X11R6 bin sbin share; do
           ln -sf /mnt/runtime/usr/$links $MBD_DIR/usr/$links
        done
        cp -f $IMGPATH/linuxrc $MBD_DIR/linuxrc
        ln -s ../linuxrc $MBD_DIR/sbin/init
-       cp -f $IMGPATH/usr/bin/ksh $MBD_DIR/sbin/ksh
-       ln -sf ksh $MBD_DIR/sbin/sh
+       #cp -f $IMGPATH/usr/bin/ksh $MBD_DIR/sbin/ksh
+       #ln -sf ksh $MBD_DIR/sbin/sh
+       cp -f $IMGPATH/usr/bin/bash $MBD_DIR/sbin/bash
+       ln -sf bash $MBD_DIR/sbin/sh
        cp -f $IMGPATH/usr/bin/login $MBD_DIR/sbin/login
-       if [ "$BUILDARCH" = "s390" ]; then
-          cp -f $IMGPATH/usr/bin/gawk-3.1.0 $MBD_DIR/sbin/awk
-       else
-          cp -f $IMGPATH/usr/bin/gawk-3.0.6 $MBD_DIR/sbin/awk
-       fi
+       cp -f $IMGPATH/usr/bin/gawk-3.0.6 $MBD_DIR/sbin/awk
        cp -f $IMGPATH/usr/bin/formatmnt $MBD_DIR/sbin/formatmnt
        cp -f $IMGPATH/usr/bin/netsetup $MBD_DIR/sbin/netsetup
        cp -f $IMGPATH/usr/bin/gettext $MBD_DIR/sbin/gettext
@@ -513,14 +513,26 @@ makeinitrd() {
           cp -pRf $IMGPATH/etc/locale/$loc/* \
             $MBD_DIR/etc/locale/$loc/
        done
+       for loc in de ja; do
+          cp -pRf $IMGPATH/usr/share/locale/$loc/LC_MESSAGES/anaconda.mo \
+		  $IMGPATH/usr/share/locale/$loc/LC_MESSAGES/s390installer.mo \
+            $MBD_DIR/etc/locale/$loc/LC_MESSAGES/
+       done
+       cp -pRf $IMGPATH/usr/share/locale/de/LC_MESSAGES/anaconda.mo \
+               $IMGPATH/usr/share/locale/de/LC_MESSAGES/s390installer.mo \
+          $MBD_DIR/usr/lib/locale/de_DE/LC_MESSAGES/
+       cp -pRf $IMGPATH/usr/share/locale/ja/LC_MESSAGES/anaconda.mo \
+               $IMGPATH/usr/share/locale/ja/LC_MESSAGES/s390installer.mo \
+          $MBD_DIR/usr/lib/locale/ja_JP.eucjp/LC_MESSAGES/
        for loc in de_DE en_US ja_JP.eucjp; do
           cp -pRf $IMGPATH/usr/lib/locale/$loc/* \
 		$MBD_DIR/usr/lib/locale/$loc/
        done
        ln -sf ja_JP.eucjp $MBD_DIR/usr/lib/locale/ja_JP
+       for file in ISO8859-15.so EUC-JP.so libJIS.so gconv-modules; do
+	  cp -f $IMGPATH/usr/lib/gconv/$file $MBD_DIR/usr/lib/gconv/$file
+       done
        cp -f $IMGPATH/etc/services $MBD_DIR/etc/
-       #cp -f $IMGPATH/etc/motd $MBD_DIR/etc/
-       #cp -f $IMGPATH/etc/issue.net $MBD_DIR/etc/
        cp -df $IMGPATH/lib/libpam.so* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libdl.so* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libdl-*.so* $MBD_DIR/lib
