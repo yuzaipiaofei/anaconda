@@ -174,12 +174,7 @@ class FileSystemType:
             w = None
         
         devicePath = entry.device.setupDevice(chroot)
-        # -vv dumps a lot of messages on the 3270 console of a s390, which
-        # needs to be cleared manually. Don't do this
-        if (iutil.getArch() != "s390" and iutil.getArch() != "s390x"):
-            args = [ "badblocks", "-vv", devicePath ]
-        else:
-            args = [ "badblocks", devicePath ]
+        args = [ "badblocks", "-vv", devicePath ]
 
         # entirely too much cutting and pasting from ext2FormatFileSystem
         fd = os.open("/dev/tty5", os.O_RDWR | os.O_CREAT | os.O_APPEND)
@@ -476,8 +471,6 @@ class extFileSystem(FileSystemType):
         args = [ "/usr/sbin/mke2fs", devicePath]
         args.extend(devArgs)
         args.extend(self.extraFormatArgs)
-        if iutil.getArch() == "s390" or iutil.getArch() == "s390x" :
-            args.extend(['-b', '4096'])
 
         rc = ext2FormatFilesystem(args, "/dev/tty5",
                                   progress,
