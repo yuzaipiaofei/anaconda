@@ -2056,6 +2056,8 @@ class ToDo:
 			ind = len(bootdev) - 1
 		    bootdisk = bootdev[:ind]
 		    bootpart = bootdev[ind:]
+		    if bootdisk[0:4] == "ida/" or bootdisk[0:6] == "cciss/" or bootdisk[0:3] == "rd/":
+			bootdisk = bootdisk[:-1]
 		    
 		    argv = [ "/usr/sbin/efibootmgr", "-c" , "-L",
 		    	     "Red Hat Linux", "-d", "/dev/%s" % bootdisk, "-p", bootpart ]
