@@ -173,7 +173,7 @@ class DiskStripe:
         group.add(gnome.canvas.CanvasRect, x1=0.0, y1=10.0, x2=width,
                   y2=STRIPE_HEIGHT, fill_color='green',
                   outline_color='grey71', width_units=1.0)
-#        group.lower_to_bottom()
+        group.lower_to_bottom()
 
     def shutDown(self):
         while self.slices:
@@ -276,15 +276,15 @@ class DiskStripeGraph:
         text = self.canvas.root().add(gnome.canvas.CanvasText,
                                       x=0.0, y=yoff,
                                       font="helvetica",
-                                      weight=pango.WEIGHT_BOLD,
-                                      size_points=12)
+                                      size_points=14)
         drivetext = ("Drive %s (Geom: %s/%s/%s) "
                      "(Model: %s)") % ('/dev/' + drive,
                                        disk.dev.cylinders,
                                        disk.dev.heads,
                                        disk.dev.sectors,
                                        disk.dev.model)
-        text.set(text=drivetext, fill_color='black', anchor=gtk.ANCHOR_NW)
+        text.set(text=drivetext, fill_color='black', anchor=gtk.ANCHOR_NW,
+                 weight=pango.WEIGHT_BOLD)
         (xxx1, yyy1, xxx2, yyy2) =  text.get_bounds()
         textheight = yyy2 - yyy1
         self.textlabels.append(text)

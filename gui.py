@@ -708,6 +708,8 @@ class InstallControlWindow:
         self.nextButtonStock.add_accelerator ("clicked", group, gtk.keysyms.F12,
                                               gtk.gdk.RELEASE_MASK, 0);
         self.window.add_accel_group (group)
+
+        # set up ctrl+alt+delete handler
         self.window.connect ("key-release-event", self.keyRelease)
 
         self.buttonBox.add (self.prevButtonStock)
