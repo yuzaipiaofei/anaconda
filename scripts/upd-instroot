@@ -364,14 +364,7 @@ usr/share/terminfo/x/xterm
 usr/share/terminfo/x/xterm-color
 usr/bin/strace
 usr/bin/ldd
-usr/bin/wget
 usr/bin/printf
-usr/bin/dasdformat
-usr/bin/formatmnt
-usr/bin/mountpoint
-usr/bin/netsetup
-usr/bin/pkgselect
-usr/bin/pkgsrc
 usr/sbin/chroot
 usr/sbin/sshd
 usr/sbin/glibc_post_upgrade
@@ -379,7 +372,6 @@ usr/sbin/xinetd
 usr/sbin/in.telnetd
 sbin/busybox.anaconda
 sbin/consoletype
-sbin/rhsetup
 sbin/ifconfig
 sbin/route
 sbin/portmap
@@ -396,8 +388,6 @@ bin/mknod
 bin/mount
 bin/umount
 bin/login
-bin/cat
-bin/chmod
 bin/sort
 bin/rpm
 $LIBDIR/libpam.so*

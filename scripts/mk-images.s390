@@ -180,8 +180,8 @@ EOF
     cp -f $IMGPATH/usr/sbin/consoletype $MBD_DIR/sbin/consoletype
     cp -f $IMGPATH/usr/sbin/mke2fs $MBD_DIR/sbin/mke2fs
     cp -f $IMGPATH/usr/bin/busybox $MBD_DIR/sbin/busybox
-    for i in cp uname tee rm ps mv more mkdir ls ln hostname head \
-             gzip grep dd chmod cat; do
+    for i in cp uname tee rm ps mv more mkdir ls lsmod ln hostname \
+             head gzip grep dd chmod cat; do
        ln -sf busybox $MBD_DIR/sbin/$i
     done
     cp -f $IMGPATH/usr/X11R6/bin/xauth $MBD_DIR/sbin/xauth
