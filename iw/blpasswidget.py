@@ -57,7 +57,7 @@ class BootloaderPasswordWidget:
         vbox.pack_start(box, gtk.FALSE)
 
         alignment = gtk.Alignment()
-        alignment.set(0.1, 0, 0, 0)
+        alignment.set(0.0, 0, 0, 0)
         alignment.add(vbox)
         self.widget = alignment
 
