@@ -88,7 +88,7 @@ rm -rf $DEST $DESTGR
 mkdir -p $DEST
 mkdir -p $DESTGR
 
-PACKAGES="glibc setup openssl python newt libtermcap zlib ash
+PACKAGES="glibc setup openssl python newt libtermcap zlib ash kon2
 	 e2fsprogs util-linux raidtools popt mount procps slang slang-j
 	 rpm XFree86 Xconfigurator anaconda anaconda-runtime
 	 kudzu-devel kudzu db3 rpm-python bzip2 dosfstools pciutils"
@@ -212,6 +212,7 @@ usr/lib/rpm/rpmrc
 usr/share/locale/*/LC_MESSAGES/anaconda.mo
 usr/sbin/anaconda
 usr/sbin/anaconda-runrescue
+usr/share/doc/kon2*/terminfo.kon
 usr/share/kudzu/pcitable
 usr/share/pci.ids
 EOF
@@ -456,6 +457,12 @@ expandPackageSet "$RPMS" $DEST $KEEPFILE
 
 expandPackageSet "$RPMSGR" $DESTGR $KEEPFILEGR
 echo -e "\rExpanding packages..."
+
+if [ -f $DEST/usr/share/doc/kon2*/terminfo.kon ]; then
+   tic $DEST/usr/share/doc/kon2*/terminfo.kon -o $DEST/usr/share/terminfo
+   tic $DEST/usr/share/doc/kon2*/terminfo.kon -o $DESTGR/usr/share/terminfo
+   rm $DEST/usr/share/doc/kon2*/terminfo.kon
+fi
 
 echo "retrieving timezones"
 TZDIR=/tmp/glibc-timezone-$$
