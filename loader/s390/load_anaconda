@@ -33,8 +33,11 @@ ln -sf /mnt/runtime/usr/lib /usr/lib
 if [ -n "$LCS" ]; then
   echo "alias $DEVICE lcs"   >> /tmp/modules.conf
 fi
-if [ -n "$QETH" -o -n "$HSI" ]; then
+if [ -n "$QETH" ]; then
   echo "alias eth0 qeth"    >> /tmp/modules.conf
+fi
+if [ -n "$HSI" ]; then
+  echo "alias hsi0 qeth"    >> /tmp/modules.conf
 fi
 if [ -n "$IUCV" ]; then
   echo "alias $DEVICE netiucv" >> /tmp/modules.conf
