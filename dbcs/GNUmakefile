@@ -10,6 +10,10 @@ widestr.o: widestr.c widestr.h
 Makefile: Setup Makefile.pre.in
 	make -f Makefile.pre.in boot
 
+.PHONY: install
+install: all
+	install dbcs.so $(DESTDIR)/$(PYTHONLIBDIR)
+
 .PHONY: clean
 clean: Makefile
 	$(RM) $(objects)
