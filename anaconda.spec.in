@@ -41,7 +41,7 @@ already installed systems.
 
 %prep
 
-%setup -q
+%setup -q -n anaconda-%{version}
 
 %build
 make depend
