@@ -271,6 +271,5 @@ class MouseWindow(InstallWindow):
 
         # finally the emulate 3 buttons
         box.pack_start(self.emulate3, gtk.FALSE)
-
         return box
 
