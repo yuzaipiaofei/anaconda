@@ -1432,6 +1432,16 @@ class FileSystemSet:
             if not os.access(instPath + rootDev, os.R_OK):
                 iutil.copyDeviceNode(rootDev, instPath + rootDev)
 
+        # XXX another hack.  we don't have the emd devices in the dev
+        # package, but need them to keep grub from being unhappy :/
+        if isys.isEMDLoaded():
+            for disk in ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+                         'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'):
+                for part in range(1, 16):
+                    dev = "%s%s" %(disk, part)
+                    if not os.access("%s/dev/%s" %(instPath, dev), os.R_OK):
+                        isys.makeDevInode(dev, "%s/dev/%s" %(instPath, dev))
+
 #        raise RuntimeError
 
     def filesystemSpace(self, chroot='/'):
