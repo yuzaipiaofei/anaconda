@@ -337,7 +337,7 @@ class InstallInterface:
         if flags.setupFilesystems:
             try:
                 kb.setMouseKeys (1)
-            except SystemError:
+            except:
                 pass
 
         if id.keyboard and not id.x_already_set:
