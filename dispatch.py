@@ -59,10 +59,17 @@ installSteps = [
     ("findrootparts", findRootParts, ("intf", "id", "dispatch", "dir", "instPath")),
     ("findinstall", ("dispatch", "intf", "id", "instPath")),
     ("installtype", ("dispatch", "id", "method", "intf")),
+
+    ("networkdevicecheck", networkDeviceCheck, ("id.network", "dispatch")),
+
+#    ("defaults", ("dispatch", "id.instLanguage", "id.keyboard", "id.mouse")),
+    ("defaults", ("dispatch", "id")),    
+
+    ("network", ("id.network", "dir", "intf")),
+
     ("keyboard", ("id.instLanguage.getDefaultKeyboard()", "id.keyboard")),    
 #    ("keyboard", ("id.instLanguage.getDefaultKeyboard()", "id.keyboard", "id.xsetup")),
     ("mouse", ("id.mouse",)),
-#    ("defaults", ("id.instLanguage", "id.keyboard", "id.mouse")),
     ("partitionmethod", ("id.partitions", "id.instClass")),
     ("partitionobjinit", partitionObjectsInitialize, ("id.diskset",
                                                       "id.partitions",
@@ -95,8 +102,8 @@ installSteps = [
     ("bootloader", ("dispatch", "id.bootloader", "id.fsset", "id.diskset")),
     ("bootloaderadvanced", ("dispatch", "id.bootloader", "id.fsset",
                             "id.diskset")),
-    ("networkdevicecheck", networkDeviceCheck, ("id.network", "dispatch")),
-    ("network", ("id.network", "dir", "intf")),
+##     ("networkdevicecheck", networkDeviceCheck, ("id.network", "dispatch")),
+##     ("network", ("id.network", "dir", "intf")),
     ("firewall", ("intf", "id.network", "id.firewall")),
     ("languagesupport", ("id.langSupport",)),
     ("timezone", ("id.instLanguage", "id.timezone")),
