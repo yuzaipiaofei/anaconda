@@ -5,6 +5,7 @@ from translate import _
 from dispatch import DISPATCH_NOOP
 import isys
 import os
+import iutil
 
 class FDiskWindow (InstallWindow):		
     def __init__ (self, ics):
@@ -42,12 +43,25 @@ class FDiskWindow (InstallWindow):
         zvt.connect ("child_died", self.child_died, widget)
         self.drive = drive
 
-	# free our fd's to the hard drive -- we have to 
-	# fstab.rescanDrives() after this or bad things happen!
-        if os.access("/sbin/fdisk", os.X_OK):
-            path = "/sbin/fdisk"
+        #print "CALLING FDASD arch=" + iutil.getArch()
+
+
+	if iutil.getArch() == "s390" or iutil.getArch() == "s390x":
+            # free our fd's to the hard drive -- we have to 
+            # fstab.rescanDrives() after this or bad things happen!
+            if os.access("/sbin/fdasd", os.X_OK):
+                path = "/sbin/fdasd"
+            else:
+                path = "/usr/sbin/fdasd"
+                
+            #print "CALLING FDASD"
         else:
-            path = "/usr/sbin/fdisk"
+            # free our fd's to the hard drive -- we have to 
+            # fstab.rescanDrives() after this or bad things happen!
+            if os.access("/sbin/fdisk", os.X_OK):
+                path = "/sbin/fdisk"
+            else:
+                path = "/usr/sbin/fdisk"
         
 	isys.makeDevInode(drive, '/tmp/' + drive)
 
@@ -66,7 +80,6 @@ class FDiskWindow (InstallWindow):
 
     # FDiskWindow tag="fdisk"
     def getScreen (self, diskset, partrequests):
-        
         self.diskset = diskset
         self.partrequests = partrequests
         
