@@ -1231,6 +1231,9 @@ static char * mediaCheckCdrom(char *cddriver) {
 	if (descr)
 	    free(descr);
 
+#ifdef INCLUDE_RESCUE
+	return NULL;
+#endif
 	ejectCdrom();
 	
 	rc = newtWinChoice(_("Media Check"), _("Test"), _("Continue"),
@@ -1255,10 +1258,17 @@ static char * mediaCheckCdrom(char *cddriver) {
 }
 
 static void wrongCDMessage(void) {
+#ifndef INCLUDE_RESCUE
     char *buf = sdupprintf(_("The %s CD was not found "
 			     "in any of your CDROM drives. Please insert "
 			     "the %s CD and press %s to retry."), PRODUCTNAME,
 			   PRODUCTNAME, _("OK"));
+#else
+    char *buf = sdupprintf(_("The %s Rescue CD was not found "
+			     "in any of your CDROM drives. Please insert "
+			     "the %s Rescue CD and press %s to retry."), 
+			   PRODUCTNAME, PRODUCTNAME, _("OK"));
+#endif /* INCLUDE_RESCUE */
     newtWinMessage(_("Error"), _("OK"), buf, _("OK"));
     free(buf);
 }
@@ -1284,7 +1294,7 @@ static void mountCdromStage2(char *cddev) {
 			  "/mnt/runtime", "loop0")) {
 #else /* INCLUDE_RESCUE */
 	if (access("/mnt/source/cramfs.img", R_OK) || 
-	    mountLoopback("/mnt/source/cramfs.img", "/mnt/source", "loop1")) {
+	    mountLoopback("/mnt/source/cramfs.img", "/mnt/runtime", "loop0")) {
 #endif /* INCLUDE_RESCUE */
 	    umount("/mnt/source");
 	    ejectCdrom();
@@ -1348,15 +1358,15 @@ static char * setupCdrom(struct installMethod * method,
 	    if (!doPwMount("/tmp/cdrom", "/mnt/source", "iso9660", 1, 0, NULL,
 			   NULL)) {
 		if (access("/mnt/source/cramfs.img", R_OK) ||
-		    mountLoopback("/mnt/source/cramfs.img", "/mnt/source", 
-				  "loop1")) {
+		    mountLoopback("/mnt/source/cramfs.img", "/mnt/runtime", 
+				  "loop0")) {
 		    umount("/mnt/source");
 		    continue;
 		}
 
 		queryMediaCheck(kd->known[i].name, flags);
 
-		if (!access("/mnt/source/etc/.rescue", R_OK)) {
+		if (!access("/mnt/runtime/etc/.rescue", R_OK)) {
 		    pid_t init;
 		    int fd;
 		    
@@ -1366,11 +1376,11 @@ static char * setupCdrom(struct installMethod * method,
 		    write(fd, "0x100\n", 6);
 		    close(fd);
 		    
-		    chdir("/mnt/source");
+		    chdir("/mnt/runtime");
 		    stopNewt();
 		    closeLog();
 
-		    if ( pivot_root("/mnt/source", "initrd") ) {
+		    if ( pivot_root("/mnt/runtime", "initrd") ) {
 			perror("pivot_root");
 			return NULL;
 		    }
@@ -1379,7 +1389,7 @@ static char * setupCdrom(struct installMethod * method,
 		    exit(0);
 		    /* This will tell the kernel to run /sbin/init as pid 0 */
 		}
-		umount("/mnt/source");
+		umount("/mnt/runtime");
 		umount("/mnt/source");
 	    }
 	    unlink("/tmp/cdrom");
