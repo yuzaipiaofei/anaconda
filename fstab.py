@@ -237,6 +237,7 @@ class Fstab:
     def getBootDevice(self):
 	bootDevice = None
 	rootDevice = None
+	arch = iutil.getArch ()
 	for (mntpoint, partition, fsystem, doFormat, size) in self.mountList():
 	    if mntpoint == '/':
 		rootDevice = partition
