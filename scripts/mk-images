@@ -624,15 +624,27 @@ makeinstimage () {
     imagename=$1
     modlist=$(expandModuleSet "$2")
     tmpdir=/tmp/instimage.dir.$$
+    IMGFILE=`mktemp -d /tmp/instimgXXXXXX`
 
     rm -rf $tmpimage $tmpdir
     mkdir -p $mntpoint $tmpdir
 
     mkdir -p $tmpdir
+    # No 2.4 kernel on S390 yet:
+    if [ "$BUILDARCH" = "s390" -o "$BUILDARCH" = "s390x" ]; then
+	dd if=/dev/zero of=$IMGFILE bs=1024 count=40000
+	echo y | /sbin/mke2fs -i 4096  $IMGFILE > /dev/null 2>/dev/null
+        mount -o loop $IMGFILE $tmpdir
+    fi
+
     (cd $INSTIMGTEMPLATE; find . | cpio --quiet -p $tmpdir)
     makemoduleball $tmpdir/modules "$modlist"
 
-    mkcramfs $tmpdir $INSTIMGPATH/${imagename}1.img
+    if [ "$BUILDARCH" != "s390" -a "$BUILDARCH" != "s390x" ]; then
+       mkcramfs $tmpdir $INSTIMGPATH/${imagename}1.img
+    else
+       umount $tmpdir
+    fi
     size=$(ls -l $INSTIMGPATH/${imagename}1.img | awk '{print $5}')
     size=$(expr $size / 1024)
     echo "Wrote $INSTIMGPATH/${imagename}1.img (${size}k)..."
