@@ -139,10 +139,10 @@ if [ $ARCH = ia64 ]; then
 fi
 
 if [ $ARCH = s390 -o $ARCH = s390x ]; then
-    PACKAGES="$PACKAGES s390utils binutils s390installer
+    PACKAGES="$PACKAGES s390utils binutils s390installer libgcc
 	sed net-tools inetd openssh openssh-server fileutils modutils
-	initscripts mount gawk xauth bash gettext pygtk2
-	portmap textutils sh-utils telnet-server login ssh_keys"
+	initscripts mount gawk xauth bash gettext pygtk2 libstdc++
+	portmap textutils sh-utils telnet-server login ssh_keys rpm-python"
 fi
 
 # xpm is missing
@@ -429,6 +429,9 @@ usr/lib/gconv/ISO8859-15.so
 usr/lib/gconv/EUC-JP.so
 usr/lib/gconv/libJIS.so
 usr/lib/gconv/gconv-modules
+usr/$LIBDIR/librpm-*4.2*
+usr/$LIBDIR/librpmdb*4.2*
+usr/$LIBDIR/librpmio*4.2*
 usr/$LIBDIR/python2.2/site-packages/gtk*/gtk/*
 usr/X11R6/bin/xauth
 usr/share/anaconda/*
@@ -532,6 +535,7 @@ usr/X11R6/lib/libXi*
 usr/X11R6/lib/libXmu*
 usr/X11R6/lib/libXpm*
 usr/X11R6/lib/libXrender*
+usr/X11R6/lib/libXrandr*
 usr/X11R6/lib/libXt*
 usr/X11R6/lib/modules/*
 usr/bin/chattr*
