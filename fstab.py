@@ -242,6 +242,8 @@ class Fstab:
 		rootDevice = partition
 	    elif mntpoint == '/boot':
 		bootDevice = partition
+	    elif arch == 'ia64' and mntpoint == '/boot/efi':
+		bootDevice = partition
 
 	if not bootDevice:
 	    bootDevice = rootDevice
