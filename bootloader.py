@@ -77,6 +77,8 @@ class KernelArguments:
 	    self.args = ""
 	    if os.environ.has_key("DASD"):
                 self.args = "dasd=" + os.environ["DASD"]
+	    if os.environ.has_key("CHANDEV"):
+		self.args = self.args + " chandev=" + os.environ["CHANDEV"]
 	else:
 	    cdrw = isys.ideCdRwList()
 	    str = ""
