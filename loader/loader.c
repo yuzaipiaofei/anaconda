@@ -1620,11 +1620,6 @@ static char * mountNfsImage(struct installMethod * method,
 		if (!FL_TESTING(flags)) pumpDisableInterface(devName);
 		return NULL;
 	    }
-#if defined (__s390__) || defined (__s390x__)
-	    /* setupRemote(&ui); */  /*  FIXME: Test if it works without this */
-	    host = ui.address;
-	    dir = ui.prefix;
-#endif
 	    stage = NFS_STAGE_NFS;
 	    break;
 
