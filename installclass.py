@@ -300,6 +300,8 @@ echo "* Security script for HA started" >&2
 /sbin/chkconfig --del autofs	 > /dev/null 2>&1
 /sbin/chkconfig --del pcmcia	 > /dev/null 2>&1
 /sbin/chkconfig --del mars-nwe	 > /dev/null 2>&1
+/sbin/chkconfig --level 345 rstatd on > /dev/null 2>&1
+/sbin/chkconfig --level 345 rwalld on > /dev/null 2>&1
 
 # I honestly can't see a reason to let any service run
 # even telnet. As such, comment out ALL services
@@ -360,7 +362,7 @@ echo "# <hostname> root" >> /root/.rhosts
 
 echo "* Security script for HA completed, Altering the MOTD" >&2
 echo "" > /etc/motd
-echo "Red Hat High Available Server 1.0" >> /etc/motd
+echo "Red Hat High Availability Server 1.0" >> /etc/motd
 echo "" >> /etc/motd 
 echo "" >> /etc/motd
 
