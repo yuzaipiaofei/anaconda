@@ -614,6 +614,7 @@ if (display_mode == 't'):
     from text import InstallInterface
     from text import stepToClasses
 
+
 if display_mode == "t":
     intf = InstallInterface ()
 else:
