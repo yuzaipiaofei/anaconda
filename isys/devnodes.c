@@ -163,7 +163,7 @@ int devMakeInode(char * devName, char * path) {
 	if (devName[3])
 	    minor += devName[3] - '1';
 #if defined (__s390__) || defined (__s390x__)
-    } else if (!strncmp(devName, "dasd", 4) && strlen(devname) > 4) {
+    } else if (!strncmp(devName, "dasd", 4) && strlen(devName) > 4) {
 	/* IBM Dasd Drives */
 	type = S_IFBLK;
 	major = 94;
