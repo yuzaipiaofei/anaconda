@@ -58,16 +58,12 @@ class DefaultsWindow(InstallWindow):
         
     # MouseWindow tag="mouse"
     def getScreen(self, dispatch, id):
-        print "in defaults getScreen"
-
         self.dispatch = dispatch
         self.id = id
         self.keyboard = id.keyboard
 	self.mouse = id.mouse
         self.network = id.network
         self.langSupport = id.langSupport
-        print self.network.available()
-        print dir(self.network)
 
 	self.flags = flags
 
