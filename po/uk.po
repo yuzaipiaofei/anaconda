@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
-"POT-Creation-Date: 2000-08-14 16:58-0400\n"
+"POT-Creation-Date: 2000-09-11 21:23-0400\n"
 "PO-Revision-Date: 2000-08-17 16:58+09:00\n"
 "Last-Translator: Dmytro Koval'ov <kov@tokyo.email.ne.jp>\n"
 "Language-Team: Ukrainian language team <linux@linux.org.ua>\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=koi8-u\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../comps.py:444
+#: ../comps.py:430
 msgid "Everything"
 msgstr "Все"
 
@@ -17,17 +17,27 @@ msgstr "Все"
 msgid "Exception Occurred"
 msgstr "Сталася помилка"
 
+#: ../exception.py:91
+msgid "Dump Written"
+msgstr ""
+
+#: ../exception.py:92
+msgid ""
+"Your system's state has been successfully written to the floppy. Your system "
+"will now be reset."
+msgstr ""
+
 #: ../fstab.py:213 ../fstab.py:404 ../fstab.py:504 ../fstab.py:711
 #: ../image.py:55 ../image.py:96 ../libfdisk/newtfsedit.c:1701
 #: ../loader/devices.c:236 ../loader/devices.c:243 ../loader/devices.c:410
 #: ../loader/devices.c:455 ../loader/devices.c:475 ../loader/lang.c:97
 #: ../loader/loader.c:504 ../loader/loader.c:514 ../loader/loader.c:752
 #: ../loader/loader.c:852 ../loader/loader.c:1022 ../loader/loader.c:1027
-#: ../loader/loader.c:1960 ../loader/loader.c:2006 ../loader/loader.c:2077
-#: ../loader/urls.c:72 ../loader/urls.c:81 ../loader/urls.c:88
-#: ../loader/urls.c:227 ../loader/urls.c:232 ../text.py:248
-#: ../textw/bootdisk_text.py:69 ../todo.py:839 ../todo.py:867 ../todo.py:951
-#: ../todo.py:964
+#: ../loader/loader.c:1166 ../loader/loader.c:2026 ../loader/loader.c:2072
+#: ../loader/loader.c:2143 ../loader/urls.c:78 ../loader/urls.c:87
+#: ../loader/urls.c:94 ../loader/urls.c:233 ../loader/urls.c:238
+#: ../text.py:248 ../textw/bootdisk_text.py:69 ../todo.py:848 ../todo.py:876
+#: ../todo.py:959 ../todo.py:972
 msgid "Error"
 msgstr "Помилка"
 
@@ -62,7 +72,7 @@ msgstr "Помилка створення област╕ своп╕нгу на пристро╖ "
 msgid "Error unmounting %s: %s"
 msgstr "Помилка розмонтування %s: %s"
 
-#: ../fstab.py:551 ../todo.py:507
+#: ../fstab.py:551 ../todo.py:511
 msgid "Creating"
 msgstr "Створення"
 
@@ -99,7 +109,7 @@ msgstr ""
 "скоп╕юйте повний текст цього виключення та сформуйте зв╕т про помилку на "
 "http://bugzilla.redhat.com/bugzilla"
 
-#: ../gui.py:271 ../text.py:810
+#: ../gui.py:275 ../text.py:810
 msgid ""
 "Please insert a floppy now. All contents of the disk will be erased, so "
 "please choose your diskette carefully."
@@ -107,17 +117,17 @@ msgstr ""
 "Вставте дискету. Весь вм╕ст дискети буде знищено, то ж вибирайте дискету "
 "обережно."
 
-#: ../gui.py:361 ../gui.py:601
+#: ../gui.py:365 ../gui.py:605
 msgid "Next"
 msgstr "Далi"
 
-#: ../gui.py:362 ../gui.py:600 ../libfdisk/newtfsedit.c:1438
+#: ../gui.py:366 ../gui.py:604 ../libfdisk/newtfsedit.c:1438
 #: ../libfdisk/newtfsedit.c:1446 ../loader/cdrom.c:34 ../loader/devices.c:93
 #: ../loader/devices.c:215 ../loader/devices.c:312 ../loader/lang.c:577
 #: ../loader/loader.c:277 ../loader/loader.c:656 ../loader/loader.c:693
-#: ../loader/loader.c:852 ../loader/loader.c:944 ../loader/loader.c:1330
+#: ../loader/loader.c:852 ../loader/loader.c:944 ../loader/loader.c:1398
 #: ../loader/net.c:164 ../loader/net.c:249 ../loader/net.c:334
-#: ../loader/urls.c:149 ../loader/urls.c:370 ../text.py:57 ../text.py:68
+#: ../loader/urls.c:155 ../loader/urls.c:376 ../text.py:57 ../text.py:68
 #: ../text.py:120 ../text.py:123 ../text.py:196 ../text.py:251 ../text.py:269
 #: ../text.py:272 ../text.py:291 ../text.py:294 ../text.py:316 ../text.py:319
 #: ../text.py:376 ../text.py:379 ../text.py:405 ../text.py:409 ../text.py:418
@@ -125,8 +135,8 @@ msgstr "Далi"
 #: ../textw/bootdisk_text.py:30 ../textw/constants_text.py:10
 #: ../textw/lilo_text.py:31 ../textw/lilo_text.py:87 ../textw/lilo_text.py:95
 #: ../textw/lilo_text.py:203 ../textw/mouse_text.py:27
-#: ../textw/mouse_text.py:28 ../textw/mouse_text.py:53
-#: ../textw/mouse_text.py:79 ../textw/network_text.py:92
+#: ../textw/mouse_text.py:28 ../textw/mouse_text.py:55
+#: ../textw/mouse_text.py:81 ../textw/network_text.py:92
 #: ../textw/network_text.py:141 ../textw/network_text.py:144
 #: ../textw/packages_text.py:55 ../textw/packages_text.py:236
 #: ../textw/packages_text.py:347 ../textw/packages_text.py:353
@@ -139,46 +149,46 @@ msgstr "Далi"
 msgid "Back"
 msgstr "Назад"
 
-#: ../gui.py:363 ../gui.py:605
+#: ../gui.py:367 ../gui.py:609
 msgid "Show Help"
 msgstr "Показати п╕дказку"
 
-#: ../gui.py:364 ../gui.py:604
+#: ../gui.py:368 ../gui.py:608
 msgid "Hide Help"
 msgstr "Сховати п╕дказку"
 
-#: ../gui.py:365 ../gui.py:603
+#: ../gui.py:369 ../gui.py:607
 msgid "Finish"
 msgstr "Зак╕нчити"
 
-#: ../gui.py:368 ../gui.py:631
+#: ../gui.py:372 ../gui.py:635
 msgid "Online Help"
 msgstr "П╕дказка"
 
-#: ../gui.py:369 ../iw/language_gui.py:10 ../text.py:62 ../text.py:881
+#: ../gui.py:373 ../iw/language_gui.py:10 ../text.py:62 ../text.py:881
 #: ../text.py:910
 msgid "Language Selection"
 msgstr "Виб╕р мови"
 
-#: ../gui.py:567
+#: ../gui.py:571
 msgid "Red Hat Linux Installer"
 msgstr "Програма встановлення Red Hat Linux"
 
-#: ../gui.py:571
+#: ../gui.py:575
 msgid "Red Hat Linux Install Shell"
 msgstr "Оболонка встановлення Red Hat Linux"
 
-#: ../gui.py:582
+#: ../gui.py:586
 #, c-format
 msgid "Red Hat Linux Installer on %s"
 msgstr "Програма встановлення Red Hat Linux на %s"
 
-#: ../gui.py:583
+#: ../gui.py:587
 #, c-format
 msgid "Red Hat Linux Install Shell on %s"
 msgstr "Оболонка Red Hat Linux Install на %s"
 
-#: ../gui.py:678
+#: ../gui.py:682
 msgid "Install Window"
 msgstr "В╕кно встановлення"
 
@@ -220,32 +230,32 @@ msgid "The CDROM could not be mounted."
 msgstr "CDROM не може бути змонтовано."
 
 #. code to create dialog in gtk+
-#: ../libfdisk/fsedit.c:967 ../libfdisk/fsedit.c:974 ../libfdisk/fsedit.c:981
-#: ../libfdisk/fsedit.c:990 ../libfdisk/fsedit.c:1017
-#: ../libfdisk/fsedit.c:1030 ../libfdisk/fsedit.c:1040
-#: ../libfdisk/fsedit.c:1069 ../libfdisk/fsedit.c:1079
-#: ../libfdisk/fsedit.c:1096 ../libfdisk/fsedit.c:1506
-#: ../libfdisk/gnomefsedit.c:777 ../libfdisk/gnomefsedit.c:812
-#: ../libfdisk/gnomefsedit.c:1160 ../libfdisk/gnomefsedit.c:1197
-#: ../libfdisk/gnomefsedit.c:1231 ../libfdisk/gnomefsedit.c:1250
-#: ../libfdisk/gnomefsedit.c:1404 ../libfdisk/gnomefsedit.c:1479
-#: ../libfdisk/gnomefsedit.c:1579 ../libfdisk/gnomefsedit.c:1597
-#: ../libfdisk/gnomefsedit.c:1877 ../libfdisk/gnomefsedit.c:1886
-#: ../libfdisk/gnomefsedit.c:2123 ../libfdisk/gnomefsedit.c:2131
-#: ../libfdisk/gnomefsedit.c:2175 ../libfdisk/gnomefsedit.c:2185
-#: ../libfdisk/gnomefsedit.c:2192 ../libfdisk/gnomefsedit.c:2207
-#: ../libfdisk/gnomefsedit.c:2216 ../libfdisk/gnomefsedit.c:2225
-#: ../libfdisk/gnomefsedit.c:2264 ../libfdisk/gnomefsedit.c:2393
-#: ../libfdisk/gnomefsedit.c:2435 ../libfdisk/newtfsedit.c:168
-#: ../libfdisk/newtfsedit.c:344 ../libfdisk/newtfsedit.c:572
-#: ../libfdisk/newtfsedit.c:634 ../libfdisk/newtfsedit.c:667
-#: ../libfdisk/newtfsedit.c:693 ../libfdisk/newtfsedit.c:712
-#: ../libfdisk/newtfsedit.c:810 ../libfdisk/newtfsedit.c:1438
-#: ../libfdisk/newtfsedit.c:1446 ../libfdisk/newtfsedit.c:1571
-#: ../libfdisk/newtfsedit.c:1592 ../libfdisk/newtfsedit.c:1618
-#: ../libfdisk/newtfsedit.c:1701 ../loader/urls.c:72 ../loader/urls.c:81
-#: ../loader/urls.c:88 ../loader/urls.c:238 ../text.py:57 ../text.py:59
-#: ../text.py:418 ../textw/constants_text.py:10 ../textw/lilo_text.py:117
+#: ../libfdisk/fsedit.c:912 ../libfdisk/fsedit.c:919 ../libfdisk/fsedit.c:926
+#: ../libfdisk/fsedit.c:935 ../libfdisk/fsedit.c:962 ../libfdisk/fsedit.c:975
+#: ../libfdisk/fsedit.c:985 ../libfdisk/fsedit.c:1014
+#: ../libfdisk/fsedit.c:1024 ../libfdisk/fsedit.c:1041
+#: ../libfdisk/fsedit.c:1451 ../libfdisk/gnomefsedit.c:777
+#: ../libfdisk/gnomefsedit.c:812 ../libfdisk/gnomefsedit.c:1160
+#: ../libfdisk/gnomefsedit.c:1197 ../libfdisk/gnomefsedit.c:1231
+#: ../libfdisk/gnomefsedit.c:1250 ../libfdisk/gnomefsedit.c:1404
+#: ../libfdisk/gnomefsedit.c:1479 ../libfdisk/gnomefsedit.c:1579
+#: ../libfdisk/gnomefsedit.c:1597 ../libfdisk/gnomefsedit.c:1875
+#: ../libfdisk/gnomefsedit.c:1884 ../libfdisk/gnomefsedit.c:2121
+#: ../libfdisk/gnomefsedit.c:2129 ../libfdisk/gnomefsedit.c:2173
+#: ../libfdisk/gnomefsedit.c:2183 ../libfdisk/gnomefsedit.c:2190
+#: ../libfdisk/gnomefsedit.c:2205 ../libfdisk/gnomefsedit.c:2214
+#: ../libfdisk/gnomefsedit.c:2223 ../libfdisk/gnomefsedit.c:2262
+#: ../libfdisk/gnomefsedit.c:2391 ../libfdisk/gnomefsedit.c:2433
+#: ../libfdisk/newtfsedit.c:168 ../libfdisk/newtfsedit.c:344
+#: ../libfdisk/newtfsedit.c:572 ../libfdisk/newtfsedit.c:634
+#: ../libfdisk/newtfsedit.c:667 ../libfdisk/newtfsedit.c:693
+#: ../libfdisk/newtfsedit.c:712 ../libfdisk/newtfsedit.c:810
+#: ../libfdisk/newtfsedit.c:1438 ../libfdisk/newtfsedit.c:1446
+#: ../libfdisk/newtfsedit.c:1571 ../libfdisk/newtfsedit.c:1592
+#: ../libfdisk/newtfsedit.c:1618 ../libfdisk/newtfsedit.c:1701
+#: ../loader/urls.c:78 ../loader/urls.c:87 ../loader/urls.c:94
+#: ../loader/urls.c:244 ../text.py:57 ../text.py:59 ../text.py:418
+#: ../textw/constants_text.py:10 ../textw/lilo_text.py:117
 #: ../textw/lilo_text.py:202 ../textw/mouse_text.py:27
 #: ../textw/silo_text.py:136 ../textw/silo_text.py:149
 #: ../textw/silo_text.py:205
@@ -272,18 +282,19 @@ msgstr "Яка модель клав╕атури п╕дключена до цього комп'ютера?"
 #: ../loader/lang.c:577 ../loader/loader.c:277 ../loader/loader.c:504
 #: ../loader/loader.c:514 ../loader/loader.c:693 ../loader/loader.c:752
 #: ../loader/loader.c:852 ../loader/loader.c:944 ../loader/loader.c:1022
-#: ../loader/loader.c:1027 ../loader/loader.c:1071 ../loader/loader.c:1080
-#: ../loader/loader.c:1330 ../loader/loader.c:1960 ../loader/loader.c:2006
-#: ../loader/loader.c:2069 ../loader/loader.c:2077 ../loader/net.c:164
-#: ../loader/net.c:249 ../loader/net.c:334 ../loader/net.c:643
-#: ../loader/net.c:676 ../loader/urls.c:149 ../loader/urls.c:227
-#: ../loader/urls.c:232 ../loader/urls.c:370 ../text.py:120 ../text.py:196
-#: ../text.py:269 ../text.py:316 ../text.py:334 ../text.py:376 ../text.py:405
-#: ../text.py:487 ../text.py:499 ../text.py:524 ../text.py:544 ../text.py:755
-#: ../text.py:781 ../text.py:806 ../text.py:812 ../text.py:827 ../text.py:1042
-#: ../textw/bootdisk_text.py:52 ../textw/bootdisk_text.py:54
-#: ../textw/lilo_text.py:30 ../textw/lilo_text.py:87 ../textw/lilo_text.py:146
-#: ../textw/lilo_text.py:152 ../textw/mouse_text.py:53
+#: ../loader/loader.c:1027 ../loader/loader.c:1126 ../loader/loader.c:1135
+#: ../loader/loader.c:1166 ../loader/loader.c:1398 ../loader/loader.c:2026
+#: ../loader/loader.c:2072 ../loader/loader.c:2135 ../loader/loader.c:2143
+#: ../loader/net.c:164 ../loader/net.c:249 ../loader/net.c:334
+#: ../loader/net.c:643 ../loader/net.c:676 ../loader/urls.c:155
+#: ../loader/urls.c:233 ../loader/urls.c:238 ../loader/urls.c:376
+#: ../text.py:120 ../text.py:196 ../text.py:269 ../text.py:316 ../text.py:334
+#: ../text.py:376 ../text.py:405 ../text.py:487 ../text.py:499 ../text.py:524
+#: ../text.py:544 ../text.py:755 ../text.py:781 ../text.py:806 ../text.py:812
+#: ../text.py:827 ../text.py:1042 ../textw/bootdisk_text.py:52
+#: ../textw/bootdisk_text.py:54 ../textw/lilo_text.py:30
+#: ../textw/lilo_text.py:87 ../textw/lilo_text.py:146
+#: ../textw/lilo_text.py:152 ../textw/mouse_text.py:55
 #: ../textw/network_text.py:92 ../textw/network_text.py:113
 #: ../textw/network_text.py:141 ../textw/packages_text.py:55
 #: ../textw/packages_text.py:89 ../textw/packages_text.py:236
@@ -338,10 +349,10 @@ msgstr ""
 "Пакети, що ви встановили, та пакети, потр╕бн╕ для узгодження пакет╕в, вже "
 "в╕д╕брано для встановлення. Чи уточнити наб╕р пакет╕в для поновлення?"
 
-#: ../iw/welcome_gui.py:88 ../libfdisk/fsedit.c:998
+#: ../iw/welcome_gui.py:88 ../libfdisk/fsedit.c:943
 #: ../libfdisk/gnomefsedit.c:727 ../libfdisk/gnomefsedit.c:1135
-#: ../libfdisk/gnomefsedit.c:1276 ../libfdisk/gnomefsedit.c:2317
-#: ../libfdisk/gnomefsedit.c:2599 ../libfdisk/gnomefsedit.c:2652
+#: ../libfdisk/gnomefsedit.c:1276 ../libfdisk/gnomefsedit.c:2315
+#: ../libfdisk/gnomefsedit.c:2601 ../libfdisk/gnomefsedit.c:2654
 #: ../libfdisk/newtfsedit.c:610 ../libfdisk/newtfsedit.c:836
 #: ../libfdisk/newtfsedit.c:1639 ../libfdisk/newtfsedit.c:1657
 #: ../libfdisk/newtfsedit.c:1742 ../loader/devices.c:207
@@ -351,10 +362,10 @@ msgstr ""
 msgid "Yes"
 msgstr "Так"
 
-#: ../iw/welcome_gui.py:91 ../libfdisk/fsedit.c:998
+#: ../iw/welcome_gui.py:91 ../libfdisk/fsedit.c:943
 #: ../libfdisk/gnomefsedit.c:727 ../libfdisk/gnomefsedit.c:1135
-#: ../libfdisk/gnomefsedit.c:1276 ../libfdisk/gnomefsedit.c:2317
-#: ../libfdisk/gnomefsedit.c:2599 ../libfdisk/gnomefsedit.c:2652
+#: ../libfdisk/gnomefsedit.c:1276 ../libfdisk/gnomefsedit.c:2315
+#: ../libfdisk/gnomefsedit.c:2601 ../libfdisk/gnomefsedit.c:2654
 #: ../libfdisk/newtfsedit.c:610 ../libfdisk/newtfsedit.c:836
 #: ../libfdisk/newtfsedit.c:1639 ../libfdisk/newtfsedit.c:1657
 #: ../libfdisk/newtfsedit.c:1742 ../loader/devices.c:208 ../loader/net.c:810
@@ -404,10 +415,10 @@ msgstr ""
 "\n"
 "Для виходу без зм╕н натисн╕ть кнопку Cancel унизу. "
 
-#: ../libfdisk/gnomefsedit.c:812 ../libfdisk/gnomefsedit.c:1886
-#: ../libfdisk/gnomefsedit.c:2435 ../libfdisk/newtfsedit.c:573
+#: ../libfdisk/gnomefsedit.c:812 ../libfdisk/gnomefsedit.c:1884
+#: ../libfdisk/gnomefsedit.c:2433 ../libfdisk/newtfsedit.c:573
 #: ../libfdisk/newtfsedit.c:1657 ../loader/devices.c:215
-#: ../loader/devices.c:503 ../loader/loader.c:2069 ../text.py:334
+#: ../loader/devices.c:503 ../loader/loader.c:2135 ../text.py:334
 #: ../text.py:337 ../text.py:812 ../text.py:814 ../textw/lilo_text.py:118
 #: ../textw/silo_text.py:136 ../textw/silo_text.py:154
 #: ../textw/userauth_text.py:63
@@ -682,7 +693,7 @@ msgstr "Окрем╕ пакети"
 msgid "Package Dependencies"
 msgstr "Залежност╕ пакет╕в"
 
-#: ../iw/xconfig_gui.py:256 ../text.py:975 ../text.py:983
+#: ../iw/xconfig_gui.py:263 ../text.py:975 ../text.py:983
 msgid "X Configuration"
 msgstr "Конф╕гурац╕я Х"
 
@@ -730,44 +741,44 @@ msgstr "Скасовано"
 msgid "I can't go to the previous step from here. You will have to try again."
 msgstr "Повернутися до попереднього етапу неможливо. Спробуйте знову."
 
-#: ../todo.py:507
+#: ../todo.py:511
 msgid "Creating boot disk..."
 msgstr "Створення системного диску"
 
-#: ../todo.py:526
+#: ../todo.py:530
 msgid "Reading"
 msgstr "Читання"
 
-#: ../todo.py:527
+#: ../todo.py:531
 msgid "Reading package information..."
 msgstr "Читання информац╕╖ пакет╕в..."
 
-#: ../todo.py:728
+#: ../todo.py:736
 msgid "Dependency Check"
 msgstr "Перев╕рка залежностей"
 
-#: ../todo.py:729
+#: ../todo.py:737
 msgid "Checking dependencies in packages selected for installation..."
 msgstr "Перев╕рка залежностей пакет╕в, що вибран╕ для встановлення..."
 
-#: ../todo.py:756 ../todo.py:797 ../todo.py:803 ../todo.py:820
+#: ../todo.py:764 ../todo.py:806 ../todo.py:812 ../todo.py:829
 msgid "no suggestion"
 msgstr "жодних пропозиц╕й"
 
-#: ../todo.py:828
+#: ../todo.py:837
 msgid "Searching"
 msgstr "Пошук"
 
-#: ../todo.py:829
+#: ../todo.py:838
 msgid "Searching for Red Hat Linux installations..."
 msgstr "Пошук встановлених систем Red Hat Linux..."
 
-#: ../todo.py:840 ../todo.py:868
+#: ../todo.py:849 ../todo.py:877
 #, c-format
 msgid "Error mounting ext2 filesystem on %s: %s"
 msgstr "Помилка монтування файлово╖ системи ext2 на %s: %s"
 
-#: ../todo.py:913
+#: ../todo.py:921
 msgid ""
 "One or more of the filesystems for your Linux system was not unmounted "
 "cleanly. Please boot your Linux installation, let the filesystems be "
@@ -777,7 +788,7 @@ msgstr ""
 "демонтовано. Завантажте ваш Linux, нехай файлов╕ системи протестуються, та "
 "коректно заверш╕ть роботу Linux для поновлення."
 
-#: ../todo.py:923
+#: ../todo.py:931
 msgid ""
 "One or more of the filesystems listed in the /etc/fstab on your Linux system "
 "cannot be mounted. Please fix this problem and try to upgrade again."
@@ -785,41 +796,41 @@ msgstr ""
 "Одну чи б╕льше файлових систем вказаних у /etc/fstab на ваш╕й Linux-систем╕ "
 "неможливо змонтувати. Владнайте цю проблему та спробуйте знову."
 
-#: ../todo.py:936
+#: ../todo.py:944
 msgid "Finding"
 msgstr "Пошук"
 
-#: ../todo.py:937
+#: ../todo.py:945
 msgid "Finding packages to upgrade..."
 msgstr "Пошук пакет╕в для поновлення..."
 
-#: ../todo.py:952
+#: ../todo.py:960
 msgid "Rebuild of RPM database failed. You may be out of disk space?"
 msgstr "Помилка перебудови бази RPM. Мало мiсця на диску?"
 
-#: ../todo.py:965
+#: ../todo.py:973
 msgid "An error occured when finding the packages to upgrade."
 msgstr "Сталася помилка п╕д час пошуку пакет╕в для поновлення."
 
-#: ../todo.py:1274
+#: ../todo.py:1282
 msgid "Processing"
 msgstr "Обробка"
 
-#: ../todo.py:1275
+#: ../todo.py:1283
 msgid "Preparing to install..."
 msgstr "П╕дготовка до встановлення... "
 
-#: ../todo.py:1529
+#: ../todo.py:1536
 #, c-format
 msgid "Upgrading %s.\n"
 msgstr "Оновлення %s.\n"
 
-#: ../todo.py:1531
+#: ../todo.py:1538
 #, c-format
 msgid "Installing %s.\n"
 msgstr "Встановлення %s.\n"
 
-#: ../todo.py:1556
+#: ../todo.py:1563
 msgid ""
 "You don't appear to have enough disk space to install the packages you've "
 "selected. You need more space on the following filesystems:\n"
@@ -829,55 +840,55 @@ msgstr ""
 "Вам потр╕бно б╕льше м╕сця на цих файлових системах:\n"
 "\n"
 
-#: ../libfdisk/gnomefsedit.c:2974 ../todo.py:1559
+#: ../libfdisk/gnomefsedit.c:2977 ../todo.py:1566
 msgid "Mount Point"
 msgstr "Точка монтування"
 
-#: ../todo.py:1559
+#: ../todo.py:1566
 msgid "Space Needed"
 msgstr "Необх╕дно м╕сце"
 
-#: ../todo.py:1572
+#: ../todo.py:1579
 msgid "Disk Space"
 msgstr "Прост╕р на дисков╕"
 
-#: ../todo.py:1607
+#: ../todo.py:1614
 msgid "Post Install"
 msgstr "Пост-установочн╕ д╕╖"
 
-#: ../todo.py:1608
+#: ../todo.py:1615
 msgid "Performing post install configuration..."
 msgstr "Конф╕гурац╕я пост-установочних д╕й..."
 
-#: ../iw/xconfig_gui.py:10 ../xf86config.py:856
+#: ../iw/xconfig_gui.py:10 ../xf86config.py:867
 msgid "Video Card"
 msgstr "В╕деокарта"
 
-#: ../iw/xconfig_gui.py:12 ../xf86config.py:858
+#: ../iw/xconfig_gui.py:12 ../xf86config.py:869
 msgid "Video Ram"
 msgstr "В╕део пам'ять"
 
-#: ../xf86config.py:860
+#: ../xf86config.py:871
 msgid "X server"
 msgstr "X Сервер"
 
-#: ../xf86config.py:862
+#: ../xf86config.py:873
 msgid "Unable to detect video card"
 msgstr "Не можу розп╕знати в╕деокарту"
 
-#: ../iw/xconfig_gui.py:11 ../xf86config.py:869 ../xf86config.py:871
+#: ../iw/xconfig_gui.py:11 ../xf86config.py:880 ../xf86config.py:882
 msgid "Monitor"
 msgstr "Мон╕тор"
 
-#: ../xf86config.py:871
+#: ../xf86config.py:882
 msgid "Plug and Play Monitor"
 msgstr "Plug and Play мон╕тор"
 
-#: ../xf86config.py:873
+#: ../xf86config.py:884
 msgid "Horizontal frequency range"
 msgstr "Д╕апазон частот горизонтально╖ розгортки"
 
-#: ../xf86config.py:875
+#: ../xf86config.py:886
 msgid "Vertical frequency range"
 msgstr "Д╕апазон частот вертикально╖ розгортки"
 
@@ -1122,7 +1133,7 @@ msgstr "Незнайден╕ залежност╕ пакет╕в"
 msgid "Total install size: %s"
 msgstr "Загальний розм╕р: %s"
 
-#: ../iw/dependencies_gui.py:68 ../iw/progress_gui.py:167
+#: ../iw/dependencies_gui.py:68 ../iw/progress_gui.py:175
 #: ../textw/packages_text.py:312
 msgid "Package"
 msgstr "Пакет"
@@ -1195,27 +1206,27 @@ msgstr "Поновити"
 msgid "Keyboard Configuration"
 msgstr "Конф╕гурац╕я клав╕атури"
 
-#: ../iw/keyboard_gui.py:70
+#: ../iw/keyboard_gui.py:72
 msgid "Model"
 msgstr "Модель"
 
-#: ../iw/keyboard_gui.py:89
+#: ../iw/keyboard_gui.py:91
 msgid "Layout"
 msgstr "Розкладка"
 
-#: ../iw/keyboard_gui.py:108
+#: ../iw/keyboard_gui.py:110
 msgid "Dead Keys"
 msgstr "Н╕м╕ клав╕ш╕"
 
-#: ../iw/keyboard_gui.py:117
+#: ../iw/keyboard_gui.py:119
 msgid "Enable dead keys"
 msgstr "Використовувати н╕м╕ клав╕ш╕"
 
-#: ../iw/keyboard_gui.py:118
+#: ../iw/keyboard_gui.py:120
 msgid "Disable dead keys"
 msgstr "В╕дключити н╕м╕ клав╕ш╕"
 
-#: ../iw/keyboard_gui.py:127
+#: ../iw/keyboard_gui.py:129
 msgid "Test your selection here:"
 msgstr "Перев╕рте ваш виб╕р тут:"
 
@@ -1228,7 +1239,7 @@ msgid "Lilo Configuration"
 msgstr "Конф╕гурац╕я LILO"
 
 #: ../iw/lilo_gui.py:191 ../iw/lilo_gui.py:317 ../iw/silo_gui.py:132
-#: ../iw/silo_gui.py:280 ../libfdisk/gnomefsedit.c:2978
+#: ../iw/silo_gui.py:280 ../libfdisk/gnomefsedit.c:2981
 msgid "Type"
 msgstr "Тип"
 
@@ -1267,10 +1278,10 @@ msgstr "Не встановлювати LILO"
 msgid "Default"
 msgstr "Типово"
 
-#: ../iw/lilo_gui.py:292 ../iw/silo_gui.py:256 ../libfdisk/gnomefsedit.c:2975
-#: ../textw/lilo_text.py:112 ../textw/lilo_text.py:193
-#: ../textw/mouse_text.py:25 ../textw/silo_text.py:131
-#: ../textw/silo_text.py:196
+#: ../iw/lilo_gui.py:292 ../iw/mouse_gui.py:142 ../iw/silo_gui.py:256
+#: ../libfdisk/gnomefsedit.c:2978 ../textw/lilo_text.py:112
+#: ../textw/lilo_text.py:193 ../textw/mouse_text.py:25
+#: ../textw/silo_text.py:131 ../textw/silo_text.py:196
 msgid "Device"
 msgstr "Пристр╕й"
 
@@ -1285,9 +1296,34 @@ msgstr "Тип розд╕лу"
 msgid "Boot label"
 msgstr "Етикетка системи"
 
+#: ../iw/lilo_gui.py:324 ../iw/silo_gui.py:287
+#, fuzzy
+msgid "Default boot image"
+msgstr "Встановити стандартний пристр╕й завантаження в PROM"
+
+#: ../iw/mouse_gui.py:131 ../textw/mouse_text.py:7
+msgid "/dev/ttyS0 (COM1 under DOS)"
+msgstr "/dev/ttyS0 (COM1 у DOS)"
+
+#: ../iw/mouse_gui.py:132 ../textw/mouse_text.py:8
+msgid "/dev/ttyS1 (COM2 under DOS)"
+msgstr "/dev/ttyS1 (COM2 у DOS)"
+
+#: ../iw/mouse_gui.py:133 ../textw/mouse_text.py:9
+msgid "/dev/ttyS2 (COM3 under DOS)"
+msgstr "/dev/ttyS2 (COM3 у DOS)"
+
+#: ../iw/mouse_gui.py:134 ../textw/mouse_text.py:10
+msgid "/dev/ttyS3 (COM4 under DOS)"
+msgstr "/dev/ttyS3 (COM4 у DOS)"
+
 #: ../iw/mouse_gui.py:136
 msgid "Emulate 3 Buttons"
 msgstr "Емулювати 3 кнопки"
+
+#: ../iw/mouse_gui.py:142
+msgid "Port"
+msgstr ""
 
 #: ../iw/network_gui.py:11 ../textw/network_text.py:94
 msgid "Network Configuration"
@@ -1342,6 +1378,11 @@ msgstr "Третинний DNS"
 msgid "Individual Package Selection"
 msgstr "╤ндив╕дуальний виб╕р пакет╕в"
 
+#: ../iw/package_gui.py:135 ../textw/packages_text.py:97
+#, c-format
+msgid "%.1f KBytes"
+msgstr ""
+
 #: ../iw/package_gui.py:175
 msgid "Up"
 msgstr "Вгору"
@@ -1375,39 +1416,44 @@ msgstr "Виб╕р груп пакет╕в"
 msgid "Select individual packages"
 msgstr "Виб╕р окремих пакет╕в"
 
-#: ../iw/progress_gui.py:35
+#: ../iw/progress_gui.py:36
 msgid "Installing Packages"
 msgstr "Встановлення пакет╕в"
 
-#: ../iw/progress_gui.py:168 ../iw/progress_gui.py:203
+#: ../iw/progress_gui.py:126
+#, c-format
+msgid "%s KBytes"
+msgstr ""
+
+#: ../iw/progress_gui.py:176 ../iw/progress_gui.py:217
 msgid "Size"
 msgstr "Розм╕р"
 
-#: ../iw/progress_gui.py:169
+#: ../iw/progress_gui.py:177
 msgid "Summary"
 msgstr "П╕дсумок"
 
-#: ../iw/progress_gui.py:203
+#: ../iw/progress_gui.py:217
 msgid "Status"
 msgstr "Стан"
 
-#: ../iw/progress_gui.py:203
+#: ../iw/progress_gui.py:217
 msgid "Packages"
 msgstr "Пакети"
 
-#: ../iw/progress_gui.py:203
+#: ../iw/progress_gui.py:217
 msgid "Time"
 msgstr "Час"
 
-#: ../iw/progress_gui.py:208
+#: ../iw/progress_gui.py:222
 msgid "Total"
 msgstr "Всього"
 
-#: ../iw/progress_gui.py:209
+#: ../iw/progress_gui.py:223
 msgid "Completed"
 msgstr "Зроблено"
 
-#: ../iw/progress_gui.py:210
+#: ../iw/progress_gui.py:224
 msgid "Remaining"
 msgstr "Залишилось"
 
@@ -1545,23 +1591,29 @@ msgstr "Не встановлювати SILO"
 msgid "Time Zone Selection"
 msgstr "Виб╕р часового поясу"
 
-#: ../iw/timezone_gui.py:151
+#. pick New York City as default
+#: ../gnome-map/gglobe-canvas.c:781 ../gnome-map/timezonemapmodule.c:766
+#: ../gnome-map/timezonemapmodule.c:768 ../iw/timezone_gui.py:139
+msgid "America/New_York"
+msgstr "Америка/Н'ю_Йорк"
+
+#: ../iw/timezone_gui.py:156
 msgid "View:"
 msgstr "Огляд:"
 
-#: ../iw/timezone_gui.py:159 ../iw/timezone_gui.py:160
+#: ../iw/timezone_gui.py:164 ../iw/timezone_gui.py:165
 msgid "System clock uses UTC"
 msgstr "Системний годинник використову╓ UTC"
 
-#: ../iw/timezone_gui.py:208
+#: ../iw/timezone_gui.py:213
 msgid "Use Daylight Saving Time (US only)"
 msgstr "Використовувати л╕тн╕й час (Т╕льки США)"
 
-#: ../iw/timezone_gui.py:222
+#: ../iw/timezone_gui.py:227
 msgid "Location"
 msgstr "Знаходження"
 
-#: ../iw/timezone_gui.py:223
+#: ../iw/timezone_gui.py:228
 msgid "UTC Offset"
 msgstr "Зсув в╕д UTC"
 
@@ -1581,31 +1633,31 @@ msgstr "Д╕апазон частот вертикально╖ розгортки"
 msgid "Test failed"
 msgstr "Тест не пройшов"
 
-#: ../iw/xconfig_gui.py:23 ../iw/xconfig_gui.py:443
+#: ../iw/xconfig_gui.py:23 ../iw/xconfig_gui.py:467
 msgid "Customize X Configuration"
 msgstr "Виб╕р конф╕гурац╕╕ Х"
 
-#: ../iw/xconfig_gui.py:90
+#: ../iw/xconfig_gui.py:96
 msgid "Bits per Pixel"
 msgstr "Б╕т на п╕ксел"
 
-#: ../iw/xconfig_gui.py:101 ../iw/xconfig_gui.py:438
+#: ../iw/xconfig_gui.py:108 ../iw/xconfig_gui.py:462
 msgid "Test this configuration"
 msgstr "Перев╕рка ц╕╓╖ конф╕гурац╕╖"
 
-#: ../iw/xconfig_gui.py:116
+#: ../iw/xconfig_gui.py:123
 msgid "Monitor Configuration"
 msgstr "Конф╕гурац╕я мон╕тору"
 
-#: ../iw/xconfig_gui.py:222
+#: ../iw/xconfig_gui.py:229
 msgid "Horizontal Sync"
 msgstr "Горизонтальна синхрон╕зац╕я"
 
-#: ../iw/xconfig_gui.py:231
+#: ../iw/xconfig_gui.py:238
 msgid "Vertical Sync"
 msgstr "Вертикальна синхрон╕зац╕я"
 
-#: ../iw/xconfig_gui.py:343
+#: ../iw/xconfig_gui.py:350
 msgid ""
 "Your video ram size can not be autodetected.  Choose your video ram size "
 "from the choices below:"
@@ -1613,7 +1665,7 @@ msgstr ""
 "Розм╕р пам'ят╕ на в╕деокарт╕ не визначено. Обер╕ть розм╕р в╕деопам'ят╕ з╕ "
 "списку:"
 
-#: ../iw/xconfig_gui.py:354 ../iw/xconfig_gui.py:375
+#: ../iw/xconfig_gui.py:361 ../iw/xconfig_gui.py:382
 msgid ""
 "In most cases your video hardware can be probed to automatically determine "
 "the best settings for your display."
@@ -1621,7 +1673,7 @@ msgstr ""
 "В б╕льшост╕ випадк╕в  в╕деообладнання може бути визначене автоматично ╕ "
 "будуть знайден╕ найкращ╕ установки для Вашого мон╕тору."
 
-#: ../iw/xconfig_gui.py:363
+#: ../iw/xconfig_gui.py:370
 msgid ""
 "If the probed settings do not match your hardware select the correct setting "
 "below:"
@@ -1629,19 +1681,19 @@ msgstr ""
 "Якщо знайден╕ параметри не в╕дпов╕дають Вашому обладнанню, вибер╕ть в╕рн╕ "
 "установки:"
 
-#: ../iw/xconfig_gui.py:384
+#: ../iw/xconfig_gui.py:391
 msgid "Autoprobe results:"
 msgstr "Результат випробування Х"
 
-#: ../iw/xconfig_gui.py:447
+#: ../iw/xconfig_gui.py:471
 msgid "Use Graphical Login"
 msgstr "Стартувати у граф╕чному режим╕"
 
-#: ../iw/xconfig_gui.py:448
+#: ../iw/xconfig_gui.py:472
 msgid "Skip X Configuration"
 msgstr "Пропустити настройку Х"
 
-#: ../iw/xconfig_gui.py:495
+#: ../iw/xconfig_gui.py:519
 msgid "Default Desktop:"
 msgstr "Типовий робочий ст╕л:"
 
@@ -1743,35 +1795,19 @@ msgstr ""
 "ви хочетете використовувати для кожного з них.\n"
 "\n"
 
-#: ../textw/mouse_text.py:7
-msgid "/dev/ttyS0 (COM1 under DOS)"
-msgstr "/dev/ttyS0 (COM1 у DOS)"
-
-#: ../textw/mouse_text.py:8
-msgid "/dev/ttyS1 (COM2 under DOS)"
-msgstr "/dev/ttyS1 (COM2 у DOS)"
-
-#: ../textw/mouse_text.py:9
-msgid "/dev/ttyS2 (COM3 under DOS)"
-msgstr "/dev/ttyS2 (COM3 у DOS)"
-
-#: ../textw/mouse_text.py:10
-msgid "/dev/ttyS3 (COM4 under DOS)"
-msgstr "/dev/ttyS3 (COM4 у DOS)"
-
 #: ../textw/mouse_text.py:26
 msgid "What device is your mouse located on?"
 msgstr "До якого пристрою п╕дключено мишу?"
 
-#: ../textw/mouse_text.py:55
+#: ../textw/mouse_text.py:57
 msgid "Which model mouse is attached to this computer?"
 msgstr "Яка модель миши п╕дключена до цього комп'ютера?"
 
-#: ../textw/mouse_text.py:66
+#: ../textw/mouse_text.py:68
 msgid "Emulate 3 Buttons?"
 msgstr "Емулювати 3 кнопки?"
 
-#: ../textw/mouse_text.py:69
+#: ../textw/mouse_text.py:71
 msgid "Mouse Selection"
 msgstr "Виб╕р миш╕"
 
@@ -1976,7 +2012,7 @@ msgstr ""
 "помилитися. Пам'ятайте, що пароль користувача root - вир╕шальна ланка "
 "безпеки системи!"
 
-#: ../loader/urls.c:340 ../textw/userauth_text.py:24
+#: ../loader/urls.c:346 ../textw/userauth_text.py:24
 msgid "Password:"
 msgstr "Пароль:"
 
@@ -2121,7 +2157,7 @@ msgid ""
 "Linux installation."
 msgstr "Вс╕ дан╕ буде втрачено при створен╕ створен╕ м╕сця для Linux."
 
-#: ../installclasses/workstation.py:7 ../libfdisk/gnomefsedit.c:2523
+#: ../installclasses/workstation.py:7 ../libfdisk/gnomefsedit.c:2521
 msgid "Workstation"
 msgstr "Робоча станц╕я"
 
@@ -2132,22 +2168,22 @@ msgstr ""
 "Ви збира╓тесь стерти будь якi iснуючи iнсталяцii Red Hat на Вашому "
 "комп'ютерi."
 
-#: ../libfdisk/fsedit.c:450
+#: ../libfdisk/fsedit.c:395
 msgid "partitioning did not meet requirements"
 msgstr "розпод╕л дискового простору не в╕дпов╕да╓ вимогам"
 
-#: ../libfdisk/fsedit.c:967 ../libfdisk/fsedit.c:974 ../libfdisk/fsedit.c:981
-#: ../libfdisk/fsedit.c:990 ../libfdisk/fsedit.c:1017
-#: ../libfdisk/fsedit.c:1030 ../libfdisk/fsedit.c:1040
+#: ../libfdisk/fsedit.c:912 ../libfdisk/fsedit.c:919 ../libfdisk/fsedit.c:926
+#: ../libfdisk/fsedit.c:935 ../libfdisk/fsedit.c:962 ../libfdisk/fsedit.c:975
+#: ../libfdisk/fsedit.c:985
 msgid "Bad Mount Point"
 msgstr "Нев╕рна точка монтування"
 
-#: ../libfdisk/fsedit.c:968
+#: ../libfdisk/fsedit.c:913
 #, c-format
 msgid "The %s directory must be on the root filesystem."
 msgstr "Каталог %s ма╓ бути у коренев╕й файлов╕й систем╕."
 
-#: ../libfdisk/fsedit.c:975
+#: ../libfdisk/fsedit.c:920
 #, c-format
 msgid ""
 "The mount point %s is illegal.\n"
@@ -2158,7 +2194,7 @@ msgstr ""
 "\n"
 "Точка монтування ма╓ починатися з /."
 
-#: ../libfdisk/fsedit.c:982
+#: ../libfdisk/fsedit.c:927
 #, c-format
 msgid ""
 "The mount point %s is illegal.\n"
@@ -2169,7 +2205,7 @@ msgstr ""
 "\n"
 "Точка монтування не може зак╕нчуватись на /."
 
-#: ../libfdisk/fsedit.c:991
+#: ../libfdisk/fsedit.c:936
 #, c-format
 msgid ""
 "The mount point %s is illegal.\n"
@@ -2180,7 +2216,7 @@ msgstr ""
 "\n"
 "Точка монтування ма╓ м╕стити лише друкован╕ символи."
 
-#: ../libfdisk/fsedit.c:999
+#: ../libfdisk/fsedit.c:944
 msgid ""
 "You've asked to put your root (/) filesystem on a DOS-style FAT partition. "
 "You can do this, but you may not use any other filesystems for your Linux "
@@ -2192,7 +2228,7 @@ msgstr ""
 "системи, ╕ кр╕м того швидк╕сть системи буде менша, н╕ж при використанн╕ "
 "р╕дних Linux розд╕л╕в. Продовжити?"
 
-#: ../libfdisk/fsedit.c:1018
+#: ../libfdisk/fsedit.c:963
 #, c-format
 msgid ""
 "The mount point %s is illegal.\n"
@@ -2203,14 +2239,14 @@ msgstr ""
 "\n"
 "Системн╕ розд╕ли повинн╕ мати тип Linux Native."
 
-#: ../libfdisk/fsedit.c:1031
+#: ../libfdisk/fsedit.c:976
 #, c-format
 msgid "On this platform, /boot must be on a DOS-compatible filesystem %x."
 msgstr ""
 "На ц╕й платформ╕ п╕дрозд╕л /boot ма╓ знаходитися на п╕дрозд╕л╕ з файловою "
 "системою, яка сум╕сна з DOS: %x."
 
-#: ../libfdisk/fsedit.c:1041
+#: ../libfdisk/fsedit.c:986
 #, c-format
 msgid ""
 "The mount point %s is illegal.\n"
@@ -2221,11 +2257,11 @@ msgstr ""
 "\n"
 "/usr ма╓ бути на розд╕л╕ типу Linux Native або NFS."
 
-#: ../libfdisk/fsedit.c:1069
+#: ../libfdisk/fsedit.c:1014
 msgid "Too Many Drives"
 msgstr "Забагато диск╕в"
 
-#: ../libfdisk/fsedit.c:1070
+#: ../libfdisk/fsedit.c:1015
 msgid ""
 "You have more drives than this program supports. Please use the standard "
 "fdisk program to setup your drives and please notify Red Hat Software that "
@@ -2234,11 +2270,11 @@ msgstr ""
 "Диск╕в б╕льше, н╕ж передбача╓ програма. Використовуйте стандартний fdisk, "
 "щоб розпод╕лити диски, та пов╕домте Red Hat, що Ви бачили це пов╕домлення."
 
-#: ../libfdisk/fsedit.c:1079
+#: ../libfdisk/fsedit.c:1024
 msgid "Error Creating Device Nodes"
 msgstr "Помилка створення спец╕альних пристро╖в "
 
-#: ../libfdisk/fsedit.c:1080
+#: ../libfdisk/fsedit.c:1025
 msgid ""
 "An error has occurred why trying to create device nodes for the hard drives "
 "in your system.  This may be because you have run out of disk space on the "
@@ -2248,11 +2284,11 @@ msgstr ""
 "в Ваш╕й систем╕. Можливо це сталося через те, що Ви використали весь прост╕р "
 "на п╕дрозд╕л╕ /tmp"
 
-#: ../libfdisk/fsedit.c:1096
+#: ../libfdisk/fsedit.c:1041
 msgid "No Drives Found"
 msgstr "Диски не знайдено"
 
-#: ../libfdisk/fsedit.c:1097
+#: ../libfdisk/fsedit.c:1042
 msgid ""
 "An error has occurred - no valid devices were found on which to create new "
 "filesystems.  Please check your hardware for the cause of this problem."
@@ -2260,7 +2296,7 @@ msgstr ""
 "Помилка: пристр╕й для створення нових файлових систем не знайдено. Щоб "
 "встановити причину, перев╕рте обладнання."
 
-#: ../libfdisk/fsedit.c:1410 ../libfdisk/fsedit.c:1490
+#: ../libfdisk/fsedit.c:1355 ../libfdisk/fsedit.c:1435
 #, c-format
 msgid ""
 "An error occurred reading the partition table for the block device %s.  The "
@@ -2268,7 +2304,7 @@ msgid ""
 msgstr ""
 "Виявлено помилку читання таблиц╕ розд╕л╕в на блочному пристро╖ %s. Помилка:"
 
-#: ../libfdisk/fsedit.c:1467
+#: ../libfdisk/fsedit.c:1412
 #, c-format
 msgid ""
 "The partition table on device %s is corrupted.  To create new partitions it "
@@ -2277,27 +2313,27 @@ msgstr ""
 "Таблицю розд╕л╕в на пристро╖ %s пошкоджено. Для створення нових розд╕л╕в "
 "пристр╕й треба ╕н╕ц╕ювати. УС╤ ДАН╤ на цьому пристро╖ буде втрачено."
 
-#: ../libfdisk/fsedit.c:1472
+#: ../libfdisk/fsedit.c:1417
 msgid "Bad Partition Table"
 msgstr "Некоректна таблиця п╕дрозд╕л╕в"
 
-#: ../libfdisk/fsedit.c:1473
+#: ../libfdisk/fsedit.c:1418
 msgid "Initialize"
 msgstr "╤н╕ц╕ювання"
 
-#: ../libfdisk/fsedit.c:1473 ../libfdisk/fsedit.c:1494
+#: ../libfdisk/fsedit.c:1418 ../libfdisk/fsedit.c:1439
 msgid "Skip Drive"
 msgstr "Пропустити диск"
 
-#: ../libfdisk/fsedit.c:1494 ../loader/net.c:254 ../loader/net.c:379
+#: ../libfdisk/fsedit.c:1439 ../loader/net.c:254 ../loader/net.c:379
 msgid "Retry"
 msgstr "Повторити"
 
-#: ../libfdisk/fsedit.c:1506
+#: ../libfdisk/fsedit.c:1451
 msgid "BSD Disklabel"
 msgstr "Етикетка диску типу BSD"
 
-#: ../libfdisk/fsedit.c:1506
+#: ../libfdisk/fsedit.c:1451
 msgid ""
 "A disk with a BSD disklabel has been found. The Red Hat installation only "
 "supports BSD Disklabels in read-only mode, so you must use a custom install "
@@ -2308,12 +2344,12 @@ msgstr ""
 "встановлення та використати утил╕ту fdisk (зам╕сть Disk Druid) для "
 "комп'ютер╕в з дисковою етикеткою BSD."
 
-#: ../libfdisk/fsedit.c:1536
+#: ../libfdisk/fsedit.c:1481
 #, c-format
 msgid "System error %d"
 msgstr "Помилка системи %d"
 
-#: ../libfdisk/fsedit.c:1545 ../libfdisk/fsedit.c:1547
+#: ../libfdisk/fsedit.c:1490 ../libfdisk/fsedit.c:1492
 msgid "Fdisk Error"
 msgstr "Помилка fdisk"
 
@@ -2352,7 +2388,7 @@ msgstr ""
 msgid "Edit Partition"
 msgstr "Редагувати розд╕л"
 
-#: ../libfdisk/gnomefsedit.c:823 ../libfdisk/gnomefsedit.c:1895
+#: ../libfdisk/gnomefsedit.c:823 ../libfdisk/gnomefsedit.c:1893
 #: ../libfdisk/newtfsedit.c:389
 msgid "Mount Point:"
 msgstr "Точка монтування:"
@@ -2381,7 +2417,7 @@ msgstr "Невдало"
 msgid "Failure Reason:"
 msgstr "Причина невдач╕:"
 
-#: ../libfdisk/gnomefsedit.c:949 ../libfdisk/gnomefsedit.c:1929
+#: ../libfdisk/gnomefsedit.c:949 ../libfdisk/gnomefsedit.c:1927
 msgid "Partition Type:"
 msgstr "Тип розд╕лу:"
 
@@ -2389,7 +2425,7 @@ msgstr "Тип розд╕лу:"
 msgid "Allowable Drives:"
 msgstr "Доступн╕ пристро╖:"
 
-#: ../libfdisk/gnomefsedit.c:1135 ../libfdisk/gnomefsedit.c:2123
+#: ../libfdisk/gnomefsedit.c:1135 ../libfdisk/gnomefsedit.c:2121
 #: ../libfdisk/newtfsedit.c:610
 msgid "No Mount Point"
 msgstr "Нема╓ точки монтування"
@@ -2403,7 +2439,7 @@ msgstr ""
 "хочете робити?"
 
 #: ../libfdisk/gnomefsedit.c:1160 ../libfdisk/gnomefsedit.c:1197
-#: ../libfdisk/gnomefsedit.c:2131 ../libfdisk/newtfsedit.c:634
+#: ../libfdisk/gnomefsedit.c:2129 ../libfdisk/newtfsedit.c:634
 #: ../libfdisk/newtfsedit.c:667
 msgid "Mount Point Error"
 msgstr "Помилка точки монтування"
@@ -2440,12 +2476,12 @@ msgstr ""
 "Розм╕р вказано некоректно. В╕н ма╓ бути б╕льшим за нуль. Використовуйте "
 "десяткову систему счислення для вказання розм╕ру."
 
-#: ../libfdisk/gnomefsedit.c:1250 ../libfdisk/gnomefsedit.c:2264
+#: ../libfdisk/gnomefsedit.c:1250 ../libfdisk/gnomefsedit.c:2262
 #: ../libfdisk/newtfsedit.c:712
 msgid "Swap Size Error"
 msgstr "Помилка розм╕ру своп╕нга"
 
-#: ../libfdisk/gnomefsedit.c:1251 ../libfdisk/gnomefsedit.c:2265
+#: ../libfdisk/gnomefsedit.c:1251 ../libfdisk/gnomefsedit.c:2263
 #: ../libfdisk/newtfsedit.c:713
 #, c-format
 msgid ""
@@ -2533,11 +2569,11 @@ msgstr ""
 "У списков╕ розд╕л╕в ╓ нерозпод╕лен╕. Нижче наведено нерозпод╕лен╕ розд╕ли з "
 "поясненням причин, з яких ╕х не було розпод╕лено."
 
-#: ../libfdisk/gnomefsedit.c:1877
+#: ../libfdisk/gnomefsedit.c:1875
 msgid "Cannot Edit Raid"
 msgstr "Не можу редагувати RAID"
 
-#: ../libfdisk/gnomefsedit.c:1878
+#: ../libfdisk/gnomefsedit.c:1876
 msgid ""
 "You have defined the '/' filesystem on a non-ext2 partition, so you cannot "
 "edit RAID devices."
@@ -2545,34 +2581,34 @@ msgstr ""
 "Ви визначили файлову систему '/' на п╕дрозд╕л╕ не типу ext2, отже Ви не "
 "можете редагувати пристро╖ RAID"
 
-#: ../libfdisk/gnomefsedit.c:1915
+#: ../libfdisk/gnomefsedit.c:1913
 msgid "<Swap Partition"
 msgstr "<Розд╕л своп╕нгу"
 
-#: ../libfdisk/gnomefsedit.c:1974
+#: ../libfdisk/gnomefsedit.c:1972
 msgid "RAID Device: /dev/"
 msgstr "Пристр╕й RAID : /dev/"
 
-#: ../libfdisk/gnomefsedit.c:1997
+#: ../libfdisk/gnomefsedit.c:1995
 msgid "RAID Type:"
 msgstr "Тип RAID:"
 
-#: ../libfdisk/gnomefsedit.c:2034
+#: ../libfdisk/gnomefsedit.c:2032
 msgid "Partitions For RAID Array:"
 msgstr "Розд╕ли для RAID массиву:"
 
-#: ../libfdisk/gnomefsedit.c:2124
+#: ../libfdisk/gnomefsedit.c:2122
 msgid "You have not selected a mount point. A mount point is required."
 msgstr "Ви не обрали точку монтування . Точка монтування ╓ обов'язковою."
 
-#: ../libfdisk/gnomefsedit.c:2132
+#: ../libfdisk/gnomefsedit.c:2130
 msgid ""
 "The mount point requested is already in use. Please select a valid mount "
 "point."
 msgstr ""
 "Ця точка монтування вже використову╓ться. Вкаж╕ть м╕сце монтування правильно."
 
-#: ../libfdisk/gnomefsedit.c:2168
+#: ../libfdisk/gnomefsedit.c:2166
 msgid ""
 "The bootable raid device can only include partitions from the first two "
 "drives on your system.\n"
@@ -2584,23 +2620,23 @@ msgstr ""
 "\n"
 "Ц╕ диски так╕:  "
 
-#: ../libfdisk/gnomefsedit.c:2175
+#: ../libfdisk/gnomefsedit.c:2173
 msgid "Booting From RAID Warning"
 msgstr "Попередження при завантаженн╕ з RAID "
 
-#: ../libfdisk/gnomefsedit.c:2185
+#: ../libfdisk/gnomefsedit.c:2183
 msgid "No RAID Device"
 msgstr "RAID пристр╕й  в╕дсутн╕й"
 
-#: ../libfdisk/gnomefsedit.c:2186
+#: ../libfdisk/gnomefsedit.c:2184
 msgid "You need to selected a RAID device."
 msgstr "Вам потр╕бно вибрати RAID пристр╕й."
 
-#: ../libfdisk/gnomefsedit.c:2192
+#: ../libfdisk/gnomefsedit.c:2190
 msgid "Used Raid Device"
 msgstr "RAID пристр╕й, який використову╓ться"
 
-#: ../libfdisk/gnomefsedit.c:2193
+#: ../libfdisk/gnomefsedit.c:2191
 #, c-format
 msgid ""
 "The raid device \"/dev/%s\" is already configured as a raid device. Please "
@@ -2609,11 +2645,11 @@ msgstr ""
 "Пристр╕й raid  \"/dev/%s\" вже сконф╕гуровано як RAID. Будь ласка обер╕ть "
 "╕нший."
 
-#: ../libfdisk/gnomefsedit.c:2206
+#: ../libfdisk/gnomefsedit.c:2204
 msgid "Not Enough Partitions"
 msgstr "Не вистача╓ п╕дрозд╕л╕в"
 
-#: ../libfdisk/gnomefsedit.c:2208
+#: ../libfdisk/gnomefsedit.c:2206
 msgid ""
 "You have not configured enough partitions for the RAID type you have "
 "selected."
@@ -2621,23 +2657,23 @@ msgstr ""
 "Ви не сконф╕гурували достатню к╕льк╕сть п╕дрозд╕л╕в для того типу  RAID, "
 "який ви вибрали."
 
-#: ../libfdisk/gnomefsedit.c:2215
+#: ../libfdisk/gnomefsedit.c:2213
 msgid "Illegal /boot RAID Type"
 msgstr "Некоректний тип RAID для /boot"
 
-#: ../libfdisk/gnomefsedit.c:2217
+#: ../libfdisk/gnomefsedit.c:2215
 msgid "Boot partitions (/boot) are only allowed on RAID-1."
 msgstr "П╕дрозд╕ли для завантажування (/boot) мобуть бути т╕льки типу RAID-1."
 
-#: ../libfdisk/gnomefsedit.c:2224
+#: ../libfdisk/gnomefsedit.c:2222
 msgid "Illegal RAID mountpoint"
 msgstr "Некоретна точка монтування RAID"
 
-#: ../libfdisk/gnomefsedit.c:2226
+#: ../libfdisk/gnomefsedit.c:2224
 msgid "RAID partitions cannot be mounted as root (/) on Alpha."
 msgstr "Розд╕л RAID не можна монтувати як root (/) на Alpha"
 
-#: ../libfdisk/gnomefsedit.c:2309
+#: ../libfdisk/gnomefsedit.c:2307
 #, c-format
 msgid ""
 "The partition %s is a pre-existing partition in the set of partitions for "
@@ -2648,15 +2684,15 @@ msgstr ""
 "для цього пристрою RAID. Точка монтування визначена як /boot. Ви впевнен╕, "
 "що зможете завантажитися з цього п╕дрозд╕лу?"
 
-#: ../libfdisk/gnomefsedit.c:2316
+#: ../libfdisk/gnomefsedit.c:2314
 msgid "Use Pre-existing Partition?"
 msgstr "Використати вже ╕снуючи п╕дрозд╕л?"
 
-#: ../libfdisk/gnomefsedit.c:2393
+#: ../libfdisk/gnomefsedit.c:2391
 msgid "Cannot Add RAID Devices"
 msgstr "Неможливо додати пристро╖ RAID"
 
-#: ../libfdisk/gnomefsedit.c:2394
+#: ../libfdisk/gnomefsedit.c:2392
 msgid ""
 "You have defined the '/' filesystem on a non-ext2 partition, so you cannot "
 "add RAID devices."
@@ -2664,96 +2700,96 @@ msgstr ""
 "Ви визначили файлову систему '/' на п╕дрозд╕л╕ не типу ext2, тому Ви не "
 "можете додавати пристро╖ типу RAID."
 
-#: ../libfdisk/gnomefsedit.c:2435
+#: ../libfdisk/gnomefsedit.c:2433
 msgid "Auto-Partition"
 msgstr "Автоматично розбити"
 
-#: ../libfdisk/gnomefsedit.c:2442
+#: ../libfdisk/gnomefsedit.c:2440
 msgid "Using Existing Disk Space"
 msgstr "Використати наявний прост╕р"
 
-#: ../libfdisk/gnomefsedit.c:2461
+#: ../libfdisk/gnomefsedit.c:2459
 msgid "Remove Linux partitions"
 msgstr "Видалити розд╕л Linux"
 
-#: ../libfdisk/gnomefsedit.c:2472
+#: ../libfdisk/gnomefsedit.c:2470
 msgid "Use existing free space"
 msgstr "Використати ╕снуючий в╕льний прост╕р"
 
 #. workstation or server?
-#: ../libfdisk/gnomefsedit.c:2484
+#: ../libfdisk/gnomefsedit.c:2482
 msgid "Intended Use"
 msgstr "Використання за призначенням"
 
-#: ../libfdisk/gnomefsedit.c:2503 ../libfdisk/gnomefsedit.c:2523
+#: ../libfdisk/gnomefsedit.c:2501 ../libfdisk/gnomefsedit.c:2521
 msgid "Server"
 msgstr "Сервер"
 
-#: ../libfdisk/gnomefsedit.c:2599
+#: ../libfdisk/gnomefsedit.c:2601
 msgid "Delete RAID Device?"
 msgstr "Видалати пристр╕й RAID ?"
 
-#: ../libfdisk/gnomefsedit.c:2600
+#: ../libfdisk/gnomefsedit.c:2602
 msgid "Are you sure you want to remove this RAID device?"
 msgstr "Ви д╕йсно хочете видалити цей пристр╕й RAID?"
 
-#: ../libfdisk/gnomefsedit.c:2651 ../libfdisk/newtfsedit.c:1741
+#: ../libfdisk/gnomefsedit.c:2653 ../libfdisk/newtfsedit.c:1741
 msgid "Reset Partition Table"
 msgstr "Стерти таблицю п╕дрозд╕л╕в"
 
-#: ../libfdisk/gnomefsedit.c:2653 ../libfdisk/newtfsedit.c:1743
+#: ../libfdisk/gnomefsedit.c:2655 ../libfdisk/newtfsedit.c:1743
 msgid "Reset partition table to original contents? "
 msgstr "Повернути початковий стан таблиц╕ п╕дрозд╕л╕в?"
 
-#: ../libfdisk/gnomefsedit.c:2689 ../libfdisk/gnomefsedit.c:2740
+#: ../libfdisk/gnomefsedit.c:2691 ../libfdisk/gnomefsedit.c:2742
 msgid "<Swap>"
 msgstr "<Swap>"
 
-#: ../libfdisk/gnomefsedit.c:2691
+#: ../libfdisk/gnomefsedit.c:2693
 msgid "<RAID>"
 msgstr "<RAID>"
 
-#: ../libfdisk/gnomefsedit.c:2693
+#: ../libfdisk/gnomefsedit.c:2695
 msgid "<not set>"
 msgstr "<не встановлено>"
 
-#: ../libfdisk/gnomefsedit.c:2976
+#: ../libfdisk/gnomefsedit.c:2979
 msgid "Requested"
 msgstr "Вимага╓ться"
 
-#: ../libfdisk/gnomefsedit.c:2977
+#: ../libfdisk/gnomefsedit.c:2980
 msgid "Actual"
 msgstr "Насправд╕"
 
-#: ../libfdisk/gnomefsedit.c:3150
+#: ../libfdisk/gnomefsedit.c:3153
 msgid "Drive"
 msgstr "Диск"
 
-#: ../libfdisk/gnomefsedit.c:3151
+#: ../libfdisk/gnomefsedit.c:3154
 msgid "Geom [C/H/S]"
 msgstr "Геометр╕я [Ц/Г/С]"
 
-#: ../libfdisk/gnomefsedit.c:3152
+#: ../libfdisk/gnomefsedit.c:3155
 msgid "Total (M)"
 msgstr "Всього (М)"
 
-#: ../libfdisk/gnomefsedit.c:3153
+#: ../libfdisk/gnomefsedit.c:3156
 msgid "Free (M)"
 msgstr "В╕льно (М)"
 
-#: ../libfdisk/gnomefsedit.c:3154
+#: ../libfdisk/gnomefsedit.c:3157
 msgid "Used (M)"
 msgstr "Використано (М)"
 
-#: ../libfdisk/gnomefsedit.c:3155
+#: ../libfdisk/gnomefsedit.c:3158
 msgid "Used (%)"
 msgstr "Використано (%)"
 
-#: ../libfdisk/gnomefsedit.c:3391
+#: ../libfdisk/gnomefsedit.c:3394
 msgid "Unallocated Partitions Exist..."
 msgstr "╢ невизначен╕ п╕дрозд╕ли..."
 
-#: ../libfdisk/gnomefsedit.c:3397 ../libfdisk/gnomefsedit.c:3411
+#: ../libfdisk/gnomefsedit.c:3400 ../libfdisk/gnomefsedit.c:3414
 msgid ""
 "You must assign a root (/) partition to a Linux native partition (ext2) or a "
 "RAID partition for the install to proceed."
@@ -2761,36 +2797,36 @@ msgstr ""
 "Щоб установка продовжувалась, призначте кореневому (/) розд╕лу тип Linux "
 "Native (ext2) або RAID розд╕л."
 
-#: ../libfdisk/gnomefsedit.c:3482
+#: ../libfdisk/gnomefsedit.c:3485
 msgid "Partitions"
 msgstr "Розд╕ли"
 
-#: ../libfdisk/gnomefsedit.c:3512
+#: ../libfdisk/gnomefsedit.c:3515
 msgid "_Add..."
 msgstr "_Додати"
 
-#: ../libfdisk/gnomefsedit.c:3519
+#: ../libfdisk/gnomefsedit.c:3522
 msgid "_Edit..."
 msgstr "_Редагувати..."
 
-#: ../libfdisk/gnomefsedit.c:3520
+#: ../libfdisk/gnomefsedit.c:3523
 msgid "_Reset"
 msgstr "_В╕дм╕нити"
 
-#: ../libfdisk/gnomefsedit.c:3525
+#: ../libfdisk/gnomefsedit.c:3528
 msgid "_Delete"
 msgstr "_Видалити"
 
 #. try having make raid device button available in read-only mode too
-#: ../libfdisk/gnomefsedit.c:3538
+#: ../libfdisk/gnomefsedit.c:3541
 msgid "_Make RAID Device"
 msgstr "_Створити RAID пристр╕й"
 
-#: ../libfdisk/gnomefsedit.c:3548
+#: ../libfdisk/gnomefsedit.c:3551
 msgid "Auto Partition"
 msgstr "Авто розбиття"
 
-#: ../libfdisk/gnomefsedit.c:3557
+#: ../libfdisk/gnomefsedit.c:3560
 msgid "Drive Summary"
 msgstr "П╕дсумок диску"
 
@@ -3137,75 +3173,79 @@ msgstr "Цей каталог не м╕стить дерево встановлення Red Hat"
 msgid "I could not mount that directory from the server"
 msgstr "Не можу змонтувати цей каталог з сервера"
 
-#: ../loader/loader.c:1071 ../loader/loader.c:1080
+#: ../loader/loader.c:1126 ../loader/loader.c:1135
 msgid "FTP"
 msgstr "FTP"
 
-#: ../loader/loader.c:1071 ../loader/loader.c:1080
+#: ../loader/loader.c:1126 ../loader/loader.c:1135
 msgid "HTTP"
 msgstr "HTTP"
 
-#: ../loader/loader.c:1072
+#: ../loader/loader.c:1127
 msgid "Unable to retrieve the first install image"
 msgstr "Не вдалося отримати перший образ ╕сталяц╕╖"
 
-#: ../loader/loader.c:1081
+#: ../loader/loader.c:1136
 msgid "Unable to retrieve the second install image"
 msgstr "Не вдалося отримати другий образ ╕сталяц╕╖"
 
-#: ../loader/loader.c:1322
+#: ../loader/loader.c:1166
+msgid "FTP and HTTP installs require 20MB or more of system memory."
+msgstr ""
+
+#: ../loader/loader.c:1390
 msgid "Rescue Method"
 msgstr "Метод спас╕ння"
 
-#: ../loader/loader.c:1323
+#: ../loader/loader.c:1391
 msgid "Installation Method"
 msgstr "Метод встановлення"
 
-#: ../loader/loader.c:1325
+#: ../loader/loader.c:1393
 msgid "What type of media contains the rescue image?"
 msgstr "Пристр╕й якого типу м╕стить рят╕вний образ?"
 
-#: ../loader/loader.c:1327
+#: ../loader/loader.c:1395
 msgid "What type of media contains the packages to be installed?"
 msgstr "Нос╕й якого типу м╕стить пакети для установки?"
 
-#: ../loader/loader.c:1961
+#: ../loader/loader.c:2027
 msgid "Cannot find ks.cfg on boot floppy."
 msgstr "Не можу знайти ks.cfg на дискет╕ завантаження."
 
-#: ../loader/loader.c:2007
+#: ../loader/loader.c:2073
 #, c-format
 msgid "Failed to read directory %s: %s"
 msgstr "Не можу прочитати каталог %s: %s"
 
-#: ../loader/loader.c:2069
+#: ../loader/loader.c:2135
 msgid "Updates Disk"
 msgstr "Диск поновлення"
 
-#: ../loader/loader.c:2070
+#: ../loader/loader.c:2136
 msgid "Insert your updates disk and press \"OK\" to continue."
 msgstr "Вставте ваш диск поновлення та натисн╕ть \"Гаразд\" для продовження."
 
-#: ../loader/loader.c:2078
+#: ../loader/loader.c:2144
 msgid "Failed to mount floppy disk."
 msgstr "Не виконано монтування floppy диску."
 
 #. Copy everything to /tmp/updates so .so files don't get run
 #. from /dev/floppy. We could (and probably should) get smarter
 #. about this at some point.
-#: ../loader/loader.c:2083
+#: ../loader/loader.c:2149
 msgid "Updates"
 msgstr "Оновлення"
 
-#: ../loader/loader.c:2083
+#: ../loader/loader.c:2149
 msgid "Reading anaconda updates..."
 msgstr "Читаю anaconda updates..."
 
-#: ../loader/loader.c:2396
+#: ../loader/loader.c:2470
 msgid "PC Card"
 msgstr "PC Card"
 
-#: ../loader/loader.c:2396
+#: ../loader/loader.c:2470
 msgid "Initializing PC Card Devices..."
 msgstr "╤н╕ц╕ювання пристрою PC Card..."
 
@@ -3213,7 +3253,7 @@ msgstr "╤н╕ц╕ювання пристрою PC Card..."
 msgid "NFS server name:"
 msgstr "Назва сервера NFS:"
 
-#: ../loader/net.c:152 ../loader/urls.c:185
+#: ../loader/net.c:152 ../loader/urls.c:191
 msgid "Red Hat directory:"
 msgstr "Каталог Red Hat:"
 
@@ -3353,21 +3393,21 @@ msgstr "Конф╕гурац╕я мереж╕"
 msgid "Would you like to set up networking?"
 msgstr "Бажа╓те настро╖ти мережу?"
 
-#: ../loader/urls.c:73
+#: ../loader/urls.c:79
 #, c-format
 msgid "Failed to log into %s: %s"
 msgstr "Неможливо створити журнал у %s: %s"
 
-#: ../loader/urls.c:82 ../loader/urls.c:89
+#: ../loader/urls.c:88 ../loader/urls.c:95
 #, c-format
 msgid "Failed to retrieve %s: %s"
 msgstr "Неможливо отримати %s: %s"
 
-#: ../loader/urls.c:94
+#: ../loader/urls.c:100
 msgid "Retrieving"
 msgstr "Отримання"
 
-#: ../loader/urls.c:154
+#: ../loader/urls.c:160
 msgid ""
 "Please enter the following information:\n"
 "\n"
@@ -3381,7 +3421,7 @@ msgstr ""
 "    o каталог на цьому сервер╕, що м╕стить\n"
 "      дистрибутив Red Hat для Вашо╖ арх╕тектури\n"
 
-#: ../loader/urls.c:163
+#: ../loader/urls.c:169
 msgid ""
 "Please enter the following information:\n"
 "\n"
@@ -3395,48 +3435,48 @@ msgstr ""
 "    o каталог на цьому сервер╕, що м╕стить\n"
 "      дистрибутив Red Hat для Вашо╖ арх╕тектури\n"
 
-#: ../loader/urls.c:181
+#: ../loader/urls.c:187
 msgid "FTP site name:"
 msgstr "Назва сервера FTP:"
 
-#: ../loader/urls.c:182
+#: ../loader/urls.c:188
 msgid "Web site name:"
 msgstr "Назва Web-сервера :"
 
-#: ../loader/urls.c:200
+#: ../loader/urls.c:206
 msgid "Use non-anonymous ftp or a proxy server"
 msgstr "Використовувати авторизований ftp або прокс╕-сервер"
 
-#: ../loader/urls.c:205
+#: ../loader/urls.c:211
 msgid "Use proxy server"
 msgstr "Використати прокс╕-сервер"
 
-#: ../loader/urls.c:217
+#: ../loader/urls.c:223
 msgid "FTP Setup"
 msgstr "Конф╕гурац╕я FTP"
 
-#: ../loader/urls.c:218
+#: ../loader/urls.c:224
 msgid "HTTP Setup"
 msgstr "Конф╕гурац╕я HTTP"
 
-#: ../loader/urls.c:228
+#: ../loader/urls.c:234
 msgid "You must enter a server name."
 msgstr "Ви ма╓те ввести назву сервера."
 
-#: ../loader/urls.c:233
+#: ../loader/urls.c:239
 msgid "You must enter a directory."
 msgstr "Ви ма╓те ввести каталог."
 
-#: ../loader/urls.c:238
+#: ../loader/urls.c:244
 msgid "Unknown Host"
 msgstr "Нев╕домий хост"
 
-#: ../loader/urls.c:239
+#: ../loader/urls.c:245
 #, c-format
 msgid "%s is not a valid hostname."
 msgstr "%s не ╓ коректним ╕менем хосту"
 
-#: ../loader/urls.c:310
+#: ../loader/urls.c:316
 msgid ""
 "If you are using non anonymous ftp, enter the account name and password you "
 "wish to use below. If you are using an FTP proxy enter the name of the FTP "
@@ -3446,7 +3486,7 @@ msgstr ""
 "та пароль. Якщо Ви використовуете прокс╕-сервер для доступу до FTP - введ╕ть "
 "назву сервера."
 
-#: ../loader/urls.c:316
+#: ../loader/urls.c:322
 msgid ""
 "If you are using a HTTP proxy server enter the name of the HTTP proxy server "
 "to use."
@@ -3454,29 +3494,34 @@ msgstr ""
 "Якщо Ви використовуете HTTP прокс╕-сервер для доступу до HTTP - введ╕ть "
 "назву сервера."
 
-#: ../loader/urls.c:337
+#: ../loader/urls.c:343
 msgid "Account name:"
 msgstr "╤м'я користувача:"
 
-#: ../loader/urls.c:346
+#: ../loader/urls.c:352
 msgid "FTP Proxy:"
 msgstr "Прокс╕-сервер FTP:"
 
-#: ../loader/urls.c:347
+#: ../loader/urls.c:353
 msgid "HTTP Proxy:"
 msgstr "Прокс╕-сервер HTTP:"
 
-#: ../loader/urls.c:351
+#: ../loader/urls.c:357
 msgid "FTP Proxy Port:"
 msgstr "Порт прокс╕-сервера FTP:"
 
-#: ../loader/urls.c:352
+#: ../loader/urls.c:358
 msgid "HTTP Proxy Port:"
 msgstr "Порт прокс╕-сервера HTTP:"
 
 #: ../loader/windows.c:46
 msgid "Loading SCSI driver"
 msgstr "Завантаження SCSI драйвера"
+
+#: ../loader/windows.c:47
+#, fuzzy, c-format
+msgid "Loading %s driver..."
+msgstr "Завантаження %s ramdisk..."
 
 #: ../gnome-map/gglobe-canvas.c:24
 msgid "Map Image to display"
@@ -3529,11 +3574,6 @@ msgstr "gglobe-canvas"
 #: ../gnome-map/gglobe-canvas.c:764
 msgid "View: "
 msgstr "Огляд:"
-
-#. pick New York City as default
-#: ../gnome-map/gglobe-canvas.c:781
-msgid "America/New_York"
-msgstr "Америка/Н'ю_Йорк"
 
 msgid "Base"
 msgstr "Основне"
@@ -3595,8 +3635,9 @@ msgstr "Сервер WWW"
 msgid "DNS Name Server"
 msgstr "Сервер DNS"
 
-msgid "Postgres (SQL) Server"
-msgstr "Postgres (SQL) Server"
+#, fuzzy
+msgid "SQL Server"
+msgstr "Сервер NFS"
 
 msgid "Network Management Workstation"
 msgstr "Станц╕я керування мережею"
@@ -3615,3 +3656,6 @@ msgstr "Розробка ядра"
 
 msgid "Utilities"
 msgstr "Утил╕ти"
+
+#~ msgid "Postgres (SQL) Server"
+#~ msgstr "Postgres (SQL) Server"
