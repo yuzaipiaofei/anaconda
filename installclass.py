@@ -156,7 +156,6 @@ class BaseInstallClass:
 	    dispatch.skipStep("xcustom", permanent = 1)
 	    dispatch.skipStep("writexconfig", permanent = 1)
 	    dispatch.skipStep("bootdisk", permanent = 1)
-	else:
 
     # This is called after the hdlist is read in.
     def setPackageSelection(self, hdlist, intf):
