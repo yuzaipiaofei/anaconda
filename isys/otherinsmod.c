@@ -167,11 +167,7 @@ int insmod(char * modName, char * path, char ** args) {
     argc += count;
 
     if ((child = fork()) == 0) {
-#if defined(__s390__) || defined(__s390x__)
-	execv("/bin/loaderbin", argv);
-#else
 	execv("/bin/loader", argv);
-#endif
 	exit(1);
     }
 
