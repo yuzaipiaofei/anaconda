@@ -78,7 +78,11 @@ class LanguageWindow:
             os.environ["LANG"] = "ja_JP.eucJP"
             os.environ["LC_ALL"] = "ja_JP.eucJP"
             os.environ["LC_NUMERIC"] = "C"
-            args = [ "kon", "-e", "/usr/bin/anaconda" ]
+            if os.access("/tmp/updates/anaconda", os.X_OK):
+                prog = "/tmp/updates/anaconda"
+            else:
+                prog = "/usr/bin/anaconda"
+            args = [ "kon", "-e", prog ]
             screen.finish()
             os.execv ("/sbin/loader", args)
 
