@@ -25,7 +25,7 @@ msgstr "エラー"
 
 #: ../fstab.py:214
 msgid "The kernel is unable to read your new partitioning information, probably because you modified extended partitions. While this is not critical, you must reboot your machine before proceeding. Insert the Red Hat boot disk now and press \"Ok\" to reboot your system.\n"
-msgstr "カーネルは新しいパーティション情報を読み込めませんでした。おそらく拡張パーティションを変更したためでしょう。致命的な問題ではありませんが、作業を進める前に機械を再起動しなければなりません。Red Hatのブートディスクを入れておいて、\"Ok\"を押してください。再起動します。"
+msgstr "カーネルは新しいパーティション情報を読み込めませんでした。おそらく拡張パーティションを変更したためでしょう。致命的な問題ではありませんが、作業を進める前に機械を再起動しなければなりません。Red Hatのブートディスクを入れておいて、\"Ok\"を押してください。再起動します。\n"
 
 #: ../fstab.py:393 ../fstab.py:620 ../fstab.py:630 ../fstab.py:654
 msgid "Formatting"
