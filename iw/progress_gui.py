@@ -224,12 +224,16 @@ class InstallProgressWindow (InstallWindow):
         label = gtk.Label (_("Package Progress: "))
         label.set_alignment (0, 0)
         progressTable.attach (label, 0, 1, 0, 1, gtk.SHRINK)
-        progressTable.attach (self.progress, 1, 2, 0, 1)
+        progressTable.attach (self.progress, 1, 2, 0, 1,
+                              gtk.FILL | gtk.EXPAND,
+                              gtk.FILL | gtk.EXPAND)
 
         label = gtk.Label (_("Total Progress:   "))
         label.set_alignment (0, 0)
         progressTable.attach (label, 0, 1, 1, 2, gtk.SHRINK)
-        progressTable.attach (self.totalProgress, 1, 2, 1, 2)
+        progressTable.attach (self.totalProgress, 1, 2, 1, 2,
+                              gtk.FILL | gtk.EXPAND,
+                              gtk.FILL | gtk.EXPAND)
 
         self.status =  {
             "total" :     { "packages" : (0, 1),
@@ -263,7 +267,7 @@ class InstallProgressWindow (InstallWindow):
             clist.column_title_passive (x)
         for x in range (3):
             clist.set_selectable (x, gtk.FALSE)
-        clist['can_focus'] = gtk.FALSE
+        clist.set_property('can_focus', gtk.FALSE)
         self.clist = clist
 #        align = gtk.Alignment (0.5, 0.5)
 #        align.add (clist)
@@ -277,17 +281,15 @@ class InstallProgressWindow (InstallWindow):
         pix = self.ics.readPixmap ("progress_first.png")
         if pix:
             frame = gtk.Frame()
-            frame.set_shadow_type (SHADOW_IN)
-            box = gtk.EventBox ()
+            frame.set_shadow_type(gtk.SHADOW_IN)
+            box = gtk.EventBox()
             self.adpix = pix
-            style = box.get_style ().copy ()
-            style.bg[STATE_NORMAL] = style.white
-            box.set_style (style)
+            box.modify_bg(gtk.STATE_NORMAL, box.get_style().white)
 #            self.adpix.set_alignment (0, 0)
-            box.add (self.adpix)
+            box.add(self.adpix)
             self.adbox = box
             frame.add (box)
-            vbox.pack_start (frame);
+            vbox.pack_start(frame);
 
 	intf.setPackageProgressWindow (self)
 	id.setInstallProgressClass(self)

@@ -15,6 +15,7 @@
 
 #import gettext_rh
 import gettext
+import iconvcodec
 
 class i18n:
     def __init__(self):
@@ -34,7 +35,10 @@ class i18n:
     def gettext(self, string):
         if not self.cat:
             return string
-        return self.cat.ugettext(string)
+        try:
+            return self.cat.ugettext(string)
+        except TypeError:
+            return string
 
 def N_(str):
     return str

@@ -275,8 +275,8 @@ class DiskStripeGraph:
         yoff = self.next_ypos
         text = self.canvas.root().add(gnome.canvas.CanvasText,
                                       x=0.0, y=yoff,
-                                      font="helvetica",
-                                      size_points=14)
+                                      font="sans",
+                                      size_points=12)
         drivetext = ("Drive %s (Geom: %s/%s/%s) "
                      "(Model: %s)") % ('/dev/' + drive,
                                        disk.dev.cylinders,

@@ -103,7 +103,7 @@ class TimezoneMap(gtk.VBox):
         self.listStore.set_sort_column_id(self.columns.TZ, gtk.SORT_ASCENDING)
 
         self.listView = gtk.TreeView(self.listStore)
-        self.listView.connect("map-event", self.listExposeEvent)
+        self.listView.connect("size-allocate", self.listScroll)
         selection = self.listView.get_selection()
         selection.connect("changed", self.selectionChanged)
         self.listView.set_property("headers-visible", gtk.FALSE)
@@ -132,7 +132,7 @@ class TimezoneMap(gtk.VBox):
         tz = self.listStore.get_value(iter, self.columns.TZ)
         self.setCurrent(self.zonetab.findEntryByTZ(tz), skipList=1)
 
-    def listExposeEvent(self, widget, *args):
+    def listScroll(self, widget, *args):
         # recenter the list
         rc = self.listView.get_selection().get_selected()
         if rc is None:

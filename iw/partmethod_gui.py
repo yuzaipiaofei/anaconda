@@ -49,9 +49,8 @@ class PartitionMethodWindow(InstallWindow):
         label=gtk.Label(_(PARTMETHOD_TYPE_DESCR_TEXT))
         label.set_line_wrap(1)
         label.set_alignment(0.0, 0.0)
-        label.set_usize(400, -1)
 
-        box.pack_start(label, gtk.FALSE, gtk.FALSE)
+        box.pack_start(label, gtk.TRUE, gtk.TRUE)
 
         radioBox = gtk.VBox (gtk.FALSE)
 

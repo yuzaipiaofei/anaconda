@@ -35,7 +35,7 @@ class LanguageWindow (InstallWindow):
 
         return None
 
-    def listMapEvent(self, widget, *args):
+    def listScroll(self, widget, *args):
         # recenter the list
         rc = self.listView.get_selection().get_selected()
         if rc is None:
@@ -91,7 +91,7 @@ class LanguageWindow (InstallWindow):
                 selection.select_iter(iter)
                 break
             next = self.listStore.iter_next(iter)
-        self.listView.connect("map-event", self.listMapEvent)
+        self.listView.connect("size-allocate", self.listScroll)
 
         sw = gtk.ScrolledWindow ()
         sw.set_border_width (5)
