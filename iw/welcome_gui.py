@@ -35,7 +35,7 @@ class WelcomeWindow (InstallWindow):
         if pix:
             box = gtk.EventBox ()
             style = box.get_style ().copy ()
-            style.bg[gtk.STATE_NORMAL] = style.white
+#            style.bg[gtk.STATE_NORMAL] = style.white
             box.set_style (style)
             box.add (pix)
             frame.add (box)

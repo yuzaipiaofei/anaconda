@@ -168,20 +168,23 @@ class ProgressWindow:
 class ExceptionWindow:
     def __init__ (self, text):
         win = gtk.Dialog ("Exception Occured")
-#        win.connect ("close", self.quit)
-        win.append_button ("Debug")
-        win.append_button ("Save to floppy")
-        win.append_button_with_pixmap ("OK", 'gtk-ok')
-        textbox = gtk.Text()
-        textbox.insert_defaults (text)
+        win.add_button("Debug", 0)
+        win.add_button("Save to floppy", 1)
+        win.add_button('gtk-ok', 2)
+        buffer = gtk.TextBuffer(None)
+        buffer.set_text(text, len(text))
+        textbox = gtk.TextView()
+        textbox.set_buffer(buffer)
+        textbox.set_property("editable", gtk.FALSE)
+        textbox.set_property("cursor_visible", gtk.FALSE)
         sw = gtk.ScrolledWindow ()
         sw.add (textbox)
-        sw.set_policy (POLICY_AUTOMATIC, POLICY_AUTOMATIC)
+        sw.set_policy (gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 
         hbox = gtk.HBox (gtk.FALSE)
-        file = pixmap_file('gnome-warning.png')
-        if file:
-            hbox.pack_start (GnomePixmap (file), gtk.FALSE)
+##         file = pixmap_file('gnome-warning.png')
+##         if file:
+##             hbox.pack_start (GnomePixmap (file), gtk.FALSE)
 
         info = gtk.Label(_("An unhandled exception has occured.  This "
                           "is most likely a bug.  Please copy the "
@@ -201,9 +204,6 @@ class ExceptionWindow:
         self.window = win
         self.rc = self.window.run ()
         
-    def quit (self, dialog, button):
-        self.rc = button
-
     def getrc (self):
         # I did it this way for future expantion
         # 0 is debug
@@ -418,7 +418,7 @@ class InstallControlWindow:
             self.hbox.reorder_child (self.hideHelpButton, 0)
             self.displayHelp = gtk.TRUE
 
-    def close (self, args):
+    def close (self, *args):
         self.textWin.destroy()
         self.releaseButton.set_sensitive(gtk.TRUE)
 
@@ -428,7 +428,8 @@ class InstallControlWindow:
 
         table = gtk.Table(3, 3, gtk.FALSE)
         self.textWin.vbox.pack_start(table)
-        self.textWin.add_button(gtk.STOCK_CLOSE, 0)
+        self.textWin.add_button('gtk-close', gtk.RESPONSE_NONE)
+        self.textWin.connect("response", self.close)
 
         vbox1 = gtk.VBox ()        
         vbox1.set_border_width (10)
@@ -596,18 +597,16 @@ class InstallControlWindow:
         self.showHelpButton = None
         self.hideHelpButton = None
 
-	self.stockButtons = [ 
-	    ('gtk-go-back', "prevButtonStock",
-             N_("Back"), self.prevClicked),
-	    ('gtk-go-forward', "nextButtonStock",
-             N_("Next"), self.nextClicked),
-	    ('gtk-help', "releaseButton",
-             N_("Release Notes"), self.releaseClicked),
-	    ('gtk-help', "showHelpButton",
-             N_("Show Help"), self.helpClicked),
-	    ('gtk-help', "hideHelpButton",
-             N_("Hide Help"), self.helpClicked),
-	    ]
+	self.stockButtons = (('gtk-go-back', "prevButtonStock",
+                              N_("_Back"), self.prevClicked),
+                             ('gtk-go-forward', "nextButtonStock",
+                              N_("_Next"), self.nextClicked),
+                             ('gtk-help', "releaseButton",
+                              N_("_Release Notes"), self.releaseClicked),
+                             ('gtk-help', "showHelpButton",
+                              N_("Show _Help"), self.helpClicked),
+                             ('gtk-help', "hideHelpButton",
+                              N_("Hide _Help"), self.helpClicked))
 
         self.reloadRcQueued = 0
         self.ii = ii
@@ -624,17 +623,23 @@ class InstallControlWindow:
 
     def buildStockButtons(self):
 	for (icon, item, text, action) in self.stockButtons:
-	    button = gtk.Button(stock=icon)
-#            button.set_property("label", _(text))
+            button = gtk.Button()
+            box = gtk.HBox(gtk.FALSE, 0)
+            image = gtk.Image()
+            image.set_from_stock(icon, gtk.ICON_SIZE_BUTTON)
+            box.pack_start(image, gtk.FALSE, gtk.FALSE)
+            label = gtk.gtk_label_new_with_mnemonic(_(text))
+            box.pack_start(label, gtk.TRUE, gtk.TRUE)
+            button.add(box)
 	    button.connect("clicked", action)
 	    button.show_all()
+            button.label = label
 	    self.__dict__[item] = button
 
     def updateStockButtons(self):
 	for (icon, item, text, action) in self.stockButtons:
 	    button = self.__dict__[item]
-            label = button.children ()[0].children ()[0].children()[1]
-            label.set_text (_(text))
+            button.label.set_text_with_mnemonic(_(text))
             button.queue_resize()
 
     def setup_window (self, runres):
@@ -748,7 +753,9 @@ class InstallControlWindow:
         self.helpFrame.add (self.box)
 
         table = gtk.Table (1, 3, gtk.TRUE)
-        table.attach (self.helpFrame, 0, 1, 0, 1)
+        table.attach (self.helpFrame, 0, 1, 0, 1,
+                      gtk.FILL | gtk.EXPAND,
+                      gtk.FILL | gtk.EXPAND)
 
         self.installFrame = gtk.Frame ()
 
