@@ -1352,7 +1352,7 @@ msgstr "自動検出の結果"
 
 #: ../iw/xconfig_gui.py:447
 msgid "Use Graphical Login"
-msgstr "グラフィカルログインの使用"
+msgstr "GUIログイン"
 
 #: ../iw/xconfig_gui.py:448
 msgid "Skip X Configuration"
