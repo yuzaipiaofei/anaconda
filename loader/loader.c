@@ -2542,7 +2542,7 @@ logMessage("found url image %s", url);
 	symlink("mnt/runtime/lib", "/lib");
 
 /* the only modules we need for alpha are on the initrd */
-#if !defined(__alpha__) && !defined(__ia64__)
+#if !defined(__ia64__)
 	unlink("/modules/modules.dep");
 	unlink("/modules/module-info");
 	unlink("/modules/pcitable");
@@ -2567,7 +2567,7 @@ logMessage("found url image %s", url);
 	symlink("../mnt/runtime/modules/modules64.cgz",
 		"/modules/modules65.cgz");
 # endif
-#endif /* !__alpha__ and !__ia32__ */
+#endif /* !__ia64__ */
     }
 
     logMessage("getting ready to spawn shell now");
