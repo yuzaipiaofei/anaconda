@@ -784,6 +784,8 @@ class s390BootloaderInfo(bootloaderInfo):
 	if os.environ.has_key("CHANDEV"):
 	    fd = os.open(instroot + "/etc/chandev.conf", os.O_WRONLY | os.O_CREAT)
 	    os.write(fd, os.environ["CHANDEV"])
+	    if os.environ.has_key("PORTNAME"):
+	       os.write(fd, os.environ["PORTNAME"])
 	    os.close(fd)
 	return ""
 	
