@@ -242,6 +242,10 @@ export CHANDEV
 export HNAME DEVICE NETTYPE IPADDR GATEWAY MTU INTERACTIVE
 export NETWORKIP NETMASK BROADCAST INSTALL DNS SEARCHDNS FORCEDASDFORMAT
 export RPMSERVER MOUNTS SWAP DASD LCS QETH IUCV DTZ ROOTPW CROOTPW
+if [ -n "\$SSH_TTY" ]; then
+	echo "Please start the program 'loader' to proceed with the installation"
+	echo 
+fi
 EOF
 # immediately read it in again to export these into the shell below
 . /etc/profile
