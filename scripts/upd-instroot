@@ -786,7 +786,7 @@ if [ -n "$NEEDGR" ]; then
     else
 	LD_LIBRARY_PATH=/usr/X11R6/lib:$LD_LIBRARY_PATH /usr/sbin/chroot $DESTGR /usr/bin/pango-querymodules > $DESTGR/etc/pango/pango.modules
     fi
-    sleep 10000 #rm -f $DESTGR/usr/bin/pango-querymodules
+    rm -f $DESTGR/usr/bin/pango-querymodules
 fi
 
 echo "Getting gtk2 input method modules"
@@ -795,7 +795,7 @@ if [ -n "$NEEDGR" ]; then
     	REALPATH=`(cd $DESTGR; /bin/pwd | sed 's,/md1/,/,g')`
 	runroot $COMPONENT --onlyone --arch $ARCH "LD_LIBRARY_PATH=/usr/X11R6/lib:$LD_LIBRARY_PATH /usr/sbin/chroot $REALPATH /usr/bin/gtk-query-immodules-2.0 2> $REALPATH/etc/gtk-2.0/gtk.immodules"
     else
-	/usr/sbin/chroot $DESTGR /usr/bin/gtk-query-immodules-2.0 > $DESTGR/etc/gtk-2.0/gtk.immodules
+	LD_LIBRARY_PATH=/usr/X11R6/lib:$LD_LIBRARY_PATH /usr/sbin/chroot $DESTGR /usr/bin/gtk-query-immodules-2.0 > $DESTGR/etc/gtk-2.0/gtk.immodules
     fi
     rm -f $DESTGR/usr/bin/gtk-query-immodules-2.0
 fi
