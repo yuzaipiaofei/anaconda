@@ -1496,9 +1496,9 @@ static PyObject * isInEMDDevice(PyObject * o, PyObject * args) {
     }
 
     close(fd);
-    fprintf(stderr, "cookie is %ld, parent is %ld\n", cookie_info.cookie,
-            cookie_info.parent_cookie);
-    if (cookie_info.cookie && !cookie_info.parent_cookie) {
+    /*    fprintf(stderr, "cookie is %ld, parent is %ld\n", cookie_info.cookie,
+          cookie_info.parent_cookie);*/
+    if (cookie_info.cookie && cookie_info.parent_cookie) {
         rc = 1;
     } else {
         rc = 0;
