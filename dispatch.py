@@ -63,7 +63,7 @@ installSteps = [
     ("findinstall", ("dispatch", "intf", "id", "instPath")),
     ("defaults", ("id.instLanguage", "id.keyboard", "id.mouse")),
 
-    ("installtype", ("dispatch", "id", "method", "intf", "id.keyboard")),
+    ("installtype", ("dispatch", "id", "method", "intf")),
     ("partitionmethod", ("id.partitions", "id.instClass")),
     ("partitionobjinit", partitionObjectsInitialize, ("id.diskset",
                                                       "id.partitions",
