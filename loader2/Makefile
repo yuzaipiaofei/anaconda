@@ -136,9 +136,9 @@ install: all
 	install -m 644 loader.tr $(DESTDIR)/$(RUNTIMEDIR)/loader
 	install -m 644 module-info $(DESTDIR)/$(RUNTIMEDIR)/loader
 	install -m 644 font.bgf.gz $(DESTDIR)/$(RUNTIMEDIR)/loader
-        for n in $(S390FILES); do \
-           install -m 755 s390/$$n $(DESTDIR)/$(RUNTIMEDIR)/loader; \
-        done
+	for n in $(S390FILES); do \
+	    install -m 755 s390/$$n $(DESTDIR)/$(RUNTIMEDIR)/loader; \
+	done
 
 ifeq (.depend,$(wildcard .depend))
 include .depend
