@@ -43,11 +43,12 @@ BTERMLIB = -lbtermdiet -lbogldiet
 WLITELIB = -lwlite
 ISYSLIB = ../isys/libisys-diet.a
 GUNZIP = ../isys/gzlib/libgunzip-diet.a
+
+OBJS += dietstubs.o ctype.o
 else
 REALCC=gcc
 CC=$(REALCC)
-
-OBJS += dietstubs.o ctype.o
+OBJS += ctype.o
 ISYSLIB += -lrpc
 CTYPEDEP = ctype.c
 endif
