@@ -456,7 +456,7 @@ makeinitrd() {
 	$MBD_DIR/mnt/runtime $MBD_DIR/etc/ssh $MBD_DIR/mnt/source \
 	$MBD_DIR/etc/locale/{de,en,ja}/LC_MESSAGES
        for links in X11R6 bin sbin share; do
-          ln -sf mnt/runtime/usr/$links $MBD_DIR/usr/$links
+          ln -sf /mnt/runtime/usr/$links $MBD_DIR/usr/$links
        done
        cp -f $IMGPATH/linuxrc $MBD_DIR/linuxrc
        ln -s ../linuxrc $MBD_DIR/sbin/init
@@ -527,7 +527,8 @@ makeinitrd() {
        cp -df $IMGPATH/lib/libnss_files* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libutil.so* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libutil-*.so* $MBD_DIR/lib
-       cp -df $IMGPATH/lib/libcrypt* $MBD_DIR/lib
+       cp -df $IMGPATH/lib/libcrypt*so* $MBD_DIR/lib
+       cp -df $IMGPATH/usr/lib/libcrypt*so* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libc.so* $MBD_DIR/lib
        cp -df $IMGPATH/lib/libc-*.so* $MBD_DIR/lib
        if [ "$BUILDARCH" = "s390" ]; then
