@@ -888,7 +888,7 @@ msgstr "未解決の依存"
 #: ../iw/dependencies_gui.py:31 ../iw/package_gui.py:413 ../textw/packages_text.py:12 ../textw/packages_text.py:275
 #, c-format
 msgid "Total install size: %s"
-msgstr "インストール合計容量： %s"
+msgstr "インストール\n合計容量： %s"
 
 #: ../iw/dependencies_gui.py:68 ../iw/progress_gui.py:167 ../textw/packages_text.py:312
 msgid "Package"
@@ -2203,19 +2203,19 @@ msgstr "<設定しない>"
 
 #: ../libfdisk/gnomefsedit.c:2976
 msgid "Requested"
-msgstr "[Requested]:"
+msgstr "Requested"
 
 #: ../libfdisk/gnomefsedit.c:2977
 msgid "Actual"
-msgstr "[Actual]:"
+msgstr "Actual"
 
 #: ../libfdisk/gnomefsedit.c:3150
 msgid "Drive"
-msgstr "[ドライブ]:"
+msgstr "ドライブ"
 
 #: ../libfdisk/gnomefsedit.c:3151
 msgid "Geom [C/H/S]"
-msgstr "ジオメトリ [C/H/S]:"
+msgstr "ジオメトリ [C/H/S]"
 
 #: ../libfdisk/gnomefsedit.c:3152
 msgid "Total (M)"
