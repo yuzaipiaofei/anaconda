@@ -1,6 +1,6 @@
 Name: anaconda
 Version: 11.1.2.168
-Release: 1
+Release: 1tzfix
 License: GPL
 Summary: Graphical system installer
 Group: Applications/System
@@ -127,6 +127,10 @@ fi
 /sbin/chkconfig --del reconfig >/dev/null 2>&1 || :
 
 %changelog
+* Thu Jun 11 2009 Radek Vykydal <rvykydal@redhat.com> 11.1.2.168-1tzfix
+- Hotfix for timezone setting for 5.3 (rvykydal)
+  Resolves: rhbz#481617
+
 * Thu Dec 18 2008 Joel Granados <jgranado@redhat.com> 11.1.2.168-1
 -  Make anaconda work with new API change in YUM (jgranado)
    Resolves: rhbz:#476957
