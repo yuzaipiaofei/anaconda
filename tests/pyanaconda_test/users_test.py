@@ -16,13 +16,13 @@ class UsersTest(mock.TestCase):
         
         import pyanaconda.users 
         pyanaconda.users.log = mock.Mock()
+        pyanaconda.users.iutil = mock.Mock()
         pyanaconda.users.iutil.mkdirChain = mock.Mock()
         
-        pyanaconda.users.os.fork = mock.Mock(return_value=False)
-        pyanaconda.users.os._exit = mock.Mock()
-        pyanaconda.users.os.waitpid = mock.Mock(return_value=(1, 1))
-        pyanaconda.users.os.WIFEXITED = mock.Mock()
-        pyanaconda.users.os.WEXITSTATUS = mock.Mock(return_value=0)
+        pyanaconda.users.os = mock.Mock()
+        pyanaconda.users.os.fork.return_value=False
+        pyanaconda.users.os.waitpid.return_value=(1, 1)
+        pyanaconda.users.os.WEXITSTATUS.return_value=0
         
         pyanaconda.users.libuser.admin = mock.Mock()
         pyanaconda.users.libuser.GIDNUMBER = GIDNUMBER
