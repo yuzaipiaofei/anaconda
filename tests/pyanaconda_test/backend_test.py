@@ -7,7 +7,7 @@ class BackendTest(mock.TestCase):
     def setUp(self):
         import pykickstart.commands
     
-        self.setupModules(["_isys", "block", 'logging', 'pykickstart'])
+        self.setupModules(["_isys", "block", 'storage', 'logging', 'pykickstart'])
         self.fs = mock.DiskIO()
         
         import sys

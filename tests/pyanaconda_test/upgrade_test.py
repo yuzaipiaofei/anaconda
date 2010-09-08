@@ -5,7 +5,7 @@ import mock
 class UpgradeTest(mock.TestCase):
     
     def setUp(self):
-        self.setupModules(["_isys", "block", 'logging'])
+        self.setupModules(["_isys", "block", 'storage', 'logging'])
         self.fs = mock.DiskIO()
         
         import pyanaconda
@@ -66,7 +66,7 @@ class UpgradeTest(mock.TestCase):
         import pyanaconda.upgrade
         pyanaconda.upgrade.flags = mock.Mock()
         pyanaconda.upgrade.findExistingRoots = mock.Mock(
-                                                return_value=(None, ['info']))
+                            return_value=(None, [("info1", "info2", "info3")]))
         pyanaconda.upgrade.setUpgradeRoot = mock.Mock()
         
         anaconda = mock.Mock()
