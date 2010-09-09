@@ -623,7 +623,7 @@ class NetworkTest(mock.TestCase):
         f.close()
         
         self.assertEqual(self.fs[TMPFILE], 
-            'network --device eth0 --bootproto dhcp\n')
+            'network --device eth0 --bootproto dhcp --noipv6\n')
     
     def network_has_name_server_1_test(self):
         import pyanaconda.network

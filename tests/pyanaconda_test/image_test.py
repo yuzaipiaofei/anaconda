@@ -50,11 +50,10 @@ class ImageTest(mock.TestCase):
         self.assertEqual(ret, {1: IMAGENAME})
         
         self.assertEqual(pyanaconda.image.isys.method_calls, 
-            [('isIsoImage', ('/%s' % IMAGENAME,), {}),
-             ('losetup', ('/dev/loop2', '/%s' % IMAGENAME), {'readOnly': 1}), 
-             ('mount', ('/dev/loop2', '/mnt/cdimage'), {'readOnly': True, 'fstype': 'iso9660'}), 
-             ('umount', ('/mnt/cdimage',), {'removeDir': False}), 
-             ('unlosetup', ('/dev/loop2',), {})]
+            [('isIsoImage', ('/Fedora-13-i386-DVD.iso',), {}), 
+             ('mount', ('/Fedora-13-i386-DVD.iso', '/mnt/cdimage'), 
+                                    {'readOnly': True, 'fstype': 'iso9660'}), 
+             ('umount', ('/mnt/cdimage',), {'removeDir': False})]
         )
                
         self.assertEqual(pyanaconda.image.os.method_calls,
@@ -81,9 +80,7 @@ class ImageTest(mock.TestCase):
         self.assertEqual(ret, {})
         
         self.assertEqual(pyanaconda.image.isys.method_calls, 
-            [('isIsoImage', ('/%s' % IMAGENAME,), {}), 
-             ('losetup', ('/dev/loop2', '/%s' % IMAGENAME), {'readOnly': 1}), 
-             ('unlosetup', ('/dev/loop2',), {})]
+            [('isIsoImage', ('/Fedora-13-i386-DVD.iso',), {})]
         )
         
     def get_disc_nums_1_test(self):
@@ -145,8 +142,8 @@ class ImageTest(mock.TestCase):
         self.assertEqual(ret,  {1: IMAGENAME})
         
         self.assertEqual(pyanaconda.image.isys.method_calls,
-           [('losetup', ('/dev/loop1', '/%s' % IMAGENAME), {'readOnly': 1}), 
-            ('mount', ('/dev/loop1', '/mnt/cdimage'), {'readOnly': True, 'fstype': 'iso9660'})])
+           [('mount', ('/Fedora-13-i386-DVD.iso', '/mnt/cdimage'), 
+                                    {'readOnly': True, 'fstype': 'iso9660'})])
         
     def present_required_media_message_1_test(self):
         import pyanaconda.image
@@ -201,8 +198,7 @@ class ImageTest(mock.TestCase):
         import pyanaconda.image
         pyanaconda.image.umountImage('/tmp', mock.Mock())
         self.assertEqual(pyanaconda.image.isys.method_calls, 
-            [('umount', ('/tmp',), {'removeDir': False}),
-             ('unlosetup', ('/dev/loop1',), {})])
+            [('umount', ('/tmp',), {'removeDir': False})])
              
     def unmount_cd_1_test(self):
         import pyanaconda.image

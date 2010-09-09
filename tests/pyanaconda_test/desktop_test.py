@@ -86,6 +86,8 @@ class DesktopTest(mock.TestCase):
         
     def write_3_test(self):
         import pyanaconda.desktop
+        pyanaconda.desktop.os = mock.Mock()
+        pyanaconda.desktop.os.path.isdir.return_value = True
         dskt = pyanaconda.desktop.Desktop()
         dskt.setDefaultDesktop('foo')
         dskt.write('/tmp')
