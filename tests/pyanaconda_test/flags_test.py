@@ -42,7 +42,7 @@ class FlagsTest(mock.TestCase):
         try:
             cmddict = pyanaconda.flags.flags.createCmdlineDict()
         except (ValueError):
-            self.assertTrue(False)
+            self.assertTrue(False, "ValueError exception was raised.")
 
         self.assertEqual(set(cmddict.keys()), 
             set(['vmlinuz', 'BOOT_IMAGE', 'initrd', 'stage2']))
@@ -78,7 +78,7 @@ class FlagsTest(mock.TestCase):
         try:
             cmddict = pyanaconda.flags.flags.createCmdlineDict()
         except (ValueError):
-            self.assertTrue(False)
+            self.assertTrue(False, "ValueError exception was raised.")
 
         self.assertEqual(set(cmddict.keys()), 
             set(['vmlinuz', 'BOOT_IMAGE', 'initrd', 'stage2']))
