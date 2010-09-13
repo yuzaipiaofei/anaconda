@@ -39,7 +39,10 @@ class FlagsTest(mock.TestCase):
         
         self.cmd = 'vmlinuz BOOT_IMAGE=/boot/img initrd=initrd.img stage2=hd:LABEL="Fedora"'
         self.mock2.read = mock.Mock(return_value=self.cmd)
-        cmddict = pyanaconda.flags.flags.createCmdlineDict()    
+        try:
+            cmddict = pyanaconda.flags.flags.createCmdlineDict()
+        except (ValueError):
+            self.assertTrue(False)
 
         self.assertEqual(set(cmddict.keys()), 
             set(['vmlinuz', 'BOOT_IMAGE', 'initrd', 'stage2']))
@@ -72,8 +75,11 @@ class FlagsTest(mock.TestCase):
                 
         self.cmd = 'vmlinuz BOOT_IMAGE="/boot/img img" initrd=initrd.img stage2=hd:LABEL="Fedora"'
         self.mock2.read = mock.Mock(return_value=self.cmd)
-        cmddict = pyanaconda.flags.flags.createCmdlineDict()    
-        #sys.stderr.write('\n'.join(cmddict)+'\n\n')
+        try:
+            cmddict = pyanaconda.flags.flags.createCmdlineDict()
+        except (ValueError):
+            self.assertTrue(False)
+
         self.assertEqual(set(cmddict.keys()), 
             set(['vmlinuz', 'BOOT_IMAGE', 'initrd', 'stage2']))
     

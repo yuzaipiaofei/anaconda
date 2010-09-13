@@ -116,7 +116,7 @@ class LiloTest(mock.TestCase):
         import pyanaconda.booty.lilo
         conf = pyanaconda.booty.lilo.LiloConfigFile()
         conf.read(self.LFILE)
-        conf.delEntry('foofoofoo')
+        self.assertRaises(KeyError, conf.delEntry, 'foofoofoo')
 
     def list_entries_1_test(self):
         import pyanaconda.booty.lilo
