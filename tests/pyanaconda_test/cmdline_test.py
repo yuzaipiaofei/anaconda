@@ -6,7 +6,9 @@ import sys
 class CmdLineTest(mock.TestCase):
     
     def setUp(self):
-        self.setupModules(["_isys", "block", 'storage', 'logging'])
+        self.setupModules(["_isys", "block", 'parted', 'storage',
+                            'pyanaconda.storage.formats', 'logging'])
+        
         self.fs = mock.DiskIO()
         self.stdout = sys.stdout
         self.TMP_STDOUT = '/tmp/stdout'

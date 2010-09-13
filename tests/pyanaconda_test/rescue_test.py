@@ -5,7 +5,9 @@ import mock
 class RescueTest(mock.TestCase):
     
     def setUp(self):
-        self.setupModules(["_isys", "block", 'storage', 'logging', 'add_drive_text'])
+        self.setupModules(["_isys", "block", 'parted', 'storage',
+                        'pyanaconda.storage.formats', 'logging', 'add_drive_text'])
+        
         self.fs = mock.DiskIO()
         
         import pyanaconda

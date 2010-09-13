@@ -5,7 +5,9 @@ import mock
 class PartIntfHelpersTest(mock.TestCase):
     
     def setUp(self):
-        self.setupModules(["_isys", "block", 'storage', 'logging'])
+        self.setupModules(["_isys", "block", 'parted', 'storage',
+                            'pyanaconda.storage.formats', 'logging'])
+        
         self.fs = mock.DiskIO()
         
         import pyanaconda
