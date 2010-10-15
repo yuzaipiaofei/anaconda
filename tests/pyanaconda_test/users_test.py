@@ -8,7 +8,7 @@ HOMEDIRECTORY = 'pw_dir'
 
 class UsersTest(mock.TestCase):
     def setUp(self):
-        self.setupModules(["_isys", "block"])
+        self.setupModules(["_isys", "block", "ConfigParser"])
         
         self.fs = mock.DiskIO()
         self.anaconda = mock.Mock()

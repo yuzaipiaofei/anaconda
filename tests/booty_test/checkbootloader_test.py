@@ -5,8 +5,9 @@ import mock
 class CheckBootLoaderTest(mock.TestCase):
     
     def setUp(self):
-        self.setupModules(["_isys", "block", 'storage', 'parted',
-                            'pyanaconda.storage.formats', 'logging'])
+        self.setupModules(['_isys', 'block', 'storage', 'parted',
+                            'pyanaconda.storage.formats', 'logging', 
+                            'ConfigParser'])
         
         self.fs = mock.DiskIO()
         

@@ -8,7 +8,8 @@ class BackendTest(mock.TestCase):
         import pykickstart.commands
     
         self.setupModules(["_isys", "block", 'parted', 'storage', 
-                    'pyanaconda.storage.formats', 'logging', 'pykickstart'])
+                    'pyanaconda.storage.formats', 'logging', 'pykickstart',
+                    'ConfigParser', 'pyanaconda.anaconda_log'])
         self.fs = mock.DiskIO()
         
         import sys

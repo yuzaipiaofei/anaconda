@@ -8,7 +8,7 @@ IMAGENAME = 'Fedora-13-i386-DVD.iso'
 class ImageTest(mock.TestCase):
     
     def setUp(self):
-        self.setupModules(["_isys", "block"])            
+        self.setupModules(["_isys", "block", "ConfigParser"])            
         self.fs = mock.DiskIO()
         
         DISCINFO = "1273712438.740122\n"
@@ -60,7 +60,6 @@ class ImageTest(mock.TestCase):
             [('stat', ('',), {}), ('listdir', ('',), {}), 
             ('access', ('/mnt/cdimage/.discinfo', 0), {}), 
             ('access', ('/mnt/cdimage/images/install.img', 0), {}), 
-            ('path.isdir', ('/mnt/cdimage/Packages',), {}), 
             ('stat', ('/%s' % IMAGENAME,), {}), 
             ('access', ('/mnt/cdimage/.discinfo', 0), {}), 
             ('access', ('/mnt/cdimage/.discinfo', 0), {}), 

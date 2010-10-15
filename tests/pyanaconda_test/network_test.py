@@ -6,7 +6,7 @@ import os
 class NetworkTest(mock.TestCase):
     
     def setUp(self):
-        self.setupModules(["_isys", "block", 'logging'])
+        self.setupModules(['_isys', 'block', 'logging', 'ConfigParser'])
         self.fs = mock.DiskIO()
         
         self.OK = 22
@@ -195,50 +195,6 @@ class NetworkTest(mock.TestCase):
     #def get_active_net_devs_test(self):
     #    pass
 
-    def log_ifcfg_file_test(self):
-        import pyanaconda.network
-        self.fs.open(self.IFCFGLOG, 'w')
-
-        pyanaconda.network.os = mock.Mock()
-        pyanaconda.network.logIfcfgFile(self.DEV_FILE, "===\n")
-        
-        self.assertEqual(self.fs[self.IFCFGLOG],
-            '===\n' + self.CONT)
-
-    def log_ifcfg_files_1_test(self):
-        import pyanaconda.network
-        pyanaconda.network.os = mock.Mock()
-        
-        pyanaconda.network.isys = mock.Mock()
-        pyanaconda.network.isys.getDeviceProperties.return_value = [self.DEVICE]
-        pyanaconda.network.logIfcfgFile = mock.Mock()
-        
-        pyanaconda.network.logIfcfgFiles()
-        self.assertEqual(self.fs[self.IFCFGLOG], '\n')
-        self.assertTrue(pyanaconda.network.logIfcfgFile.called)
-
-    def log_ifcfg_files_2_test(self):
-        import pyanaconda.network
-        pyanaconda.network.os = mock.Mock()
-        
-        pyanaconda.network.isys = mock.Mock()
-        pyanaconda.network.isys.getDeviceProperties.return_value = [self.DEVICE]
-        pyanaconda.network.logIfcfgFile = mock.Mock()
-        
-        pyanaconda.network.logIfcfgFiles()
-        self.assertEqual(self.fs[self.IFCFGLOG], '\n')
-        self.assertTrue(pyanaconda.network.logIfcfgFile.called)
-
-    def logifcfgfiles_plus_logifcfgfile_test(self):
-        import pyanaconda.network
-        pyanaconda.network.os = mock.Mock()
-        
-        pyanaconda.network.isys = mock.Mock()
-        pyanaconda.network.isys.getDeviceProperties.return_value = [self.DEVICE]
-        pyanaconda.network.logIfcfgFiles()
-        self.assertEqual(self.fs[self.IFCFGLOG], 
-            '\n===== %s\n%s' % (self.DEV_FILE, self.CONT))
-
     ##
     ## NetworkDevice class tests
     ##
@@ -246,8 +202,7 @@ class NetworkTest(mock.TestCase):
     def networkdevice_read_test(self):
         import pyanaconda.network
         
-        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE,
-            logfile=self.IFCFGLOG)
+        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE)
         ret = nd.read()
         self.assertEqual(ret, 4)
         self.assertEqual(nd.info, 
@@ -257,8 +212,7 @@ class NetworkTest(mock.TestCase):
     def networkdevice_clear_test(self):
         import pyanaconda.network
         
-        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE,
-            logfile=self.IFCFGLOG)
+        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE)
         nd.info = {'DEVICE': 'eth0', 'HWADDR': '00:11:22:50:55:50', 'TYPE': 'Ethernet'}
         nd.clear()
         self.assertEqual(nd.info, {})
@@ -268,15 +222,13 @@ class NetworkTest(mock.TestCase):
         pyanaconda.network.iutil = mock.Mock()
         pyanaconda.network.iutil.isS390.return_value = False
         
-        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE,
-            logfile=self.IFCFGLOG)
+        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE)
         nd.info = {'HWADDR': '00:11:22:50:55:50', 'DEVICE': 'eth0', 'TYPE': 'Ethernet'}
         self.assertTrue(str(nd).startswith('DEVICE="eth0"'))
 
     def networkdevice_load_ifcfg_file_test(self):
         import pyanaconda.network
-        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE,
-            logfile=self.IFCFGLOG)
+        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE)
         nd.loadIfcfgFile()
         self.assertFalse(nd._dirty)
         self.assertEqual(nd.info,
@@ -285,8 +237,7 @@ class NetworkTest(mock.TestCase):
     
     def networkdevice_write_ifcfg_file_test(self):
         import pyanaconda.network
-        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE,
-            logfile=self.IFCFGLOG)
+        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE)
         nd.info = {'HWADDR': '66:55:44:33:22:11', 'DEVICE': 'eth1', 'TYPE': 'Ethernet'}
         nd._dirty = True
         nd.writeIfcfgFile()
@@ -295,16 +246,14 @@ class NetworkTest(mock.TestCase):
     
     def networkdevice_set_1_test(self):
         import pyanaconda.network
-        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE,
-            logfile=self.IFCFGLOG)
+        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE)
         nd.set(('key', 'value'))
         self.assertEqual(nd.info, {'KEY': 'value'})
         self.assertTrue(nd._dirty)
         
     def networkdevice_set_2_test(self):
         import pyanaconda.network
-        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE,
-            logfile=self.IFCFGLOG)
+        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE)
         nd.set(('key', 'value'))
         nd.set(('key', 'other_value'))
         self.assertEqual(nd.info, {'KEY': 'other_value'})
@@ -312,8 +261,7 @@ class NetworkTest(mock.TestCase):
         
     def networkdevice_set_3_test(self):
         import pyanaconda.network
-        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE,
-            logfile=self.IFCFGLOG)
+        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE)
         nd.set(('key', 'value'))
         nd._dirty = False
         nd.set(('key', 'other_value'))
@@ -322,15 +270,13 @@ class NetworkTest(mock.TestCase):
         
     def networkdevice_keyfile_path_test(self):
         import pyanaconda.network
-        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE,
-            logfile=self.IFCFGLOG)
+        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE)
         ret = nd.keyfilePath
         self.assertEqual(ret, self.DEV_KEY_FILE)
         
     def networkdevice_write_wepkey_file_1_test(self):
         import pyanaconda.network
-        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE,
-            logfile=self.IFCFGLOG)
+        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE)
         nd.wepkey = False
         ret = nd.writeWepkeyFile()
         self.assertFalse(ret)
@@ -345,8 +291,7 @@ class NetworkTest(mock.TestCase):
         pyanaconda.network.os.path = os.path
         pyanaconda.network.shutil = mock.Mock()
         
-        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE,
-            logfile=self.IFCFGLOG)
+        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE)
         nd.iface = self.DEVICE
         nd.wepkey = '12345'
         
@@ -354,58 +299,7 @@ class NetworkTest(mock.TestCase):
         self.assertEqual(pyanaconda.network.os.write.call_args[0], (88, 'KEY1=12345\n'))
         self.assertEqual(pyanaconda.network.shutil.move.call_args[0],
             (TMP_FILE, '%s/keys-%s' % (TMP_DIR, self.DEVICE)))
-            
-    def networkdevice_log_test(self):
-        import pyanaconda.network
-        HEADER = 'LOG'
-        pyanaconda.network.NetworkDevice.log_values = mock.Mock()
-        pyanaconda.network.NetworkDevice.log_write_file = mock.Mock()
-        pyanaconda.network.NetworkDevice.log_file = mock.Mock()
-        
-        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE,
-            logfile=self.IFCFGLOG)
-        nd.log(HEADER)
-        self.assertEqual(self.fs[self.IFCFGLOG], HEADER)
-    
-    def networkdevice_log_values_test(self):
-        import pyanaconda.network
-        HEADER = 'LOGVAL'
-        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE,
-            logfile=self.IFCFGLOG)
-        nd.info = {'HWADDR': '66:55:44:33:22:11', 'DEVICE': 'eth0', 'TYPE': 'Ethernet'}
-        nd.log_values(HEADER)
-        self.assertEqual(self.fs[self.IFCFGLOG],
-            HEADER+'== values for file /tmp/etc/sysconfig/network-scripts/ifcfg-eth0\n'
-            'DEVICE="eth0"\n'
-            'HWADDR="66:55:44:33:22:11"\n'
-            'TYPE="Ethernet"\n')
-    
-    def networkdevice_log_write_file_test(self):
-        import pyanaconda.network
-        HEADER = 'LOGWRITEFILE'
-        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE,
-            logfile=self.IFCFGLOG)
-        nd.info = {'HWADDR': '66:55:44:33:22:11', 'DEVICE': 'eth0', 'TYPE': 'Ethernet'}
-        nd.log_write_file(HEADER)
-        self.assertEqual(self.fs[self.IFCFGLOG],
-            HEADER+'== file to be written for /tmp/etc/sysconfig/network-scripts/ifcfg-eth0\n'
-            'DEVICE="eth0"\n'
-            'HWADDR="66:55:44:33:22:11"\n'
-            'TYPE="Ethernet"\n')
-    
-    def networkdevice_log_file_test(self):
-        import pyanaconda.network
-        HEADER = 'LOGFILE'
-        nd = pyanaconda.network.NetworkDevice(self.NETSCRIPTSDIR, self.DEVICE,
-            logfile=self.IFCFGLOG)
-        nd.log_file(HEADER)
-        self.assertEqual(self.fs[self.IFCFGLOG],
-            HEADER+'== file /tmp/etc/sysconfig/network-scripts/ifcfg-eth0\n'
-            'DEVICE=eth0\n'
-            'HWADDR=00:11:22:50:55:50\n'
-            'TYPE=Ethernet\n'
-            'BOOTPROTO=dhcp\n')
-    
+           
     #def networkdevice_used_by_fcoe_test(self):
     #    pass
     
@@ -617,7 +511,7 @@ class NetworkTest(mock.TestCase):
         
         nw = pyanaconda.network.Network()
         nw.netdevices[self.DEVICE] = pyanaconda.network.NetworkDevice(
-            self.NETSCRIPTSDIR, self.DEVICE, logfile=self.IFCFGLOG)
+            self.NETSCRIPTSDIR, self.DEVICE)
         nw.netdevices[self.DEVICE].loadIfcfgFile()
         nw.writeKS(f)
         f.close()
@@ -709,7 +603,7 @@ class NetworkTest(mock.TestCase):
         self.fs.open(self.NETWORKCONFFILE, 'w')
         
         device = pyanaconda.network.NetworkDevice(
-            self.NETSCRIPTSDIR, self.DEVICE, logfile=self.IFCFGLOG)
+            self.NETSCRIPTSDIR, self.DEVICE)
         device.loadIfcfgFile()
         
         nw = pyanaconda.network.Network()

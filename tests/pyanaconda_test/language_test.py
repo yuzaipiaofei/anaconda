@@ -7,7 +7,7 @@ ENVIRON_LANG = 'en_US.utf8'
 class LanguageTest(mock.TestCase):
     
     def setUp(self):
-        self.setupModules(["_isys", "block"])         
+        self.setupModules(["_isys", "block", "ConfigParser"])         
                 
         # Mock filesystem     
         self.fs = mock.DiskIO()

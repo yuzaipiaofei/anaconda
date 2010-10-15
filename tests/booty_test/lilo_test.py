@@ -5,8 +5,9 @@ import mock
 class LiloTest(mock.TestCase):
     only = True
     def setUp(self):
-        self.setupModules(["_isys", "block", 'parted', 'storage',
-                            'pyanaconda.storage.formats', "logging"])
+        self.setupModules(['_isys', 'block', 'parted', 'storage',
+                            'pyanaconda.storage.formats', 'logging', 
+                            'ConfigParser'])
         
         self.fs = mock.DiskIO()
       

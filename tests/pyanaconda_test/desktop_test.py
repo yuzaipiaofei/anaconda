@@ -6,7 +6,7 @@ import sys
 class DesktopTest(mock.TestCase):
     
     def setUp(self):
-        self.setupModules(["_isys", "block"])            
+        self.setupModules(["_isys", "block", "ConfigParser"])            
         self.fs = mock.DiskIO()
         
         self.fs.open('/tmp/etc/inittab', 'w').write('id:5:initdefault:')

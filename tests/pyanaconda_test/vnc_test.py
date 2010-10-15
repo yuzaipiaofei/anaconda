@@ -6,7 +6,7 @@ import os
 class VncTest(mock.TestCase):
     
     def setUp(self):
-        self.setupModules(["_isys", "block", 'logging'])
+        self.setupModules(["_isys", "block", "logging", "ConfigParser"])
         self.fs = mock.DiskIO()
       
         import pyanaconda
