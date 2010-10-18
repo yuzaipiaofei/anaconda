@@ -156,21 +156,8 @@ class LanguageTest(mock.TestCase):
         self.assertEqual(ret, 'cz-lat2') 
 
     def get_default_keyboard_with_cs_CZ_locale_test(self):
-        import pyanaconda.language
-        
-        # os.environ['LANG'] returns 'utf8' instead 'UTF-8':
-        #
-        # Python 2.6.4 (r264:75706, Jun  4 2010, 18:20:31) 
-        # [GCC 4.4.4 20100503 (Red Hat 4.4.4-2)] on linux2
-        # Type "help", "copyright", "credits" or "license" for more information.
-        # >>> import os
-        # >>> os.environ['LANG']
-        # 'en_US.utf8'
-        
-        # This test fail because (in __init__) 
-        # we expect 'cs_CZ.UTF-8' but we obtain 'cs_CZ.utf8'
-        
-        pyanaconda.language.os.environ = {'LANG': 'cs_CZ.utf8'}
+        import pyanaconda.language       
+        pyanaconda.language.os.environ = {'LANG': 'cs'}
         lang = pyanaconda.language.Language()
         ret = lang.getDefaultKeyboard('/tmp')
         self.assertEqual(ret, 'cz-lat2') 
@@ -184,8 +171,7 @@ class LanguageTest(mock.TestCase):
 
     def get_default_time_zone_with_cs_CZ_locale_test(self):
         import pyanaconda.language
-        pyanaconda.language.os.environ = {'LANG': 'cs_CZ.utf8'}
-        # ^ See "get_default_keyboard_with_cs_CZ_locale_test" for more info
+        pyanaconda.language.os.environ = {'LANG': 'cs'}
         pyanaconda.language.os.path.exists = mock.Mock(return_value=False)
         lang = pyanaconda.language.Language()
         ret = lang.getDefaultTimeZone('/tmp')
