@@ -55,22 +55,7 @@ class ImageTest(mock.TestCase):
                                     {'readOnly': True, 'fstype': 'iso9660'}), 
              ('umount', ('/mnt/cdimage',), {'removeDir': False})]
         )
-               
-        self.assertEqual(pyanaconda.image.os.method_calls,
-            [('stat', ('',), {}), ('listdir', ('',), {}), 
-            ('access', ('/mnt/cdimage/.discinfo', 0), {}), 
-            ('access', ('/mnt/cdimage/images/install.img', 0), {}), 
-            ('stat', ('/%s' % IMAGENAME,), {}), 
-            ('access', ('/mnt/cdimage/.discinfo', 0), {}), 
-            ('access', ('/mnt/cdimage/.discinfo', 0), {}), 
-            ('access', ('/mnt/cdimage/.discinfo', 0), {}), 
-            ('access', ('/mnt/cdimage/.discinfo', 0), {}), 
-            ('access', ('/mnt/cdimage/.discinfo', 0), {}), 
-            ('access', ('/mnt/cdimage/.discinfo', 0), {}), 
-            ('access', ('/mnt/cdimage/.discinfo', 0), {}), 
-            ('access', ('/mnt/cdimage/.discinfo', 0), {})]
-        )
-     
+    
     def find_iso_images_2_test(self):
         import pyanaconda.image
         pyanaconda.image.isys.mount = mock.Mock(side_effect=SystemError())
