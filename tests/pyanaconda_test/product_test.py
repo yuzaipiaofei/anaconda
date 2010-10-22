@@ -15,8 +15,10 @@ class ProductTest(mock.TestCase):
         del sys.modules['pyanaconda.product']
               
         # os module global mock
+        self.modifiedModule("os")
         os = sys.modules['os']
         os.access = mock.Mock(return_value=False)
+        os.uname.return_value = ('', '', '', '', 'i386')
         os.environ = {}      
     
         # fake /tmp/product/.buildstamp file
