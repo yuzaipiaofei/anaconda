@@ -6,7 +6,8 @@ class PackagesTest(mock.TestCase):
     
     def setUp(self):
         self.setupModules(["_isys", "block", "logging", "parted", "storage", 
-                    "pyanaconda.storage.formats", "ConfigParser"])
+                    "pyanaconda.storage.formats", "ConfigParser", 
+                    "pyanaconda.storage.storage_log"])
         self.fs = mock.DiskIO()
         
         import pyanaconda

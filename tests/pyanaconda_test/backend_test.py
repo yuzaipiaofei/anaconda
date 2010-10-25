@@ -9,7 +9,8 @@ class BackendTest(mock.TestCase):
     
         self.setupModules(["_isys", "block", 'parted', 'storage', 
                     'pyanaconda.storage.formats', 'logging', 'pykickstart',
-                    'ConfigParser', 'pyanaconda.anaconda_log'])
+                    'ConfigParser', 'pyanaconda.anaconda_log', 
+                    'pyanaconda.storage.storage_log'])
         self.fs = mock.DiskIO()
         
         import sys
@@ -18,10 +19,7 @@ class BackendTest(mock.TestCase):
         
         import pyanaconda
         pyanaconda.anaconda_log = mock.Mock()
-        
-        import pyanaconda.storage
-        pyanaconda.storage.storage_log = mock.Mock()
-        
+               
         self.DD_EXTRACTED = '/tmp/DD'
         
         import pyanaconda.backend
