@@ -40,7 +40,7 @@ function dud_contents()
 
 # filter the driver update list so only the modules
 # meant for instalation are in it
-# TODO there is no implementation of the rule mechanism atm.
+# TODO 7.1 there is no implementation of the rule mechanism atm.
 function dud_rules()
 {
     cat
@@ -91,6 +91,9 @@ function dud_parse()
 }
 
 # dud_select <title line> <input data> [<default value> [noninteractive]]
+# This is the (non)interactive part of module selection,
+# the user can select drivers to install using simple text interface
+# The list of selected modules gets printed out to the 3rd filedes
 function dud_select()
 {
     MODULES=()
@@ -104,14 +107,13 @@ function dud_select()
 
     dud_parse $DEFAULT <$2
 
-    sh
-
     if [ $MODE == "interactive" ]; then
         L="x"
     else
         L=""
     fi
 
+    # TUI
     while [ "x$L" != "x" -a ${#MODULES[*]} -gt 0 ]; do
         # header
         clear
@@ -136,6 +138,7 @@ function dud_select()
         fi
     done
 
+    # print all selected drivers to the result descriptor (3)
     for i in "${!FLAGS[@]}"; do
         if [ ${SELECTED[$i]} == "x" ]; then
             echo ${FILES[$i]} ${FLAGS[$i]} 1>&3
@@ -187,16 +190,36 @@ function driverupdatedisc()
     cut -f1 -d " " /proc/modules | sort >/tmp/dud_state_current
     cat /tmp/dud_state /tmp/dud_state_current | uniq -u >/tmp/dud_rmmod
 
-    # remove all modules that were added by driver updates
-    for mod in $(cat /tmp/dud_rmmod); do
-        rmmod -w $mod
+    # iterative removal of package dependencies
+    REMOVING=1
+
+    # remove all modules that were added by driver updates and can be removed
+    while [ $REMOVING -gt 0 ]; do
+        # this might be the last iteration
+        REMOVING=0
+
+        for mod in $(cat /tmp/dud_rmmod); do
+            rmmod $mod
+            if [ $? -eq 0 ]; then
+                # is something was removed, there needs to be another iteration
+                # to remove the modules that depended on this one
+                REMOVING=1
+            fi
+        done
     done
 
+    # wait a bit to let the kernel and udev stabilize
     sleep 1
 
     # load modules (in their new version incarnation) again
+    # XXX it freezes here for an unknown reason..
     udevadm trigger
 }
+
+#
+# The main flow of execution starts below this point
+#
+
 
 # save module state
 cut -f1 -d " " /proc/modules | sort >/tmp/dud_state
@@ -230,7 +253,7 @@ if [ $? -eq 0 ]; then
     # UI select partition (if there are any)
     # UI browse directories (if rhdd3 file is present, skip following steps)
     # UI select driver update disc image
-    driverupdatedisc $dud $ARCH $NUM
+    driverupdatedisc $dud $ARCH $NUM # TODO skip mounting for directory based DUDs
     NUM=$(expr $NUM + 1)
 fi
 
