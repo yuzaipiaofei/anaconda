@@ -28,6 +28,15 @@ install() {
     inst_hook pre-udev 40 "$moddir/kickstart-genrules.sh"
     inst_hook pre-udev 40 "$moddir/updates-genrules.sh"
     inst_hook pre-trigger 40 "$moddir/anaconda-udevprop.sh"
+    inst_hook pre-trigger 41 "$moddir/driver-updates.sh"
+    inst /sbin/depmod
+    inst /bin/cut
+    inst /bin/clear
+    inst /bin/uniq
+    inst /bin/sort
+    inst /bin/blkid
+    inst "$moddir/../utils/dud_list" /bin/dud_list
+    inst "$moddir/../utils/dud_extract" /bin/dud_extract
     inst_hook initqueue/settled 00 "$moddir/anaconda-ks-sendheaders.sh"
     inst_hook initqueue/online 80 "$moddir/anaconda-netroot.sh"
     inst "$moddir/anaconda-diskroot" "/sbin/anaconda-diskroot"
