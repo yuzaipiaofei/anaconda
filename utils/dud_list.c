@@ -47,7 +47,7 @@ int dlabelProvides(const char* dep, const char* version, uint32_t sense, void *u
 
     int packageflags = 0;
 
-    //logMessage(DEBUGLVL, "Provides: %s = %s", dep, version);
+    logMessage(DEBUGLVL, "Provides: %s = %s\n", dep, version);
 
     if (version == NULL)
         return 0;
@@ -81,13 +81,43 @@ int dlabelProvides(const char* dep, const char* version, uint32_t sense, void *u
     return packageflags;
 }
 
-int dlabelOK(Header *rpmheader, int packageflags)
+int dlabelOK(const char* source, Header *h, int packageflags)
 {
+    struct rpmtd_s tdname;
+    struct rpmtd_s tddesc;
+    
+    const char *name;
+    const char *description;
+    
+    if (!headerGet(*h, RPMTAG_NAME, &tdname, HEADERGET_MINMEM))
+        return 0;
+    
+    if (!headerGet(*h, RPMTAG_DESCRIPTION, &tddesc, HEADERGET_MINMEM)){
+        rpmtdFreeData(&tdname);
+        return 0;
+    }
+    
+    /* iterator */
+    name = rpmtdNextString(&tdname);
+    description = rpmtdNextString(&tddesc);
+
+    fprintf(stdout, "%s\n%s\n", source, name);
+
+    if (packageflags & dup_modules) fprintf(stdout, "modules ");
+    if (packageflags & dup_firmwares) fprintf(stdout, "firmwares ");
+    if (packageflags & dup_binaries) fprintf(stdout, "binaries ");
+    if (packageflags & dup_libraries) fprintf(stdout, "libraries ");
+
+    fprintf(stdout, "\n%s\n---\n", description);
+
+    rpmtdFreeData(&tdname);
+    rpmtdFreeData(&tddesc);
+
+    return 0;
 }
 
 int main(int argc, char *argv[])
 {
-    char *cvalue = NULL;
     int option;
     int option_index;
 
@@ -119,6 +149,10 @@ int main(int argc, char *argv[])
             break;
         }
 
+    }
+
+    if (verbose) {
+        printf("Listing DUD dir %s\n", directory);
     }
 
     char *globpattern;

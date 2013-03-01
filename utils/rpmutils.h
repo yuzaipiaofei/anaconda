@@ -43,7 +43,7 @@
         abort();                                                    \
     }
 
-#define logMessage(level,...) fprintf(stderr, __VA_ARGS__)
+#define logMessage(level, ...) fprintf(stderr, __VA_ARGS__)
 #define CRITICAL 0
 #define DEBUGLVL 0
 #define WARNING 0
@@ -63,10 +63,10 @@ typedef int (*filterfunc)(const char* name, const struct stat *fstat, int flags,
 typedef int (*dependencyfunc)(const char* depname, const char* depversion, const uint32_t sense, void *userptr);
 
 /*
-  callback type for a function to call if a package fulfills all criteria to be accepted as
+  callback type for a function to call if a package fullfills all criteria to be accepted as
   a driver update RPM
 */
-typedef int (*okfunc)(Header *rpmheader, int packageflags);
+typedef int (*okfunc)(const char* filename, Header *rpmheader, int packageflags);
 
 const char * headerGetString(Header h, rpmTag tag);
 

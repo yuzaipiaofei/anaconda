@@ -24,7 +24,7 @@ utilsdir            = $(libexecdir)/$(PACKAGE_NAME)
 dist_sbin_SCRIPTS    = logpicker handle-sshpw
 utils_PROGRAMS       = dud_list dud_extract
 
-dud_list_LDADD = $(RPM_LIBS)
+dud_list_LDADD = $(RPM_LIBS) $(LIBARCHIVE_LIBS)
 dud_list_SOURCES = rpmutils.c dud_list.c
 
 dud_extract_LDFLAGS = $(LIBARCHIVE_LIBS) $(RPM_LIBS)

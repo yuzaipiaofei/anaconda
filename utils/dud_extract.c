@@ -34,7 +34,7 @@ int dlabelFilter(const char* name, const struct stat *fstat, int packageflags, v
 {
     int l = strlen(name);
 
-    logMessage(DEBUGLVL, "Unpacking %s with flags %02x", name, packageflags);
+    logMessage(DEBUGLVL, "Unpacking %s with flags %02x\n", name, packageflags);
 
     /* unpack bin and sbin if the package was marked as installer-enhancement */
     if ((packageflags & dup_binaries)) {
@@ -84,7 +84,6 @@ int dlabelFilter(const char* name, const struct stat *fstat, int packageflags, v
 
 int main(int argc, char *argv[])
 {
-    char *cvalue = NULL;
     int option;
     int option_index;
 
@@ -96,8 +95,6 @@ int main(int argc, char *argv[])
 
     int verbose = 0;
     char *oldcwd;
-    char *globpattern;
-    int rc = 0;
 
     while ((option = getopt_long(argc, argv, shortopts, longopts, &option_index)) != -1) {
         switch (option) {
@@ -138,6 +135,10 @@ int main(int argc, char *argv[])
             break;
         }
 
+    }
+
+    if (verbose) {
+        printf("Extracting DUP RPM to %s\n", directory);
     }
 
     /* get current working directory */

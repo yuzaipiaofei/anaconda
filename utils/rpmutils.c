@@ -257,7 +257,7 @@ int checkDUDRPM(const char *source,
         break;
     }
 
-    ok(&h, packageflags);
+    ok(source, &h, packageflags);
 
     Fclose(fdi);
 
