@@ -201,8 +201,6 @@ function driverupdatedisc()
 
     # copy binaries and libraries to / directory
     # TODO
-
-    sh
     
     # save the list of extracted modules for later use in anaconda
     cat /tmp/dud_extract.txt >>/tmp/dud_extracted.txt
