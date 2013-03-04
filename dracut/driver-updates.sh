@@ -30,10 +30,10 @@ function dud_copy()
 #dud_contents <driverdisc> <arch> <kernel> <anaconda>
 function dud_contents()
 {
-    KERNEL=${3:-`uname -r`}
-    ANACONDA=${4:-"master"}
-    ARCH=${2:-`uname -m`}
-    localdud=$1
+    local KERNEL=${3:-`uname -r`}
+    local ANACONDA=${4:-"master"}
+    local ARCH=${2:-`uname -m`}
+    local localdud=$1
 
     "/bin/dud_list" -k "$KERNEL" -a "$ANACONDA" -d "$localdud"
 }
@@ -48,17 +48,27 @@ function dud_rules()
 
 # extract driver update rpms selected for installation
 # the list is passed using standard input
-function dud_extract()
+function dud_extract_all()
 {
-    repo=$1
-    dest=$2
+    local repo=$1
+    local dest=$2
+    local rpm
+    local arg
+    local args
+    local extract_args
 
     read rpm args
     while [ "x$rpm" != "x" ]; do
         echo "Extracting driver update rpm $rpm"
+        extract_args=""
+        for arg in $args; do
+            extract_args="$extract_args --$arg"
+        done
 
-        pushd $dest
-        "/bin/dud_extract" $args --rpm=$rpm --directory=.
+        mkdir -p "$dest"
+        pushd "$dest"
+        echo "/bin/dud_extract" $extract_args --rpm=$rpm --directory=.
+        "/bin/dud_extract" $extract_args --rpm=$rpm --directory=.
         popd
 
         read rpm args
@@ -69,7 +79,8 @@ function dud_extract()
 # dud_parse x|. (default value)
 function dud_parse()
 {
-    default=$1
+    local default=$1
+    local DESCTMP
 
     read L
     while [ "x$L" != "x" ]; do
@@ -96,14 +107,16 @@ function dud_parse()
 # The list of selected modules gets printed out to the 3rd filedes
 function dud_select()
 {
-    MODULES=()
-    FILES=()
-    DESCRIPTIONS=()
-    FLAGS=()
-    SELECTED=()
+    local MODULES=()
+    local FILES=()
+    local DESCRIPTIONS=()
+    local FLAGS=()
+    local SELECTED=()
 
-    DEFAULT=${3:-"."}
-    MODE=${4:-"interactive"}
+    local DEFAULT=${3:-"."}
+    local MODE=${4:-"interactive"}
+    
+    local L
 
     dud_parse $DEFAULT <$2
 
@@ -149,9 +162,12 @@ function dud_select()
 # process potential DUD for a given architecture
 function driverupdatedisc()
 {
-    device=$1
-    arch=$2
-    num=$3
+    local device=$1
+    local arch=$2
+    local num=$3
+    local DUD
+    local MODE
+    local DEFAULT
 
     echo "Checking Driver Update Disc $device..."
     DUD="/media/dud"
@@ -173,7 +189,20 @@ function driverupdatedisc()
 
     dud_select "Select DUP RPMs to install" /tmp/dud_list.txt $DEFAULT $MODE 3>/tmp/dud_extract.txt
 
-    dud_extract /tmp/DD-$num "/lib/modules/$(uname -r)/updates" </tmp/dud_extract.txt
+    # extract the module files
+    dud_extract_all /tmp/DD-$num /tmp/duds/DD-$num </tmp/dud_extract.txt
+
+    # copy modules and firmwares to the proper directories
+    # modules are in <kernel version>/{kernel,updates,extra}/* structure so
+    # strip the kernel version and the first directory name of it
+    mkdir -p "/lib/modules/$(uname -r)/updates" "/lib/firmware/updates"
+    cp -r /tmp/duds/DD-$num/lib/modules/*/*/* "/lib/modules/$(uname -r)/updates/"
+    cp -r /tmp/duds/DD-$num/lib/firmware/* /lib/firmware/
+
+    # copy binaries and libraries to / directory
+    # TODO
+
+    sh
     
     # save the list of extracted modules for later use in anaconda
     cat /tmp/dud_extract.txt >>/tmp/dud_extracted.txt
@@ -191,7 +220,7 @@ function driverupdatedisc()
     cat /tmp/dud_state /tmp/dud_state_current | uniq -u >/tmp/dud_rmmod
 
     # iterative removal of package dependencies
-    REMOVING=1
+    local REMOVING=1
 
     # remove all modules that were added by driver updates and can be removed
     while [ $REMOVING -gt 0 ]; do
@@ -199,10 +228,11 @@ function driverupdatedisc()
         REMOVING=0
 
         for mod in $(cat /tmp/dud_rmmod); do
-            rmmod $mod
+            rmmod $mod 2>/dev/null
             if [ $? -eq 0 ]; then
                 # is something was removed, there needs to be another iteration
                 # to remove the modules that depended on this one
+                echo "Module $mod removed"
                 REMOVING=1
             fi
         done
@@ -212,7 +242,6 @@ function driverupdatedisc()
     sleep 1
 
     # load modules (in their new version incarnation) again
-    # XXX it freezes here for an unknown reason..
     udevadm trigger
 }
 
