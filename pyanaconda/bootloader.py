@@ -1668,12 +1668,32 @@ class GRUB2(GRUB):
         return ret
 
 class EFIGRUB(GRUB2):
-    packages = ["grub2-efi", "efibootmgr", "shim"]
     can_dual_boot = False
     stage2_is_valid_stage1 = False
     stage2_bootable = False
 
-    _efi_binary = "\\shim.efi"
+    _is_32bit_firmware = False
+    _packages32 = ["grub2-efi.i686", "efibootmgr", "shim.i686"]
+    _packages64 = ["grub2-efi", "efibootmgr", "shim"]
+
+    def __init__(self
+        super(EFIGRUB, self).__init__()
+            f = open("/sys/firmware/efi/fw_platform_size", "r")
+            value = f.readline().strip()
+            if value == '32':
+                self._is_32bit_firmware = True
+
+    @property
+    def _efi_binary(self):
+        if self._is_32bit_firmware:
+            return "\\shimia32.efi"
+        return "\\shimx64.efi"
+
+    @property
+    def packages(self):
+        if self._is_32bit_firmware:
+            return self._packages32
+        return self._packages64
 
     @property
     def _config_dir(self):
@@ -1780,6 +1800,7 @@ class EFIGRUB(GRUB2):
 
 class Aarch64EFIGRUB(EFIGRUB):
     _serial_consoles = ["ttyAMA", "ttyS"]
+    _efi_binary = "\\shimaa64.efi"
 
 class MacEFIGRUB(EFIGRUB):
     def mactel_config(self):
