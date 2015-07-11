@@ -309,6 +309,8 @@ update-desktop-database &> /dev/null || :
 %{_prefix}/libexec/anaconda/dd_*
 
 %changelog
+* Fri Jul 10 2015 Brian C. Lane <bcl@redhat.com> - 21.48.22.19-1
+
 * Fri Jul 10 2015 Brian C. Lane <bcl@redhat.com> - 21.48.22.18-1
 - Start the network before the display (dshea)
   Resolves: rhbz#1240732
