@@ -18,7 +18,6 @@
 # Authors:
 #  Peter Jones <pjones@redhat.com>
 #
-from functools import wraps
 from decorator import decorator
 import pdb
 import copy
@@ -27,11 +26,13 @@ import types
 import sys
 import traceback
 
-def log(tracetype, level, fmt, *args):
+def do_log_thingy(tracepoint, level, fmt, *args):
+    """ this is a fake logger """
     argstr = fmt % args
-    print("%s %s.%d: %s" % (time.asctime(), tracetype, level, argstr))
+    print("%s %s.%d: %s" % (time.asctime(), tracepoint, level, argstr))
 
 def ingress_egress_logger(func, obj, *args, **kwargs):
+    """ A simple logger to log entry and exit of functions / methods """
     if func and hasattr(func, '_tracelevel'):
         level = obj._tracelevel
     if obj and hasattr(obj, '_tracelevel'):
@@ -40,29 +41,19 @@ def ingress_egress_logger(func, obj, *args, **kwargs):
         # XXX FIXME: figure out a good default level
         level = 1
 
-    objname = "%s.%s"  % (func.__module__, func.__qualname__)
-    if obj:
-        funcname = objname
-    else:
-        funcname = "%s.%s" % (func.__module__, func.__name__)
+    funcname = "%s.%s"  % (func.__module__, func.__qualname__)
 
     newargs = copy.copy(args)
     for k,v in kwargs.items():
         newargs.append("%s=%s" % (k,v))
     argstr = ",".join(newargs)
 
-    log("ingress", level, "%s(%s)" % (funcname, argstr))
-    if not obj:
-        obj = func.__new__(func, *args, **kwargs)
-        return_obj = True
-        func.__init__(obj, *args, **kwargs)
-        ret = obj
-    else:
-        ret = func(obj, *args, **kwargs)
-    log("egress", level, "%s() = %s" % (funcname, ret))
+    do_log_thingy("ingress", level, "%s(%s)" % (funcname, argstr))
+    ret = func(obj, *args, **kwargs)
+    do_log_thingy("egress", level, "%s() = %s" % (funcname, ret))
     return ret
 
-def tracetype(name):
+def tracepoint(name):
     """ Decorator to add a tracepoint type to an object."""
     def run_func_with_logger_set(func):
         setattr(func, '_tracepoint', name)
@@ -70,22 +61,39 @@ def tracetype(name):
     return run_func_with_logger_set
 
 class LogFunction(object):
-    def __init__(self, tracepoint):
+    """ This class provides a callable to log some data """
+
+    def __init__(self, tracepoint=None):
         self._tracepoint = tracepoint
 
     # XXX this should use our real log formatter instead
     def __call__(self, level, msg, *args):
+        # this is probably the default tracepoint, but maybe not.  
         tracepoint = self._tracepoint
-        try:
-            raise Exception
-        except Exception:
-            stuff = sys.exc_info()
-        obj = stuff[2].tb_frame.f_back.f_locals['self']
-        funcname = stuff[2].tb_frame.f_back.f_code.co_name
-        func = getattr(obj, funcname)
-        if hasattr(func, '_tracepoint'):
-            tracepoint = func._tracepoint
-        return log(tracepoint, level, msg, *args)
+        if tracepoint == None:
+            # it is the default, which means we need to find if our
+            # function or object have a non-default value
+            try:
+                raise Exception
+            except Exception:
+                stuff = sys.exc_info()
+            namespace = stuff[2].tb_frame.f_back.f_locals
+            if "self" in namespace:
+                obj = namespace['self']
+                funcname = stuff[2].tb_frame.f_back.f_code.co_name
+                func = getattr(obj, funcname)
+            else:
+                obj = None
+                func = None
+            if hasattr(func, '_tracepoint'):
+                tracepoint = func._tracepoint
+            if tracepoint is None and hasattr(obj, '_tracepoint'):
+                tracepoint = obj._tracepoint
+            # but on the output side we use "default".
+            if tracepoint is None:
+                tracepoint = "default"
+        if tracepoint != "squelch":
+            return do_log_thingy(tracepoint, level, msg, *args)
 
     def __getattr__(self, name):
         if name in self.__dict__:
@@ -94,34 +102,62 @@ class LogFunction(object):
             return LogFunction(tracepoint=name)
 
 class LoggedObject(type):
+    """ This class object provides you with a metaclass you can use in your
+    classes to get logging set up with easy defaults
+    """
     def __new__(cls, name, bases, nmspc):
         for k, v in nmspc.items():
             if isinstance(v, types.FunctionType):
                 v = decorator(ingress_egress_logger, v)
                 nmspc[k] = v
 
-        tracepoint = nmspc.setdefault("_tracepoint", "default")
+        # We use "None" rather than "default" here so that if somebody /sets/
+        # something to default, we won't override it with something with lower
+        # precedence.
+        tracepoint = nmspc.setdefault("_tracepoint", None)
         nmspc['log'] = LogFunction(tracepoint)
         return type.__new__(cls, name, bases, nmspc)
 
-@tracetype("baz")
+log = LogFunction()
+
+@tracepoint("zoom")
 class Foo(metaclass=LoggedObject):
     def __init__(self):
+        self.log(1, "this should be log level type zoom")
         print('1')
 
-    @tracetype("baz")
+    @tracepoint("baz")
     def foo(self):
-        self.log(3, "I have no mouth and I must scream")
+        self.log(3, "this should be log type baz")
         print('2')
 
     def zonk(self):
-        self.log.debug(3, "I have no mouth and I must scream")
+        self.log.debug(3, "this should be log type debug")
         print('3')
         return 0
+
+class Bar(metaclass=LoggedObject):
+    def __init__(self):
+        self.log(9, "this should be log type default")
+
+@tracepoint("incorrect")
+class Baz(metaclass=LoggedObject):
+    @tracepoint("default")
+    def __init__(self):
+        self.log(4, "this should be log type default")
+
+    def zonk(self):
+        self.log(5,"this should be log type incorrect")
+
+@tracepoint("maybe")
+def bullshit():
+    log(4, "does this even work?  maybe...")
 
 x = Foo()
 x.foo()
 x.zonk()
 
-pdb.set_trace()
-pass
+y = Bar()
+
+z = Baz()
+z.zonk()
